@@ -11,6 +11,7 @@
     <RepositoryUrl>https://github.com/ultrabstrong/Corely.Security</RepositoryUrl>
     <PackageTags>Corely Security Encrypt Hash Sign</PackageTags>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Description>Composable .NET security toolkit providing provider-based hashing, symmetric/asymmetric encryption, digital signatures, key rotation with versioned key stores, self-describing value formats, and DI-friendly factories.</Description>
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Corely.IAM.UnitTests" />
