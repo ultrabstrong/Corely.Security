@@ -20,28 +20,29 @@ graph TD
     G --> H
 
     H --> I[Generated Keys]
-    I --> J[Key Stores (Versioned)]
+    I --> J["Key Stores (Versioned)"]
     J --> D
     J --> E
     J --> F
     J --> G
     C --> J
 
-    D --> K[Encrypted Values (typeCode:keyVersion:cipher)]
+    D --> K["Encrypted Values (typeCode:keyVersion:cipher)"]
     E --> K
-    F --> L[Signatures (typeCode:signature)]
+    F --> L["Signatures (typeCode:signature)"]
     G --> L
-    C --> M[Hashes (typeCode:base64SaltPlusHash)]
+    C --> M["Hashes (typeCode:base64SaltPlusHash)"]
 
     N[DI Container] --> B
     N --> O[Password Validation Provider]
 
-    style K fill:#eef,stroke:#446
-    style L fill:#eef,stroke:#446
-    style M fill:#eef,stroke:#446
-    style J fill:#ffe,stroke:#aa5
-    style H fill:#ffe,stroke:#aa5
-    style B fill:#efe,stroke:#484
+    %% Improved contrast styles
+    style K fill:#1e3a8a,stroke:#0f172a,color:#ffffff
+    style L fill:#1e3a8a,stroke:#0f172a,color:#ffffff
+    style M fill:#1e3a8a,stroke:#0f172a,color:#ffffff
+    style J fill:#065f46,stroke:#064e3b,color:#ffffff
+    style H fill:#065f46,stroke:#064e3b,color:#ffffff
+    style B fill:#92400e,stroke:#78350f,color:#ffffff
 ```
 
 These blocks provide small, composable building blocks for application-level cryptography & credential workflows:
