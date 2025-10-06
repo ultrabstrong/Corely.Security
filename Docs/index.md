@@ -36,7 +36,6 @@ graph TD
     N[DI Container] --> B
     N --> O[Password Validation Provider]
 
-    %% Improved contrast styles
     style K fill:#1e3a8a,stroke:#0f172a,color:#ffffff
     style L fill:#1e3a8a,stroke:#0f172a,color:#ffffff
     style M fill:#1e3a8a,stroke:#0f172a,color:#ffffff
