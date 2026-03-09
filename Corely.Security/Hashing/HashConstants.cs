@@ -2,6 +2,6 @@
 
 public static class HashConstants
 {
-    public const string SALTED_SHA256_CODE = "00";
-    public const string SALTED_SHA512_CODE = "01";
+    public const string SALTED_SHA256_CODE = "SHA256-Salted";
+    public const string SALTED_SHA512_CODE = "SHA512-Salted";
 }

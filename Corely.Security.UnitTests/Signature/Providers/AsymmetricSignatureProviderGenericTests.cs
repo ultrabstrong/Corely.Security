@@ -92,7 +92,7 @@ public abstract class AsymmetricSignatureProviderGenericTests
     }
 
     [Fact]
-    public abstract void SignatureTypeCode_ReturnsCorrectCode_ForImplementation();
+    public abstract void ProviderName_ReturnsCorrectValue_ForImplementation();
 
     [Fact]
     public abstract void GetAsymmetricKeyProvider_ReturnsCorrectKeyProvider_ForImplementation();

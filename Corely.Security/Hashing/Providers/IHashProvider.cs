@@ -2,7 +2,8 @@
 
 public interface IHashProvider
 {
-    string HashTypeCode { get; }
+    string ProviderName { get; }
+    string ProviderDescription { get; }
     string Hash(string value);
     bool Verify(string value, string hash);
 }

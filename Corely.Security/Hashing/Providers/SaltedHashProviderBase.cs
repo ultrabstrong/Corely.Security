@@ -7,14 +7,16 @@ public abstract class SaltedHashProviderBase : IHashProvider
 {
     private const int SALT_SIZE = 16;
 
-    public abstract string HashTypeCode { get; }
+    public abstract string ProviderName { get; }
+
+    public virtual string ProviderDescription => GetType().Name;
 
     public SaltedHashProviderBase()
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(HashTypeCode, nameof(HashTypeCode));
-        if (HashTypeCode.Contains(':'))
+        ArgumentException.ThrowIfNullOrWhiteSpace(ProviderName, nameof(ProviderName));
+        if (ProviderName.Contains(':'))
         {
-            throw new HashException($"Hash type code cannot contain ':'")
+            throw new HashException($"Hash provider name cannot contain ':'")
             {
                 Reason = HashException.ErrorReason.InvalidTypeCode
             };
@@ -50,7 +52,7 @@ public abstract class SaltedHashProviderBase : IHashProvider
     {
         var saltedHash = salt.Concat(hash).ToArray();
         var finalHash = Convert.ToBase64String(saltedHash);
-        return $"{HashTypeCode}:{finalHash}";
+        return $"{ProviderName}:{finalHash}";
     }
 
     public virtual bool Verify(string value, string originalHash)
@@ -77,9 +79,9 @@ public abstract class SaltedHashProviderBase : IHashProvider
 
     private byte[] ValidateForSalt(string hash)
     {
-        if (!hash.StartsWith(HashTypeCode))
+        if (!hash.StartsWith(ProviderName))
         {
-            throw new HashException($"Hash must start with {HashTypeCode}")
+            throw new HashException($"Hash must start with {ProviderName}")
             {
                 Reason = HashException.ErrorReason.InvalidFormat
             };

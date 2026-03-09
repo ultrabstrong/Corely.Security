@@ -9,9 +9,18 @@ public class AesEncryptionProviderTests : SymmetricEncryptionProviderGenericTest
     private readonly AesEncryptionProvider _aesEncryptionProvider = new();
 
     [Fact]
-    public override void EncryptionTypeCode_ReturnsCorrectCode_ForImplementation()
+    public override void ProviderName_ReturnsCorrectValue_ForImplementation()
     {
-        Assert.Equal(SymmetricEncryptionConstants.AES_CODE, _aesEncryptionProvider.EncryptionTypeCode);
+        Assert.Equal(SymmetricEncryptionConstants.AES_CODE, _aesEncryptionProvider.ProviderName);
+    }
+
+    [Fact]
+    public void ProviderDescription_ReturnsNonDefaultValue()
+    {
+        var description = _aesEncryptionProvider.ProviderDescription;
+
+        Assert.False(string.IsNullOrWhiteSpace(description));
+        Assert.NotEqual(_aesEncryptionProvider.GetType().Name, description);
     }
 
     [Fact]

@@ -121,7 +121,7 @@ public class AsymmetricSignatureProviderFactoryTests
         var signatureProvider = _signatureProviderFactory.GetDefaultProvider();
 
         Assert.NotNull(signatureProvider);
-        Assert.Equal(DEFAULT_PROVIDER_CODE, signatureProvider.SignatureTypeCode);
+        Assert.Equal(DEFAULT_PROVIDER_CODE, signatureProvider.ProviderName);
     }
 
     [Theory, MemberData(nameof(GetProviderData))]

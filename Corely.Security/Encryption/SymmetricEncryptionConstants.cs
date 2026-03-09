@@ -2,5 +2,5 @@
 
 public static class SymmetricEncryptionConstants
 {
-    public const string AES_CODE = "00";
+    public const string AES_CODE = "AES-256-CBC-PKCS7";
 }

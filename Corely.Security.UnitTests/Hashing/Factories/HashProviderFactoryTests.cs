@@ -120,7 +120,7 @@ public class HashProviderFactoryTests
     {
         var hashProvider = _hashProviderFactory.GetDefaultProvider();
         Assert.NotNull(hashProvider);
-        Assert.Equal(DEFAULT_PROVIDER_CODE, hashProvider.HashTypeCode);
+        Assert.Equal(DEFAULT_PROVIDER_CODE, hashProvider.ProviderName);
     }
 
     [Theory, MemberData(nameof(GetProviderData))]

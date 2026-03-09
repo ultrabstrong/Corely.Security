@@ -7,7 +7,10 @@ namespace Corely.Security.Signature.Providers;
 
 public sealed class ECDsaSignatureProvider : AsymmetricSignatureProviderBase
 {
-    public override string SignatureTypeCode => AsymmetricSignatureConstants.ECDSA_SHA256_CODE;
+    public override string ProviderName => AsymmetricSignatureConstants.ECDSA_SHA256_CODE;
+
+    public override string ProviderDescription =>
+        "ECDSA digital signature using the P-256 curve. Signatures are in DER format, Base64-encoded. Keys use PKCS#8 (private) and SubjectPublicKeyInfo (public) format, Base64-encoded.";
 
     private readonly EcdsaKeyProvider _ecdsaKeyProvider = new();
     private readonly HashAlgorithmName _hashAlgorithm;

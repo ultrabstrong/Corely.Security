@@ -5,15 +5,17 @@ namespace Corely.Security.Encryption.Providers;
 
 public abstract class SymmetricEncryptionProviderBase : ISymmetricEncryptionProvider
 {
-    public abstract string EncryptionTypeCode { get; }
+    public abstract string ProviderName { get; }
+
+    public virtual string ProviderDescription => GetType().Name;
 
     public SymmetricEncryptionProviderBase()
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(EncryptionTypeCode, nameof(EncryptionTypeCode));
+        ArgumentException.ThrowIfNullOrWhiteSpace(ProviderName, nameof(ProviderName));
 
-        if (EncryptionTypeCode.Contains(':'))
+        if (ProviderName.Contains(':'))
         {
-            throw new EncryptionException($"Symmetric encryption type code cannot contain ':'")
+            throw new EncryptionException($"Symmetric encryption provider name cannot contain ':'")
             {
                 Reason = EncryptionException.ErrorReason.InvalidTypeCode
             };
@@ -39,9 +41,9 @@ public abstract class SymmetricEncryptionProviderBase : ISymmetricEncryptionProv
 
     private (string, int) ValidateForKeyVersion(string value)
     {
-        if (!value.StartsWith(EncryptionTypeCode))
+        if (!value.StartsWith(ProviderName))
         {
-            throw new EncryptionException($"Value must start with {EncryptionTypeCode}")
+            throw new EncryptionException($"Value must start with {ProviderName}")
             {
                 Reason = EncryptionException.ErrorReason.InvalidFormat
             };
@@ -78,7 +80,7 @@ public abstract class SymmetricEncryptionProviderBase : ISymmetricEncryptionProv
 
     private string FormatEncryptedValue(string encryptedValue, int keyVersion)
     {
-        return $"{EncryptionTypeCode}:{keyVersion}:{encryptedValue}";
+        return $"{ProviderName}:{keyVersion}:{encryptedValue}";
     }
 
     public string? RemoveEncodedEncryptionData(string value)

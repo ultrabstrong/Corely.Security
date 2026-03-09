@@ -10,8 +10,17 @@ public class Sha256SaltedHashProviderTests : SaltedHashProviderGenericTests
     protected override IHashProvider HashProvider => _sha256SaltedHashProvider;
 
     [Fact]
-    public override void HashTypeCode_ReturnsCorrectCode_ForImplementation()
+    public override void ProviderName_ReturnsCorrectValue_ForImplementation()
     {
-        Assert.Equal(HashConstants.SALTED_SHA256_CODE, _sha256SaltedHashProvider.HashTypeCode);
+        Assert.Equal(HashConstants.SALTED_SHA256_CODE, _sha256SaltedHashProvider.ProviderName);
+    }
+
+    [Fact]
+    public void ProviderDescription_ReturnsNonDefaultValue()
+    {
+        var description = _sha256SaltedHashProvider.ProviderDescription;
+
+        Assert.False(string.IsNullOrWhiteSpace(description));
+        Assert.NotEqual(_sha256SaltedHashProvider.GetType().Name, description);
     }
 }

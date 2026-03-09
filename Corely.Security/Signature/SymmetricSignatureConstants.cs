@@ -2,5 +2,5 @@
 
 public static class SymmetricSignatureConstants
 {
-    public const string HMAC_SHA256_CODE = "00";
+    public const string HMAC_SHA256_CODE = "HMAC-SHA256";
 }

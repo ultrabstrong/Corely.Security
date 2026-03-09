@@ -12,15 +12,15 @@ Factories:
 Add custom provider:
 ```csharp
 var factory = new SymmetricEncryptionProviderFactory(SymmetricEncryptionConstants.AES_CODE);
-factory.AddProvider("99", new DemoSymmetricEncryptionProvider());
+factory.AddProvider("DemoSymEnc", new DemoSymmetricEncryptionProvider());
 ```
 Update existing provider:
 ```csharp
-factory.UpdateProvider("99", new DemoSymmetricEncryptionProvider());
+factory.UpdateProvider("DemoSymEnc", new DemoSymmetricEncryptionProvider());
 ```
 Lookup:
 ```csharp
-var prov = factory.GetProvider("00");
+var prov = factory.GetProvider("AES-256-CBC-PKCS7");
 var list = factory.ListProviders();
 ```
 Auto resolution (verification / decryption):
@@ -31,7 +31,7 @@ Auto resolution (verification / decryption):
 - Asymmetric signature: `GetProviderForVerifying(value)`
 
 Notes:
-- Type codes must be non-empty and cannot contain ':' (validated at runtime)
+- Provider names must be non-empty and cannot contain ':' (validated at runtime)
 - Factories are safe to register as singletons
 
-Demo references: RunAddCustomProvidersDemo, provider code constants in each *Constants class.
+Demo references: RunAddCustomProvidersDemo, provider name constants in each *Constants class.

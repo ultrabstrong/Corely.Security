@@ -1,6 +1,6 @@
 # Asymmetric Encryption
 
-RSA provider included (code `"00"`). Uses key versioning like symmetric encryption.
+RSA provider included (provider name `"RSA-2048-OAEP-SHA256"`). Uses key versioning like symmetric encryption.
 
 Usage:
 ```csharp
@@ -18,8 +18,8 @@ var (newPub, newPriv) = keyProv.CreateKeys();
 keyStore.Add(newPub, newPriv);
 var rotatedCipher = provider.ReEncrypt(cipher, keyStore);
 ```
-Format: `encTypeCode:keyVersion:base64Cipher`. Note: cipher size depends on key size; rotating keys does not invalidate previously encrypted values—they can still be decrypted using stored versioned keys.
+Format: `providerName:keyVersion:base64Cipher`. Note: cipher size depends on key size; rotating keys does not invalidate previously encrypted valuesï¿½they can still be decrypted using stored versioned keys.
 
-Custom provider example (demo) uses a passthrough code `"98"`.
+Custom provider example (demo) uses a passthrough provider name `"DemoAsymEnc"`.
 
 See demos: RunAsymmetricEncryptionDemo, AsymmetricKeyStoreDemo, RunAddCustomProvidersDemo.

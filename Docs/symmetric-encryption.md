@@ -1,6 +1,6 @@
 # Symmetric Encryption
 
-AES provider included (code `"00"`). Output embeds type code and key version for rotation support.
+AES provider included (provider name `"AES-256-CBC-PKCS7"`). Output embeds provider name and key version for rotation support.
 
 Encrypt / decrypt:
 ```csharp
@@ -15,10 +15,10 @@ Rotate & re-encrypt:
 keyStore.Add(provider.GetSymmetricKeyProvider().CreateKey());
 var rotatedCipher = provider.ReEncrypt(cipher, keyStore);
 ```
-Format: `encTypeCode:keyVersion:base64Cipher`. Note: AES key size is determined by the generated key (Base64 length reflects raw key bytes) and the version enables rotation.
+Format: `providerName:keyVersion:base64Cipher`. Note: AES key size is determined by the generated key (Base64 length reflects raw key bytes) and the version enables rotation.
 
 Add custom provider (passthrough example in demo):
 ```csharp
-factory.AddProvider("99", new DemoSymmetricEncryptionProvider());
+factory.AddProvider("DemoSymEnc", new DemoSymmetricEncryptionProvider());
 ```
 Relevant demos: RunSymmetricEncryptionDemo, RunAddCustomProvidersDemo, SymmetricKeyStoreDemo.

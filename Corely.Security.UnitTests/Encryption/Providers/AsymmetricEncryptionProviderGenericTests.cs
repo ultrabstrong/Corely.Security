@@ -26,7 +26,7 @@ public abstract class AsymmetricEncryptionProviderGenericTests
 
         var encrypted = _encryptionProvider.Encrypt(decrypted, _keyStoreProvider);
 
-        Assert.StartsWith(_encryptionProvider.EncryptionTypeCode, encrypted);
+        Assert.StartsWith(_encryptionProvider.ProviderName, encrypted);
         Assert.Matches(@"^.+:\d+:.+", encrypted);
         Assert.NotEqual(decrypted, encrypted);
     }
@@ -35,7 +35,7 @@ public abstract class AsymmetricEncryptionProviderGenericTests
     public void Encrypt_ReturnsCorrectlyFormattedValue_WithEmptyAndWhitespace(string value)
     {
         var encrypted = _encryptionProvider.Encrypt(value, _keyStoreProvider);
-        Assert.StartsWith(_encryptionProvider.EncryptionTypeCode, encrypted);
+        Assert.StartsWith(_encryptionProvider.ProviderName, encrypted);
         Assert.Matches(@"^.+:\d+:.+", encrypted);
         Assert.NotEqual(value, encrypted);
     }
@@ -110,10 +110,10 @@ public abstract class AsymmetricEncryptionProviderGenericTests
     [InlineData("::", true)]
     [InlineData(":1", true)]
     [InlineData(":2:", true)]
-    public void Decrypt_Throws_WithInvalidFormat(string value, bool prependTypeCode)
+    public void Decrypt_Throws_WithInvalidFormat(string value, bool prependProviderName)
     {
-        var testValue = prependTypeCode
-            ? $"{_encryptionProvider.EncryptionTypeCode}{value}"
+        var testValue = prependProviderName
+            ? $"{_encryptionProvider.ProviderName}{value}"
             : value;
 
         var ex = Record.Exception(() => _encryptionProvider.Decrypt(testValue, _keyStoreProvider));
@@ -133,8 +133,8 @@ public abstract class AsymmetricEncryptionProviderGenericTests
 
         Assert.Equal(originalDecrypted, decrypted);
         Assert.NotEqual(originalEncrypted, encrypted);
-        Assert.StartsWith($"{_encryptionProvider.EncryptionTypeCode}:1:", originalEncrypted);
-        Assert.StartsWith($"{_encryptionProvider.EncryptionTypeCode}:1:", encrypted);
+        Assert.StartsWith($"{_encryptionProvider.ProviderName}:1:", originalEncrypted);
+        Assert.StartsWith($"{_encryptionProvider.ProviderName}:1:", encrypted);
     }
 
     [Fact]
@@ -151,8 +151,8 @@ public abstract class AsymmetricEncryptionProviderGenericTests
 
         Assert.Equal(originalDecrypted, decrypted);
         Assert.NotEqual(originalEncrypted, encrypted);
-        Assert.StartsWith($"{_encryptionProvider.EncryptionTypeCode}:1:", originalEncrypted);
-        Assert.StartsWith($"{_encryptionProvider.EncryptionTypeCode}:2:", encrypted);
+        Assert.StartsWith($"{_encryptionProvider.ProviderName}:1:", originalEncrypted);
+        Assert.StartsWith($"{_encryptionProvider.ProviderName}:2:", encrypted);
     }
 
     [Fact]
@@ -174,7 +174,7 @@ public abstract class AsymmetricEncryptionProviderGenericTests
     }
 
     [Fact]
-    public abstract void EncryptionTypeCode_ReturnsCorrectCode_ForImplementation();
+    public abstract void ProviderName_ReturnsCorrectValue_ForImplementation();
 
     [Fact]
     public abstract void GetAsymmetricKeyProvider_ReturnsCorrectKeyProvider_ForImplementation();

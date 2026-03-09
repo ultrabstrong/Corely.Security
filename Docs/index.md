@@ -1,7 +1,7 @@
 # Corely.Security Documentation
 
 ## Overview
-Corely.Security gives you small plug-in style building blocks for application "lock and key" needs. You ask a factory for a provider (hashing, encryption, signatures). That provider uses a key (from a key provider) fetched through a versioned key store so you can rotate keys later. The provider returns a self-describing string (it starts with a short code, sometimes also a key version) so the library can figure out how to verify or decrypt it later without you tracking metadata. You can plug in custom providers or real key management backends, and everything wires cleanly through dependency injection.
+Corely.Security gives you small plug-in style building blocks for application "lock and key" needs. You ask a factory for a provider (hashing, encryption, signatures). That provider uses a key (from a key provider) fetched through a versioned key store so you can rotate keys later. The provider returns a self-describing string (it starts with a human-readable provider name, sometimes also a key version) so the library can figure out how to verify or decrypt it later without you tracking metadata. You can plug in custom providers or real key management backends, and everything wires cleanly through dependency injection.
 
 ### Concept Map
 ```mermaid
@@ -27,11 +27,11 @@ graph TD
     J --> G
     C --> J
 
-    D --> K["Encrypted Values (typeCode:keyVersion:cipher)"]
+    D --> K["Encrypted Values (providerName:keyVersion:cipher)"]
     E --> K
-    F --> L["Signatures (typeCode:signature)"]
+    F --> L["Signatures (providerName:signature)"]
     G --> L
-    C --> M["Hashes (typeCode:base64SaltPlusHash)"]
+    C --> M["Hashes (providerName:base64SaltPlusHash)"]
 
     N[DI Container] --> B
     N --> O[Password Validation Provider]
@@ -46,7 +46,7 @@ graph TD
 
 These blocks provide small, composable building blocks for application-level cryptography & credential workflows:
 - Uniform provider interfaces for hashing, encryption, and digital signatures
-- Pluggable factories keyed by short type codes (enables encoded self-describing values)
+- Pluggable factories keyed by human-readable provider names (enables encoded self-describing values)
 - Versioned key stores to support seamless key rotation + on-demand re-encryption
 - Minimal DI-friendly construction (no static globals)
 - Clear value formats so decryption / verification can auto-select the correct provider
@@ -66,15 +66,15 @@ Each topic below maps to a runnable demo in `Corely.Security.DemoApp/Program.cs`
 - [Password Validation](password-validation.md)
 
 ## Value Encoding Formats
-The library prefixes encoded values with a short type code (and sometimes key version) so factories can auto-resolve providers.
+The library prefixes encoded values with a human-readable provider name (and sometimes key version) so factories can auto-resolve providers.
 
 | Feature | Format |
 |---------|--------|
-| Hash | `hashTypeCode:base64SaltPlusHash` |
-| Symmetric Encryption | `encTypeCode:keyVersion:cipherBase64` |
-| Asymmetric Encryption | `encTypeCode:keyVersion:cipherBase64` |
-| Symmetric Signature | `sigTypeCode:signatureBase64` |
-| Asymmetric Signature | `sigTypeCode:signatureBase64` |
+| Hash | `providerName:base64SaltPlusHash` |
+| Symmetric Encryption | `providerName:keyVersion:cipherBase64` |
+| Asymmetric Encryption | `providerName:keyVersion:cipherBase64` |
+| Symmetric Signature | `providerName:signatureBase64` |
+| Asymmetric Signature | `providerName:signatureBase64` |
 
 ## Quick Start
 ```csharp

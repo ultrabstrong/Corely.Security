@@ -92,7 +92,7 @@ public abstract class SymmetricSignatureProviderGenericTests
     }
 
     [Fact]
-    public abstract void SignatureTypeCode_ReturnsCorrectCode_ForImplementation();
+    public abstract void ProviderName_ReturnsCorrectValue_ForImplementation();
 
     [Fact]
     public abstract void GetSymmetricKeyProvider_ReturnsCorrectKeyProvider_ForImplementation();

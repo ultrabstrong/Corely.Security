@@ -113,7 +113,8 @@ internal class Program
         var verified = hashProvider.Verify(value, hash);
         var failedVerify = hashProvider.Verify(value + "X", hash);
 
-        Console.WriteLine($"Provider Code: {hashProvider.HashTypeCode}");
+        Console.WriteLine($"Provider Name: {hashProvider.ProviderName}");
+        Console.WriteLine($"Provider Description: {hashProvider.ProviderDescription}");
         Console.WriteLine($"Original: {value}");
         Console.WriteLine($"Hash: {hash}");
         Console.WriteLine($"Verify (correct): {verified}");
@@ -133,7 +134,8 @@ internal class Program
         var encrypted = provider.Encrypt(plaintext, keyStore);
         var decrypted = provider.Decrypt(encrypted, keyStore);
 
-        Console.WriteLine($"Provider Code: {provider.EncryptionTypeCode}");
+        Console.WriteLine($"Provider Name: {provider.ProviderName}");
+        Console.WriteLine($"Provider Description: {provider.ProviderDescription}");
         Console.WriteLine($"Plaintext: {plaintext}");
         Console.WriteLine($"Encrypted: {encrypted}");
         Console.WriteLine($"Decrypted: {decrypted}");
@@ -160,7 +162,8 @@ internal class Program
         var verified = provider.Verify(data, signature, keyStore);
         var failed = provider.Verify(data + "tampered", signature, keyStore);
 
-        Console.WriteLine($"Provider Code: {provider.SignatureTypeCode}");
+        Console.WriteLine($"Provider Name: {provider.ProviderName}");
+        Console.WriteLine($"Provider Description: {provider.ProviderDescription}");
         Console.WriteLine($"Data: {data}");
         Console.WriteLine($"Signature (Base64): {signature}");
         Console.WriteLine($"Verify (correct): {verified}");
@@ -187,7 +190,8 @@ internal class Program
         var plaintext = "Highly sensitive asymmetric data";
         var encrypted = provider.Encrypt(plaintext, keyStore);
         var decrypted = provider.Decrypt(encrypted, keyStore);
-        Console.WriteLine($"Provider Code: {provider.EncryptionTypeCode}");
+        Console.WriteLine($"Provider Name: {provider.ProviderName}");
+        Console.WriteLine($"Provider Description: {provider.ProviderDescription}");
         Console.WriteLine($"Plaintext: {plaintext}");
         Console.WriteLine($"Encrypted: {encrypted}");
         Console.WriteLine($"Decrypted: {decrypted}");
@@ -235,7 +239,7 @@ internal class Program
         {
             var factory = new HashProviderFactory(HashConstants.SALTED_SHA256_CODE);
             var provider = new DemoHashProvider();
-            factory.AddProvider(provider.HashTypeCode, provider);
+            factory.AddProvider(provider.ProviderName, provider);
             var hash = provider.Hash("anything");
             Console.WriteLine($"Custom Hash Provider => {hash}");
         }
@@ -244,7 +248,7 @@ internal class Program
         {
             var factory = new SymmetricEncryptionProviderFactory(SymmetricEncryptionConstants.AES_CODE);
             var provider = new DemoSymmetricEncryptionProvider();
-            factory.AddProvider(provider.EncryptionTypeCode, provider);
+            factory.AddProvider(provider.ProviderName, provider);
             var keyStore = new InMemorySymmetricKeyStoreProvider("AAAAAA==");
             var encrypted = provider.Encrypt("demo", keyStore);
             Console.WriteLine($"Custom Symmetric Encryption => {encrypted}");
@@ -254,7 +258,7 @@ internal class Program
         {
             var factory = new AsymmetricEncryptionProviderFactory(AsymmetricEncryptionConstants.RSA_CODE);
             var provider = new DemoAsymmetricEncryptionProvider();
-            factory.AddProvider(provider.EncryptionTypeCode, provider);
+            factory.AddProvider(provider.ProviderName, provider);
             var keyStore = new InMemoryAsymmetricKeyStoreProvider("PUB", "PRIV");
             var encrypted = provider.Encrypt("demo", keyStore);
             Console.WriteLine($"Custom Asymmetric Encryption => {encrypted}");
@@ -264,7 +268,7 @@ internal class Program
         {
             var factory = new SymmetricSignatureProviderFactory(SymmetricSignatureConstants.HMAC_SHA256_CODE);
             var provider = new DemoSymmetricSignatureProvider("SIG");
-            factory.AddProvider(provider.SignatureTypeCode, provider);
+            factory.AddProvider(provider.ProviderName, provider);
             var keyStore = new InMemorySymmetricKeyStoreProvider("AAAAAA==");
             var signature = provider.Sign("data", keyStore);
             Console.WriteLine($"Custom Symmetric Signature => {signature}");
@@ -274,7 +278,7 @@ internal class Program
         {
             var factory = new AsymmetricSignatureProviderFactory(AsymmetricSignatureConstants.ECDSA_SHA256_CODE);
             var provider = new DemoAsymmetricSignatureProvider("ASIG");
-            factory.AddProvider(provider.SignatureTypeCode, provider);
+            factory.AddProvider(provider.ProviderName, provider);
             var keyStore = new InMemoryAsymmetricKeyStoreProvider("PUB", "PRIV");
             var signature = provider.Sign("data", keyStore);
             Console.WriteLine($"Custom Asymmetric Signature => {signature}");
@@ -435,8 +439,9 @@ internal class Program
 // --- Demo-only Custom Provider Implementations ---
 internal sealed class DemoHashProvider : SaltedHashProviderBase
 {
-    // Unique demo code (not conflicting with built-ins "00", "01").
-    public override string HashTypeCode => "ZZ";
+    // Unique demo provider name (not conflicting with built-in providers).
+    public override string ProviderName => "DemoHash";
+    public override string ProviderDescription => "Demo hash provider for testing";
 
     protected override byte[] HashInternal(byte[] value)
      => SHA256.HashData(value);
@@ -444,8 +449,9 @@ internal sealed class DemoHashProvider : SaltedHashProviderBase
 
 internal sealed class DemoSymmetricEncryptionProvider : SymmetricEncryptionProviderBase
 {
-    // Unique demo code (built-in AES uses "00").
-    public override string EncryptionTypeCode => "99";
+    // Unique demo provider name (built-in AES uses "AES-256-CBC-PKCS7").
+    public override string ProviderName => "DemoSymEnc";
+    public override string ProviderDescription => "Demo symmetric encryption provider for testing";
     protected override string DecryptInternal(string value, string key) => value;
     protected override string EncryptInternal(string value, string key) => value;
     public override ISymmetricKeyProvider GetSymmetricKeyProvider() => new DemoSymmetricKeyProvider();
@@ -453,8 +459,9 @@ internal sealed class DemoSymmetricEncryptionProvider : SymmetricEncryptionProvi
 
 internal sealed class DemoAsymmetricEncryptionProvider : AsymmetricEncryptionProviderBase
 {
-    // Unique demo code (built-in RSA uses "00").
-    public override string EncryptionTypeCode => "98";
+    // Unique demo provider name (built-in RSA uses "RSA-2048-OAEP-SHA256").
+    public override string ProviderName => "DemoAsymEnc";
+    public override string ProviderDescription => "Demo asymmetric encryption provider for testing";
     protected override string DecryptInternal(string value, string privateKey) => value;
     protected override string EncryptInternal(string value, string publicKey) => value;
     public override IAsymmetricKeyProvider GetAsymmetricKeyProvider() => new DemoAsymmetricKeyProvider();
@@ -462,8 +469,9 @@ internal sealed class DemoAsymmetricEncryptionProvider : AsymmetricEncryptionPro
 
 internal sealed class DemoSymmetricSignatureProvider : SymmetricSignatureProviderBase
 {
-    // Unique demo code (built-in HMAC SHA256 uses "00").
-    public override string SignatureTypeCode => "97";
+    // Unique demo provider name (built-in HMAC SHA256 uses "HMAC-SHA256").
+    public override string ProviderName => "DemoSymSig";
+    public override string ProviderDescription => "Demo symmetric signature provider for testing";
     private readonly string _signatureValue;
     public DemoSymmetricSignatureProvider(string signatureValue) => _signatureValue = signatureValue;
     protected override string SignInternal(string value, string key) => _signatureValue;
@@ -474,8 +482,9 @@ internal sealed class DemoSymmetricSignatureProvider : SymmetricSignatureProvide
 
 internal sealed class DemoAsymmetricSignatureProvider : AsymmetricSignatureProviderBase
 {
-    // Unique demo code (built-in ECDSA/RSA use "00"/"01").
-    public override string SignatureTypeCode => "96";
+    // Unique demo provider name (built-in ECDSA/RSA use "ECDSA-P256-SHA256"/"RSA-2048-PKCS1-SHA256").
+    public override string ProviderName => "DemoAsymSig";
+    public override string ProviderDescription => "Demo asymmetric signature provider for testing";
     private readonly string _signatureValue;
     public DemoAsymmetricSignatureProvider(string signatureValue) => _signatureValue = signatureValue;
     protected override string SignInternal(string value, string privateKey) => _signatureValue;

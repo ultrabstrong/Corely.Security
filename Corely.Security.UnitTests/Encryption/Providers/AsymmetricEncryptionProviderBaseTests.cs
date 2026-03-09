@@ -18,7 +18,7 @@ public sealed class AsymmetricEncryptionProviderBaseTests : AsymmetricEncryption
 
     private class MockEncryptionProvider : AsymmetricEncryptionProviderBase
     {
-        public override string EncryptionTypeCode => TEST_ENCRYPTION_TYPE_CODE;
+        public override string ProviderName => TEST_PROVIDER_NAME;
         private readonly MockAsymmetricKeyProvider _mockKeyProvider = new();
         public override IAsymmetricKeyProvider GetAsymmetricKeyProvider() => _mockKeyProvider;
         protected override string EncryptInternal(string value, string key) => $"{Guid.NewGuid()}{value}";
@@ -34,30 +34,30 @@ public sealed class AsymmetricEncryptionProviderBaseTests : AsymmetricEncryption
 
     private class NullMockEncryptionProvider : MockAsymmetricEncryptionProviderBase
     {
-        public override string EncryptionTypeCode => null!;
+        public override string ProviderName => null!;
     }
 
     private class EmptyMockEncryptionProvider : MockAsymmetricEncryptionProviderBase
     {
-        public override string EncryptionTypeCode => string.Empty;
+        public override string ProviderName => string.Empty;
     }
 
     private class WhitespaceMockEncryptionProvider : MockAsymmetricEncryptionProviderBase
     {
-        public override string EncryptionTypeCode => " ";
+        public override string ProviderName => " ";
     }
 
     private class ColonMockEncryptionProvider : MockAsymmetricEncryptionProviderBase
     {
-        public override string EncryptionTypeCode => "as:df";
+        public override string ProviderName => "as:df";
     }
 
-    private const string TEST_ENCRYPTION_TYPE_CODE = "00";
+    private const string TEST_PROVIDER_NAME = "00";
 
     private readonly MockEncryptionProvider _mockEncryptionProvider = new();
 
     [Fact]
-    public void NullEncryptionTypeCode_Throws_OnBuild()
+    public void NullProviderName_Throws_OnBuild()
     {
         var ex = Record.Exception(() => new NullMockEncryptionProvider());
         Assert.NotNull(ex);
@@ -65,7 +65,7 @@ public sealed class AsymmetricEncryptionProviderBaseTests : AsymmetricEncryption
     }
 
     [Fact]
-    public void EmptyEncryptionTypeCode_Throws_OnBuild()
+    public void EmptyProviderName_Throws_OnBuild()
     {
         var ex = Record.Exception(() => new EmptyMockEncryptionProvider());
         Assert.NotNull(ex);
@@ -73,7 +73,7 @@ public sealed class AsymmetricEncryptionProviderBaseTests : AsymmetricEncryption
     }
 
     [Fact]
-    public void WhitespaceEncryptionTypeCode_Throws_OnBuild()
+    public void WhitespaceProviderName_Throws_OnBuild()
     {
         var ex = Record.Exception(() => new WhitespaceMockEncryptionProvider());
         Assert.NotNull(ex);
@@ -81,7 +81,7 @@ public sealed class AsymmetricEncryptionProviderBaseTests : AsymmetricEncryption
     }
 
     [Fact]
-    public void ColonEncryptionTypeCode_Throws_OnBuild()
+    public void ColonProviderName_Throws_OnBuild()
     {
         var ex = Record.Exception(() => new ColonMockEncryptionProvider());
         Assert.NotNull(ex);
@@ -89,9 +89,9 @@ public sealed class AsymmetricEncryptionProviderBaseTests : AsymmetricEncryption
     }
 
     [Fact]
-    public override void EncryptionTypeCode_ReturnsCorrectCode_ForImplementation()
+    public override void ProviderName_ReturnsCorrectValue_ForImplementation()
     {
-        Assert.Equal(TEST_ENCRYPTION_TYPE_CODE, _mockEncryptionProvider.EncryptionTypeCode);
+        Assert.Equal(TEST_PROVIDER_NAME, _mockEncryptionProvider.ProviderName);
     }
 
     [Fact]

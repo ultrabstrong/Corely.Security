@@ -6,7 +6,10 @@ namespace Corely.Security.Encryption.Providers;
 
 public sealed class RsaEncryptionProvider : AsymmetricEncryptionProviderBase
 {
-    public override string EncryptionTypeCode => AsymmetricEncryptionConstants.RSA_CODE;
+    public override string ProviderName => AsymmetricEncryptionConstants.RSA_CODE;
+
+    public override string ProviderDescription =>
+        "RSA encryption with OAEP-SHA256 padding. Keys use PKCS#8 (private) and SubjectPublicKeyInfo (public) format, Base64-encoded. Output is Base64-encoded.";
 
     private readonly RsaKeyProvider _rsaKeyProvider = new();
     private readonly RSAEncryptionPadding _rsaEncryptionPadding;

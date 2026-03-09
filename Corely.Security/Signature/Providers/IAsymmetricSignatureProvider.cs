@@ -6,7 +6,8 @@ namespace Corely.Security.Signature.Providers;
 
 public interface IAsymmetricSignatureProvider
 {
-    string SignatureTypeCode { get; }
+    string ProviderName { get; }
+    string ProviderDescription { get; }
     IAsymmetricKeyProvider GetAsymmetricKeyProvider();
     string Sign(string data, IAsymmetricKeyStoreProvider keyStoreProvider);
     bool Verify(string data, string signature, IAsymmetricKeyStoreProvider keyStoreProvider);

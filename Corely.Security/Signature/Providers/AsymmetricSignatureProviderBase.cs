@@ -6,15 +6,17 @@ namespace Corely.Security.Signature.Providers;
 
 public abstract class AsymmetricSignatureProviderBase : IAsymmetricSignatureProvider
 {
-    public abstract string SignatureTypeCode { get; }
+    public abstract string ProviderName { get; }
+
+    public virtual string ProviderDescription => GetType().Name;
 
     public AsymmetricSignatureProviderBase()
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(SignatureTypeCode, nameof(SignatureTypeCode));
+        ArgumentException.ThrowIfNullOrWhiteSpace(ProviderName, nameof(ProviderName));
 
-        if (SignatureTypeCode.Contains(':'))
+        if (ProviderName.Contains(':'))
         {
-            throw new SignatureException($"Signature type code cannot contain ':'")
+            throw new SignatureException($"Signature provider name cannot contain ':'")
             {
                 Reason = SignatureException.ErrorReason.InvalidTypeCode
             };

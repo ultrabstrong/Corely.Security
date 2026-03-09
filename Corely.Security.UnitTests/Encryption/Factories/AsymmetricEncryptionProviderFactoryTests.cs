@@ -121,7 +121,7 @@ public class AsymmetricEncryptionProviderFactoryTests
         var encryptionProvider = _encryptionProviderFactory.GetDefaultProvider();
 
         Assert.NotNull(encryptionProvider);
-        Assert.Equal(DEFAULT_PROVIDER_CODE, encryptionProvider.EncryptionTypeCode);
+        Assert.Equal(DEFAULT_PROVIDER_CODE, encryptionProvider.ProviderName);
     }
 
     [Theory, MemberData(nameof(GetProviderData))]

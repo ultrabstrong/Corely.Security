@@ -22,7 +22,7 @@ public class SymmetricSignatureProviderBaseTests : SymmetricSignatureProviderGen
 
     private class MockSignatureProvider : SymmetricSignatureProviderBase
     {
-        public override string SignatureTypeCode => TEST_ENCRYPTION_TYPE_CODE;
+        public override string ProviderName => TEST_PROVIDER_NAME;
         private readonly MockSymmetricKeyProvider _mockKeyProvider = new();
 
         private string lastValue = string.Empty;
@@ -54,30 +54,30 @@ public class SymmetricSignatureProviderBaseTests : SymmetricSignatureProviderGen
 
     private class NullMockSignatureProvider : MockSymmetricSignatureProviderBase
     {
-        public override string SignatureTypeCode => null!;
+        public override string ProviderName => null!;
     }
 
     private class EmptyMockSignatureProvider : MockSymmetricSignatureProviderBase
     {
-        public override string SignatureTypeCode => string.Empty;
+        public override string ProviderName => string.Empty;
     }
 
     private class WhitespaceMockSignatureProvider : MockSymmetricSignatureProviderBase
     {
-        public override string SignatureTypeCode => " ";
+        public override string ProviderName => " ";
     }
 
     private class ColonMockSignatureProvider : MockSymmetricSignatureProviderBase
     {
-        public override string SignatureTypeCode => "as:df";
+        public override string ProviderName => "as:df";
     }
 
-    private const string TEST_ENCRYPTION_TYPE_CODE = "00";
+    private const string TEST_PROVIDER_NAME = "00";
 
     private readonly MockSignatureProvider _mockSignatureProvider = new();
 
     [Fact]
-    public void NullEncryptionTypeCode_Throws_OnBuild()
+    public void NullProviderName_Throws_OnBuild()
     {
         var ex = Record.Exception(() => new NullMockSignatureProvider());
         Assert.NotNull(ex);
@@ -85,7 +85,7 @@ public class SymmetricSignatureProviderBaseTests : SymmetricSignatureProviderGen
     }
 
     [Fact]
-    public void EmptyEncryptionTypeCode_Throws_OnBuild()
+    public void EmptyProviderName_Throws_OnBuild()
     {
         var ex = Record.Exception(() => new EmptyMockSignatureProvider());
         Assert.NotNull(ex);
@@ -93,7 +93,7 @@ public class SymmetricSignatureProviderBaseTests : SymmetricSignatureProviderGen
     }
 
     [Fact]
-    public void WhitespaceEncryptionTypeCode_Throws_OnBuild()
+    public void WhitespaceProviderName_Throws_OnBuild()
     {
         var ex = Record.Exception(() => new WhitespaceMockSignatureProvider());
         Assert.NotNull(ex);
@@ -101,7 +101,7 @@ public class SymmetricSignatureProviderBaseTests : SymmetricSignatureProviderGen
     }
 
     [Fact]
-    public void ColonEncryptionTypeCode_Throws_OnBuild()
+    public void ColonProviderName_Throws_OnBuild()
     {
         var ex = Record.Exception(() => new ColonMockSignatureProvider());
         Assert.NotNull(ex);
@@ -109,9 +109,9 @@ public class SymmetricSignatureProviderBaseTests : SymmetricSignatureProviderGen
     }
 
     [Fact]
-    public override void SignatureTypeCode_ReturnsCorrectCode_ForImplementation()
+    public override void ProviderName_ReturnsCorrectValue_ForImplementation()
     {
-        Assert.Equal(TEST_ENCRYPTION_TYPE_CODE, _mockSignatureProvider.SignatureTypeCode);
+        Assert.Equal(TEST_PROVIDER_NAME, _mockSignatureProvider.ProviderName);
     }
 
     [Fact]

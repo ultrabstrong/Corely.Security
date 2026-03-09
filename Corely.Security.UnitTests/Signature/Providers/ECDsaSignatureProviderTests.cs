@@ -11,9 +11,18 @@ public class ECDsaSignatureProviderTests : AsymmetricSignatureProviderGenericTes
     private readonly ECDsaSignatureProvider _ecDsaSignatureProvider = new(HashAlgorithmName.SHA256);
 
     [Fact]
-    public override void SignatureTypeCode_ReturnsCorrectCode_ForImplementation()
+    public override void ProviderName_ReturnsCorrectValue_ForImplementation()
     {
-        Assert.Equal(AsymmetricSignatureConstants.ECDSA_SHA256_CODE, _ecDsaSignatureProvider.SignatureTypeCode);
+        Assert.Equal(AsymmetricSignatureConstants.ECDSA_SHA256_CODE, _ecDsaSignatureProvider.ProviderName);
+    }
+
+    [Fact]
+    public void ProviderDescription_ReturnsNonDefaultValue()
+    {
+        var description = _ecDsaSignatureProvider.ProviderDescription;
+
+        Assert.False(string.IsNullOrWhiteSpace(description));
+        Assert.NotEqual(_ecDsaSignatureProvider.GetType().Name, description);
     }
 
     [Fact]

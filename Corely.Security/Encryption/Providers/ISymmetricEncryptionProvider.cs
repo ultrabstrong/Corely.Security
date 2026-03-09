@@ -5,7 +5,8 @@ namespace Corely.Security.Encryption.Providers;
 
 public interface ISymmetricEncryptionProvider
 {
-    string EncryptionTypeCode { get; }
+    string ProviderName { get; }
+    string ProviderDescription { get; }
     ISymmetricKeyProvider GetSymmetricKeyProvider();
     string Encrypt(string value, ISymmetricKeyStoreProvider keyStoreProvider);
     string Decrypt(string value, ISymmetricKeyStoreProvider keyStoreProvider);

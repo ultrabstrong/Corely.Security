@@ -14,7 +14,7 @@ public sealed class SymmetricEncryptionProviderBaseTests : SymmetricEncryptionPr
 
     private class MockEncryptionProvider : SymmetricEncryptionProviderBase
     {
-        public override string EncryptionTypeCode => TEST_ENCRYPTION_TYPE_CODE;
+        public override string ProviderName => TEST_PROVIDER_NAME;
         private readonly MockSymmetricKeyProvider _mockKeyProvider = new();
         public override ISymmetricKeyProvider GetSymmetricKeyProvider() => _mockKeyProvider;
         protected override string EncryptInternal(string value, string key) => $"{Guid.NewGuid()}{value}";
@@ -30,30 +30,30 @@ public sealed class SymmetricEncryptionProviderBaseTests : SymmetricEncryptionPr
 
     private class NullMockEncryptionProvider : MockSymmetricEncryptionProviderBase
     {
-        public override string EncryptionTypeCode => null!;
+        public override string ProviderName => null!;
     }
 
     private class EmptyMockEncryptionProvider : MockSymmetricEncryptionProviderBase
     {
-        public override string EncryptionTypeCode => string.Empty;
+        public override string ProviderName => string.Empty;
     }
 
     private class WhitespaceMockEncryptionProvider : MockSymmetricEncryptionProviderBase
     {
-        public override string EncryptionTypeCode => " ";
+        public override string ProviderName => " ";
     }
 
     private class ColonMockEncryptionProvider : MockSymmetricEncryptionProviderBase
     {
-        public override string EncryptionTypeCode => "as:df";
+        public override string ProviderName => "as:df";
     }
 
-    private const string TEST_ENCRYPTION_TYPE_CODE = "00";
+    private const string TEST_PROVIDER_NAME = "00";
 
     private readonly MockEncryptionProvider _mockEncryptionProvider = new();
 
     [Fact]
-    public void NullEncryptionTypeCode_Throws_OnBuild()
+    public void NullProviderName_Throws_OnBuild()
     {
         var ex = Record.Exception(() => new NullMockEncryptionProvider());
         Assert.NotNull(ex);
@@ -61,7 +61,7 @@ public sealed class SymmetricEncryptionProviderBaseTests : SymmetricEncryptionPr
     }
 
     [Fact]
-    public void EmptyEncryptionTypeCode_Throws_OnBuild()
+    public void EmptyProviderName_Throws_OnBuild()
     {
         var ex = Record.Exception(() => new EmptyMockEncryptionProvider());
         Assert.NotNull(ex);
@@ -69,7 +69,7 @@ public sealed class SymmetricEncryptionProviderBaseTests : SymmetricEncryptionPr
     }
 
     [Fact]
-    public void WhitespaceEncryptionTypeCode_Throws_OnBuild()
+    public void WhitespaceProviderName_Throws_OnBuild()
     {
         var ex = Record.Exception(() => new WhitespaceMockEncryptionProvider());
         Assert.NotNull(ex);
@@ -77,7 +77,7 @@ public sealed class SymmetricEncryptionProviderBaseTests : SymmetricEncryptionPr
     }
 
     [Fact]
-    public void ColonEncryptionTypeCode_Throws_OnBuild()
+    public void ColonProviderName_Throws_OnBuild()
     {
         var ex = Record.Exception(() => new ColonMockEncryptionProvider());
         Assert.NotNull(ex);
@@ -85,9 +85,9 @@ public sealed class SymmetricEncryptionProviderBaseTests : SymmetricEncryptionPr
     }
 
     [Fact]
-    public override void EncryptionTypeCode_ReturnsCorrectCode_ForImplementation()
+    public override void ProviderName_ReturnsCorrectValue_ForImplementation()
     {
-        Assert.Equal(TEST_ENCRYPTION_TYPE_CODE, _mockEncryptionProvider.EncryptionTypeCode);
+        Assert.Equal(TEST_PROVIDER_NAME, _mockEncryptionProvider.ProviderName);
     }
 
     [Fact]

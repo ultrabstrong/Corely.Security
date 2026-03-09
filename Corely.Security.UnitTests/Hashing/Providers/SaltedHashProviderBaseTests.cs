@@ -8,82 +8,82 @@ public class SaltedHashProviderBaseTests : SaltedHashProviderGenericTests
 {
     private class MockHashProvider : SaltedHashProviderBase
     {
-        public override string HashTypeCode => TEST_HASH_TYPE_CODE;
+        public override string ProviderName => TEST_PROVIDER_NAME;
         protected override byte[] HashInternal(byte[] value) => value;
     }
 
-    private class NullTypeCodeMockHashProvider : SaltedHashProviderBase
+    private class NullMockHashProvider : SaltedHashProviderBase
     {
-        public override string HashTypeCode => null!;
+        public override string ProviderName => null!;
         protected override byte[] HashInternal(byte[] value) => value;
     }
 
-    private class EmptyTypeCodeMockHashProvider : SaltedHashProviderBase
+    private class EmptyMockHashProvider : SaltedHashProviderBase
     {
-        public override string HashTypeCode => string.Empty;
+        public override string ProviderName => string.Empty;
         protected override byte[] HashInternal(byte[] value) => value;
     }
 
-    private class WhitespaceTypeCodeMockHashProvider : SaltedHashProviderBase
+    private class WhitespaceMockHashProvider : SaltedHashProviderBase
     {
-        public override string HashTypeCode => " ";
+        public override string ProviderName => " ";
         protected override byte[] HashInternal(byte[] value) => value;
     }
 
-    private class ColonTypeCodeMockHashProvider : SaltedHashProviderBase
+    private class ColonMockHashProvider : SaltedHashProviderBase
     {
-        public override string HashTypeCode => "as:df";
+        public override string ProviderName => "as:df";
         protected override byte[] HashInternal(byte[] value) => value;
     }
 
     protected override IHashProvider HashProvider => _mockHashProvider;
 
-    private const string TEST_HASH_TYPE_CODE = "00";
+    private const string TEST_PROVIDER_NAME = "00";
 
     private readonly MockHashProvider _mockHashProvider = new();
 
     [Fact]
-    public void NullHashTypeCode_Throws_OnBuild()
+    public void NullProviderName_Throws_OnBuild()
     {
-        var ex = Record.Exception(() => new NullTypeCodeMockHashProvider());
+        var ex = Record.Exception(() => new NullMockHashProvider());
         Assert.NotNull(ex);
         Assert.IsType<ArgumentNullException>(ex);
     }
 
     [Fact]
-    public void EmptyHashTypeCode_Throws_OnBuild()
+    public void EmptyProviderName_Throws_OnBuild()
     {
-        var ex = Record.Exception(() => new EmptyTypeCodeMockHashProvider());
+        var ex = Record.Exception(() => new EmptyMockHashProvider());
         Assert.NotNull(ex);
         Assert.IsType<ArgumentException>(ex);
     }
 
     [Fact]
-    public void WhitespaceHashTypeCode_Throws_OnBuild()
+    public void WhitespaceProviderName_Throws_OnBuild()
     {
-        var ex = Record.Exception(() => new WhitespaceTypeCodeMockHashProvider());
+        var ex = Record.Exception(() => new WhitespaceMockHashProvider());
         Assert.NotNull(ex);
         Assert.IsType<ArgumentException>(ex);
     }
 
     [Fact]
-    public void ColonHashTypeCode_Throws_OnBuild()
+    public void ColonProviderName_Throws_OnBuild()
     {
-        var ex = Record.Exception(() => new ColonTypeCodeMockHashProvider());
+        var ex = Record.Exception(() => new ColonMockHashProvider());
         Assert.NotNull(ex);
         Assert.IsType<HashException>(ex);
     }
 
     [Fact]
-    public override void HashTypeCode_ReturnsCorrectCode_ForImplementation()
+    public override void ProviderName_ReturnsCorrectValue_ForImplementation()
     {
-        Assert.Equal(TEST_HASH_TYPE_CODE, _mockHashProvider.HashTypeCode);
+        Assert.Equal(TEST_PROVIDER_NAME, _mockHashProvider.ProviderName);
     }
 
     [Theory]
     [InlineData("asdf")]
-    [InlineData(TEST_HASH_TYPE_CODE)]
-    [InlineData($"{TEST_HASH_TYPE_CODE}:asdf")]
+    [InlineData(TEST_PROVIDER_NAME)]
+    [InlineData($"{TEST_PROVIDER_NAME}:asdf")]
     public void Verify_ReturnsFalse_WithInvalidHash(string hash)
     {
         var fixture = new Fixture();

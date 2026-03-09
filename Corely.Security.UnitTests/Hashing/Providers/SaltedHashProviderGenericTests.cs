@@ -32,7 +32,7 @@ public abstract class SaltedHashProviderGenericTests
     {
         var value = _fixture.Create<string>();
         var hashed = HashProvider.Hash(value);
-        Assert.StartsWith(HashProvider.HashTypeCode, hashed);
+        Assert.StartsWith(HashProvider.ProviderName, hashed);
         Assert.NotEqual(value, hashed[hashed.IndexOf(':')..]);
     }
 
@@ -40,7 +40,7 @@ public abstract class SaltedHashProviderGenericTests
     public void Hash_ReturnsCorrectlyFormattedValue_WithEmptyAndWhitespace(string value)
     {
         var hashed = HashProvider.Hash(value);
-        Assert.StartsWith(HashProvider.HashTypeCode, hashed);
+        Assert.StartsWith(HashProvider.ProviderName, hashed);
         Assert.NotEqual(value, hashed[hashed.IndexOf(':')..]);
     }
 
@@ -75,7 +75,7 @@ public abstract class SaltedHashProviderGenericTests
     {
         var value = _fixture.Create<string>();
         var hash = HashProvider.Hash(value);
-        var isVerified = HashProvider.Verify(value, hash.Replace(HashProvider.HashTypeCode, "--"));
+        var isVerified = HashProvider.Verify(value, hash.Replace(HashProvider.ProviderName, "--"));
         Assert.False(isVerified);
     }
 
@@ -91,5 +91,5 @@ public abstract class SaltedHashProviderGenericTests
     }
 
     [Fact]
-    public abstract void HashTypeCode_ReturnsCorrectCode_ForImplementation();
+    public abstract void ProviderName_ReturnsCorrectValue_ForImplementation();
 }

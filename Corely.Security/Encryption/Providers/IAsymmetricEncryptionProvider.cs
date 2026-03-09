@@ -5,7 +5,8 @@ namespace Corely.Security.Encryption.Providers;
 
 public interface IAsymmetricEncryptionProvider
 {
-    string EncryptionTypeCode { get; }
+    string ProviderName { get; }
+    string ProviderDescription { get; }
     IAsymmetricKeyProvider GetAsymmetricKeyProvider();
     string Encrypt(string value, IAsymmetricKeyStoreProvider keyStoreProvider);
     string Decrypt(string value, IAsymmetricKeyStoreProvider keyStoreProvider);

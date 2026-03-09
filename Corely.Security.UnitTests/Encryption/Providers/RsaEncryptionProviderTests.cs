@@ -10,9 +10,18 @@ public class RsaEncryptionProviderTests : AsymmetricEncryptionProviderGenericTes
     private readonly RsaEncryptionProvider _rsaEncryptionProvider = new(RSAEncryptionPadding.OaepSHA256);
 
     [Fact]
-    public override void EncryptionTypeCode_ReturnsCorrectCode_ForImplementation()
+    public override void ProviderName_ReturnsCorrectValue_ForImplementation()
     {
-        Assert.Equal(AsymmetricEncryptionConstants.RSA_CODE, _rsaEncryptionProvider.EncryptionTypeCode);
+        Assert.Equal(AsymmetricEncryptionConstants.RSA_CODE, _rsaEncryptionProvider.ProviderName);
+    }
+
+    [Fact]
+    public void ProviderDescription_ReturnsNonDefaultValue()
+    {
+        var description = _rsaEncryptionProvider.ProviderDescription;
+
+        Assert.False(string.IsNullOrWhiteSpace(description));
+        Assert.NotEqual(_rsaEncryptionProvider.GetType().Name, description);
     }
 
     [Fact]

@@ -11,9 +11,18 @@ public class RsaSignatureProviderTests : AsymmetricSignatureProviderGenericTests
     private readonly RsaSignatureProvider _rsaSignatureProvider = new(HashAlgorithmName.SHA256);
 
     [Fact]
-    public override void SignatureTypeCode_ReturnsCorrectCode_ForImplementation()
+    public override void ProviderName_ReturnsCorrectValue_ForImplementation()
     {
-        Assert.Equal(AsymmetricSignatureConstants.RSA_SHA256_CODE, _rsaSignatureProvider.SignatureTypeCode);
+        Assert.Equal(AsymmetricSignatureConstants.RSA_SHA256_CODE, _rsaSignatureProvider.ProviderName);
+    }
+
+    [Fact]
+    public void ProviderDescription_ReturnsNonDefaultValue()
+    {
+        var description = _rsaSignatureProvider.ProviderDescription;
+
+        Assert.False(string.IsNullOrWhiteSpace(description));
+        Assert.NotEqual(_rsaSignatureProvider.GetType().Name, description);
     }
 
     [Fact]

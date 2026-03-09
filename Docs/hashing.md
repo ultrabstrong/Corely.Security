@@ -3,8 +3,8 @@
 Purpose: Produce salted hashes with provider identification.
 
 Default providers:
-- SHA256 Salted (`"00"`)
-- SHA512 Salted (`"01"`)
+- SHA256 Salted (`"SHA256-Salted"`)
+- SHA512 Salted (`"SHA512-Salted"`)
 
 Factory usage:
 ```csharp
@@ -17,10 +17,10 @@ Resolve by encoded hash:
 ```csharp
 var verifyProvider = factory.GetProviderToVerify(hash);
 ```
-Format: `hashTypeCode:base64(salt+hash)` (salt bytes immediately followed by hash bytes, then Base64 encoded). Salt length is fixed at 16 bytes.
+Format: `providerName:base64(salt+hash)` (salt bytes immediately followed by hash bytes, then Base64 encoded). Salt length is fixed at 16 bytes.
 
 Add a custom hash provider:
 ```csharp
-factory.AddProvider("ZZ", new DemoHashProvider());
+factory.AddProvider("DemoHash", new DemoHashProvider());
 ```
 See demo: RunHashingDemo & RunAddCustomProvidersDemo.
