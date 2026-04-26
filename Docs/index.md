@@ -46,6 +46,7 @@ graph TD
 
 These blocks provide small, composable building blocks for application-level cryptography & credential workflows:
 - Uniform provider interfaces for hashing, encryption, and digital signatures
+- URL-safe secret generation for token and verifier workflows
 - Pluggable factories keyed by human-readable provider names (enables encoded self-describing values)
 - Versioned key stores to support seamless key rotation + on-demand re-encryption
 - Minimal DI-friendly construction (no static globals)
@@ -60,6 +61,7 @@ Each topic below maps to a runnable demo in `Corely.Security.DemoApp/Program.cs`
 - [Symmetric Signatures](symmetric-signatures.md)
 - [Asymmetric Signatures](asymmetric-signatures.md)
 - [Key Providers](key-providers.md)
+- [Secret Providers](secret-providers.md)
 - [Key Stores](key-stores.md)
 - [Provider Factories & Custom Providers](provider-factories.md)
 - [Dependency Injection](dependency-injection.md)

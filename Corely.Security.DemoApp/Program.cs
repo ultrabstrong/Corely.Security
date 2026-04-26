@@ -8,6 +8,7 @@ using Corely.Security.Keys;
 using Corely.Security.KeyStore;
 using Corely.Security.PasswordValidation.Models;
 using Corely.Security.PasswordValidation.Providers;
+using Corely.Security.Secrets;
 using Corely.Security.Signature;
 using Corely.Security.Signature.Factories;
 using Corely.Security.Signature.Providers;
@@ -26,6 +27,7 @@ internal class Program
 
         // Demonstrate key providers
         RunKeyProvidersDemo();
+        RunSecretProvidersDemo();
 
         // Demonstrate simple encryption, hashing, and signing operations
         RunHashingDemo();
@@ -100,6 +102,17 @@ internal class Program
         SymmetricHmacKeyProviderDemo();
         AsymmetricRsaKeyProviderDemo();
         AsymmetricEcdsaKeyProviderDemo();
+    }
+
+    private static void RunSecretProvidersDemo()
+    {
+        Console.WriteLine("\n-- Secret Providers Demo --");
+
+        var secretProvider = new RandomSecretProvider();
+        var secret = secretProvider.CreateSecret();
+
+        Console.WriteLine($"Secret: {secret}");
+        Console.WriteLine($"Valid: {secretProvider.IsSecretValid(secret)}");
     }
 
     private static void RunHashingDemo()
@@ -308,6 +321,7 @@ internal class Program
             new HashProviderFactory(HashConstants.SALTED_SHA256_CODE));
 
         services.AddScoped<IPasswordValidationProvider, PasswordValidationProvider>();
+        services.AddSingleton<ISecretProvider, RandomSecretProvider>();
 
         // Manually register options since no IConfiguration binding here
         services.AddSingleton(
@@ -330,6 +344,10 @@ internal class Program
         var pwdValidator = provider.GetRequiredService<IPasswordValidationProvider>();
         var pwdResult = pwdValidator.ValidatePassword("Abcdef1");
         Console.WriteLine($"Password Validation Success => {pwdResult.IsSuccess}");
+
+        var secretProvider = provider.GetRequiredService<ISecretProvider>();
+        var secret = secretProvider.CreateSecret();
+        Console.WriteLine($"Generated Secret Valid => {secretProvider.IsSecretValid(secret)}");
     }
 
     private static void RunKeyStoreProvidersDemo()

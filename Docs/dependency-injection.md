@@ -13,6 +13,7 @@ services.AddSingleton<IAsymmetricSignatureProviderFactory>(_ =>
 services.AddSingleton<IHashProviderFactory>(_ =>
     new HashProviderFactory(HashConstants.SALTED_SHA256_CODE));
 services.AddScoped<IPasswordValidationProvider, PasswordValidationProvider>();
+services.AddSingleton<ISecretProvider, RandomSecretProvider>();
 ```
 Options registration (manual example in demo):
 ```csharp
@@ -22,7 +23,9 @@ Resolve and use:
 ```csharp
 var hashFactory = provider.GetRequiredService<IHashProviderFactory>();
 var hash = hashFactory.GetDefaultProvider().Hash("demo");
+var secretProvider = provider.GetRequiredService<ISecretProvider>();
+var secret = secretProvider.CreateSecret();
 ```
-Note: Factories are light and stateful only for the provider registrations you add—singleton lifetime is appropriate.
+Note: Factories are light and stateful only for the provider registrations you addï¿½singleton lifetime is appropriate.
 
 Demo: RunDependencyInjectionDemo.
