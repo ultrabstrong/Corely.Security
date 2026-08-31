@@ -10,7 +10,9 @@ public sealed class ECDsaSignatureProvider : AsymmetricSignatureProviderBase
     public override string ProviderName => AsymmetricSignatureConstants.ECDSA_SHA256_CODE;
 
     public override string ProviderDescription =>
-        "ECDSA digital signature using the P-256 curve. Signatures are in DER format, Base64-encoded. Keys use PKCS#8 (private) and SubjectPublicKeyInfo (public) format, Base64-encoded.";
+        "ECDSA digital signature using the P-256 curve. Signatures are IEEE P1363 (the raw r and s "
+        + "values concatenated, 64 bytes for P-256), Base64-encoded - not a DER sequence. Keys use "
+        + "PKCS#8 (private) and SubjectPublicKeyInfo (public) format, Base64-encoded.";
 
     private readonly EcdsaKeyProvider _ecdsaKeyProvider = new();
     private readonly HashAlgorithmName _hashAlgorithm;
