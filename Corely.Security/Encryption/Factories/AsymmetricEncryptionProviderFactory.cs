@@ -13,7 +13,9 @@ public class AsymmetricEncryptionProviderFactory : IAsymmetricEncryptionProvider
         ArgumentNullException.ThrowIfNull(defaultProviderCode, nameof(defaultProviderCode));
 
         _defaultProviderCode = defaultProviderCode;
-        _providers.Add(AsymmetricEncryptionConstants.RSA_CODE, new RsaEncryptionProvider(RSAEncryptionPadding.OaepSHA256));
+        var rsa = new RsaEncryptionProvider(RSAEncryptionPadding.OaepSHA256);
+        _providers.Add(AsymmetricEncryptionConstants.RSA_CODE, rsa);
+        _providers.Add(AsymmetricEncryptionConstants.LEGACY_RSA_CODE, rsa);
     }
 
     public void AddProvider(string providerCode, IAsymmetricEncryptionProvider provider)

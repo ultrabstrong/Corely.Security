@@ -14,7 +14,7 @@ public sealed class RsaSignatureProvider : AsymmetricSignatureProviderBase
     private readonly HashAlgorithmName _hashAlgorithm;
 
     public RsaSignatureProvider(HashAlgorithmName hashAlgorithm)
-        : base($"RSA-2048-PKCS1-{hashAlgorithm.Name}")
+        : base($"RSA-PKCS1-{hashAlgorithm.Name}")
     {
         _hashAlgorithm = hashAlgorithm;
     }

@@ -13,8 +13,12 @@ public class AsymmetricSignatureProviderFactory : IAsymmetricSignatureProviderFa
         ArgumentNullException.ThrowIfNull(defaultProviderCode, nameof(defaultProviderCode));
 
         _defaultProviderCode = defaultProviderCode;
-        _providers.Add(AsymmetricSignatureConstants.ECDSA_SHA256_CODE, new ECDsaSignatureProvider(HashAlgorithmName.SHA256));
-        _providers.Add(AsymmetricSignatureConstants.RSA_SHA256_CODE, new RsaSignatureProvider(HashAlgorithmName.SHA256));
+        var ecdsa = new ECDsaSignatureProvider(HashAlgorithmName.SHA256);
+        var rsa = new RsaSignatureProvider(HashAlgorithmName.SHA256);
+        _providers.Add(AsymmetricSignatureConstants.ECDSA_SHA256_CODE, ecdsa);
+        _providers.Add(AsymmetricSignatureConstants.RSA_SHA256_CODE, rsa);
+        _providers.Add(AsymmetricSignatureConstants.LEGACY_ECDSA_SHA256_CODE, ecdsa);
+        _providers.Add(AsymmetricSignatureConstants.LEGACY_RSA_SHA256_CODE, rsa);
     }
     public void AddProvider(string providerCode, IAsymmetricSignatureProvider provider)
     {
@@ -79,13 +83,6 @@ public class AsymmetricSignatureProviderFactory : IAsymmetricSignatureProviderFa
         return value;
     }
 
-    public IAsymmetricSignatureProvider GetProviderForVerifying(string value)
-    {
-        ArgumentNullException.ThrowIfNull(value, nameof(value));
-
-        var providerCode = value.Split(':')[0];
-        return GetProvider(providerCode);
-    }
 
     public List<(string ProviderCode, Type ProviderType)> ListProviders()
     {

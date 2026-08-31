@@ -1,8 +1,12 @@
 # Asymmetric Signatures
 
 Default providers:
-- ECDSA SHA256 (`"ECDSA-P256-SHA256"`)
-- RSA SHA256 (`"RSA-2048-PKCS1-SHA256"`)
+- ECDSA SHA256 (`"ECDSA-SHA256"`)
+- RSA SHA256 (`"RSA-PKCS1-SHA256"`)
+
+The 1.x names `"ECDSA-P256-SHA256"` and `"RSA-2048-PKCS1-SHA256"` stay registered as aliases.
+Curve and key size come from whichever key the key store supplies, not from provider
+configuration, so they are no longer claimed in the name.
 
 Sign / verify:
 ```csharp

@@ -78,13 +78,6 @@ public class SymmetricSignatureProviderFactory : ISymmetricSignatureProviderFact
         return value;
     }
 
-    public ISymmetricSignatureProvider GetProviderForVerifying(string value)
-    {
-        ArgumentNullException.ThrowIfNull(value, nameof(value));
-
-        var providerCode = value.Split(':')[0];
-        return GetProvider(providerCode);
-    }
 
     public List<(string ProviderCode, Type ProviderType)> ListProviders()
     {

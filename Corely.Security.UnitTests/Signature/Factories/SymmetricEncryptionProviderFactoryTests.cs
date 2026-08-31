@@ -144,29 +144,7 @@ public class SymmetricEncryptionProviderFactoryTests
             || ex is SignatureException);
     }
 
-    [Theory, MemberData(nameof(GetProviderData))]
-    public void GetProviderForVerifying_ReturnsSignatureProvider(string code, Type providerType)
-    {
-        var signedValue = $"{code}:1:{_fixture.Create<string>()}";
-        var signatureProvider = _signatureProviderFactory.GetProviderForVerifying(signedValue);
 
-        Assert.NotNull(signatureProvider);
-        Assert.IsType(providerType, signatureProvider);
-    }
-
-    [Theory]
-    [ClassData(typeof(NullEmptyAndWhitespace))]
-    [InlineData("-")]
-    [InlineData("--")]
-    public void GetProviderForVerifying_Throws_WithInvalidCode(string code)
-    {
-        var ex = Record.Exception(() => _signatureProviderFactory.GetProviderForVerifying(code));
-
-        Assert.NotNull(ex);
-        Assert.True(ex is ArgumentNullException
-            || ex is ArgumentException
-            || ex is SignatureException);
-    }
 
     [Fact]
     public void ListProviders_ReturnsProviders()

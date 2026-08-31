@@ -1,6 +1,11 @@
 # Asymmetric Encryption
 
-RSA provider included (provider name `"RSA-2048-OAEP-SHA256"`). Uses key versioning like symmetric encryption.
+RSA provider included (provider name `"RSA-OAEP-SHA256"`). Uses key versioning like symmetric
+encryption.
+
+The 1.x name `"RSA-2048-OAEP-SHA256"` stays registered as a read alias, so values encrypted by
+1.x still decrypt. The key size was never provider configuration - it comes from whichever key
+the key store supplies - so it is no longer claimed in the name.
 
 Usage:
 ```csharp

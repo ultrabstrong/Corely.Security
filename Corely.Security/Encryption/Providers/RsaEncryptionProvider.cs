@@ -15,7 +15,7 @@ public sealed class RsaEncryptionProvider : AsymmetricEncryptionProviderBase
     private readonly RSAEncryptionPadding _rsaEncryptionPadding;
 
     public RsaEncryptionProvider(RSAEncryptionPadding rsaEncryptionPadding)
-        : base($"RSA-2048-{PaddingName(rsaEncryptionPadding)}")
+        : base($"RSA-{PaddingName(rsaEncryptionPadding)}")
     {
         _rsaEncryptionPadding = rsaEncryptionPadding;
     }

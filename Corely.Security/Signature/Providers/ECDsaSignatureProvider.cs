@@ -16,7 +16,7 @@ public sealed class ECDsaSignatureProvider : AsymmetricSignatureProviderBase
     private readonly HashAlgorithmName _hashAlgorithm;
 
     public ECDsaSignatureProvider(HashAlgorithmName hashAlgorithm)
-        : base($"ECDSA-P256-{hashAlgorithm.Name}")
+        : base($"ECDSA-{hashAlgorithm.Name}")
     {
         _hashAlgorithm = hashAlgorithm;
     }
