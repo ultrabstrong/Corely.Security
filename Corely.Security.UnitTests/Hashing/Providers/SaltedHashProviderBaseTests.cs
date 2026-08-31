@@ -8,31 +8,41 @@ public class SaltedHashProviderBaseTests : SaltedHashProviderGenericTests
 {
     private class MockHashProvider : SaltedHashProviderBase
     {
-        public override string ProviderName => TEST_PROVIDER_NAME;
+        public MockHashProvider()
+            : base(TEST_PROVIDER_NAME) { }
+
         protected override byte[] HashInternal(byte[] value) => value;
     }
 
     private class NullMockHashProvider : SaltedHashProviderBase
     {
-        public override string ProviderName => null!;
+        public NullMockHashProvider()
+            : base(null!) { }
+
         protected override byte[] HashInternal(byte[] value) => value;
     }
 
     private class EmptyMockHashProvider : SaltedHashProviderBase
     {
-        public override string ProviderName => string.Empty;
+        public EmptyMockHashProvider()
+            : base(string.Empty) { }
+
         protected override byte[] HashInternal(byte[] value) => value;
     }
 
     private class WhitespaceMockHashProvider : SaltedHashProviderBase
     {
-        public override string ProviderName => " ";
+        public WhitespaceMockHashProvider()
+            : base(" ") { }
+
         protected override byte[] HashInternal(byte[] value) => value;
     }
 
     private class ColonMockHashProvider : SaltedHashProviderBase
     {
-        public override string ProviderName => "as:df";
+        public ColonMockHashProvider()
+            : base("as:df") { }
+
         protected override byte[] HashInternal(byte[] value) => value;
     }
 

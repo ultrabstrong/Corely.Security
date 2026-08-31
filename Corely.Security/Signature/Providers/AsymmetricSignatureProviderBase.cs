@@ -6,21 +6,27 @@ namespace Corely.Security.Signature.Providers;
 
 public abstract class AsymmetricSignatureProviderBase : IAsymmetricSignatureProvider
 {
-    public abstract string ProviderName { get; }
+    public string ProviderName { get; }
 
     public virtual string ProviderDescription => GetType().Name;
 
-    public AsymmetricSignatureProviderBase()
+    // The name is supplied by the derived constructor rather than read from an abstract
+    // property. Calling a virtual member from a base constructor observes the derived type
+    // before its fields are assigned, so a name computed from constructor arguments was
+    // either half-formed or null at the moment it was validated.
+    protected AsymmetricSignatureProviderBase(string providerName)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(ProviderName, nameof(ProviderName));
+        ArgumentException.ThrowIfNullOrWhiteSpace(providerName, nameof(providerName));
 
-        if (ProviderName.Contains(':'))
+        if (providerName.Contains(':'))
         {
             throw new SignatureException($"Signature provider name cannot contain ':'")
             {
                 Reason = SignatureException.ErrorReason.InvalidTypeCode
             };
         }
+
+        ProviderName = providerName;
     }
 
     public string Sign(string data, IAsymmetricKeyStoreProvider keyStoreProvider)

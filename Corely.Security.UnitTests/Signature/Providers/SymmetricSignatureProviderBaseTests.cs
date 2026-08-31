@@ -22,7 +22,9 @@ public class SymmetricSignatureProviderBaseTests : SymmetricSignatureProviderGen
 
     private class MockSignatureProvider : SymmetricSignatureProviderBase
     {
-        public override string ProviderName => TEST_PROVIDER_NAME;
+        public MockSignatureProvider()
+            : base(TEST_PROVIDER_NAME) { }
+
         private readonly MockSymmetricKeyProvider _mockKeyProvider = new();
 
         private string lastValue = string.Empty;
@@ -46,6 +48,9 @@ public class SymmetricSignatureProviderBaseTests : SymmetricSignatureProviderGen
 
     private abstract class MockSymmetricSignatureProviderBase : SymmetricSignatureProviderBase
     {
+        protected MockSymmetricSignatureProviderBase(string providerName)
+            : base(providerName) { }
+
         public override ISymmetricKeyProvider GetSymmetricKeyProvider() => null!;
         public override SigningCredentials GetSigningCredentials(string key) => null!;
         protected override string SignInternal(string value, string key) => value;
@@ -54,22 +59,30 @@ public class SymmetricSignatureProviderBaseTests : SymmetricSignatureProviderGen
 
     private class NullMockSignatureProvider : MockSymmetricSignatureProviderBase
     {
-        public override string ProviderName => null!;
+        public NullMockSignatureProvider()
+            : base(null!) { }
+
     }
 
     private class EmptyMockSignatureProvider : MockSymmetricSignatureProviderBase
     {
-        public override string ProviderName => string.Empty;
+        public EmptyMockSignatureProvider()
+            : base(string.Empty) { }
+
     }
 
     private class WhitespaceMockSignatureProvider : MockSymmetricSignatureProviderBase
     {
-        public override string ProviderName => " ";
+        public WhitespaceMockSignatureProvider()
+            : base(" ") { }
+
     }
 
     private class ColonMockSignatureProvider : MockSymmetricSignatureProviderBase
     {
-        public override string ProviderName => "as:df";
+        public ColonMockSignatureProvider()
+            : base("as:df") { }
+
     }
 
     private const string TEST_PROVIDER_NAME = "00";

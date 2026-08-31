@@ -23,7 +23,9 @@ public sealed class AsymmetricSignatureProviderBaseTests : AsymmetricSignaturePr
 
     private class MockSignatureProvider : AsymmetricSignatureProviderBase
     {
-        public override string ProviderName => TEST_PROVIDER_NAME;
+        public MockSignatureProvider()
+            : base(TEST_PROVIDER_NAME) { }
+
         private readonly MockAsymmetricKeyProvider _mockKeyProvider = new();
 
         private string lastValue = string.Empty;
@@ -48,6 +50,9 @@ public sealed class AsymmetricSignatureProviderBaseTests : AsymmetricSignaturePr
 
     private abstract class MockAsymmetricSignatureProviderBase : AsymmetricSignatureProviderBase
     {
+        protected MockAsymmetricSignatureProviderBase(string providerName)
+            : base(providerName) { }
+
         public override IAsymmetricKeyProvider GetAsymmetricKeyProvider() => null!;
         public override SigningCredentials GetSigningCredentials(string key, bool isKeyPrivate) => null!;
         protected override string SignInternal(string value, string privateKey) => value;
@@ -56,22 +61,30 @@ public sealed class AsymmetricSignatureProviderBaseTests : AsymmetricSignaturePr
 
     private class NullMockSignatureProvider : MockAsymmetricSignatureProviderBase
     {
-        public override string ProviderName => null!;
+        public NullMockSignatureProvider()
+            : base(null!) { }
+
     }
 
     private class EmptyMockSignatureProvider : MockAsymmetricSignatureProviderBase
     {
-        public override string ProviderName => string.Empty;
+        public EmptyMockSignatureProvider()
+            : base(string.Empty) { }
+
     }
 
     private class WhitespaceMockSignatureProvider : MockAsymmetricSignatureProviderBase
     {
-        public override string ProviderName => " ";
+        public WhitespaceMockSignatureProvider()
+            : base(" ") { }
+
     }
 
     private class ColonMockSignatureProvider : MockAsymmetricSignatureProviderBase
     {
-        public override string ProviderName => "as:df";
+        public ColonMockSignatureProvider()
+            : base("as:df") { }
+
     }
 
     private const string TEST_PROVIDER_NAME = "00";

@@ -18,7 +18,9 @@ public sealed class AsymmetricEncryptionProviderBaseTests : AsymmetricEncryption
 
     private class MockEncryptionProvider : AsymmetricEncryptionProviderBase
     {
-        public override string ProviderName => TEST_PROVIDER_NAME;
+        public MockEncryptionProvider()
+            : base(TEST_PROVIDER_NAME) { }
+
         private readonly MockAsymmetricKeyProvider _mockKeyProvider = new();
         public override IAsymmetricKeyProvider GetAsymmetricKeyProvider() => _mockKeyProvider;
         protected override string EncryptInternal(string value, string key) => $"{Guid.NewGuid()}{value}";
@@ -27,6 +29,9 @@ public sealed class AsymmetricEncryptionProviderBaseTests : AsymmetricEncryption
 
     private abstract class MockAsymmetricEncryptionProviderBase : AsymmetricEncryptionProviderBase
     {
+        protected MockAsymmetricEncryptionProviderBase(string providerName)
+            : base(providerName) { }
+
         public override IAsymmetricKeyProvider GetAsymmetricKeyProvider() => null!;
         protected override string EncryptInternal(string value, string key) => value;
         protected override string DecryptInternal(string value, string key) => value;
@@ -34,22 +39,30 @@ public sealed class AsymmetricEncryptionProviderBaseTests : AsymmetricEncryption
 
     private class NullMockEncryptionProvider : MockAsymmetricEncryptionProviderBase
     {
-        public override string ProviderName => null!;
+        public NullMockEncryptionProvider()
+            : base(null!) { }
+
     }
 
     private class EmptyMockEncryptionProvider : MockAsymmetricEncryptionProviderBase
     {
-        public override string ProviderName => string.Empty;
+        public EmptyMockEncryptionProvider()
+            : base(string.Empty) { }
+
     }
 
     private class WhitespaceMockEncryptionProvider : MockAsymmetricEncryptionProviderBase
     {
-        public override string ProviderName => " ";
+        public WhitespaceMockEncryptionProvider()
+            : base(" ") { }
+
     }
 
     private class ColonMockEncryptionProvider : MockAsymmetricEncryptionProviderBase
     {
-        public override string ProviderName => "as:df";
+        public ColonMockEncryptionProvider()
+            : base("as:df") { }
+
     }
 
     private const string TEST_PROVIDER_NAME = "00";

@@ -5,21 +5,27 @@ namespace Corely.Security.Encryption.Providers;
 
 public abstract class SymmetricEncryptionProviderBase : ISymmetricEncryptionProvider
 {
-    public abstract string ProviderName { get; }
+    public string ProviderName { get; }
 
     public virtual string ProviderDescription => GetType().Name;
 
-    public SymmetricEncryptionProviderBase()
+    // The name is supplied by the derived constructor rather than read from an abstract
+    // property. Calling a virtual member from a base constructor observes the derived type
+    // before its fields are assigned, so a name computed from constructor arguments was
+    // either half-formed or null at the moment it was validated.
+    protected SymmetricEncryptionProviderBase(string providerName)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(ProviderName, nameof(ProviderName));
+        ArgumentException.ThrowIfNullOrWhiteSpace(providerName, nameof(providerName));
 
-        if (ProviderName.Contains(':'))
+        if (providerName.Contains(':'))
         {
             throw new EncryptionException($"Symmetric encryption provider name cannot contain ':'")
             {
                 Reason = EncryptionException.ErrorReason.InvalidTypeCode
             };
         }
+
+        ProviderName = providerName;
     }
 
     public string Encrypt(string value, ISymmetricKeyStoreProvider keyStoreProvider)

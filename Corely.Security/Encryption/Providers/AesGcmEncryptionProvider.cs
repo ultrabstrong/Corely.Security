@@ -9,7 +9,8 @@ public sealed class AesGcmEncryptionProvider : SymmetricEncryptionProviderBase
     private const int NONCE_SIZE = 12;
     private const int TAG_SIZE = 16;
 
-    public override string ProviderName => SymmetricEncryptionConstants.AES_GCM_CODE;
+    public AesGcmEncryptionProvider()
+        : base(SymmetricEncryptionConstants.AES_GCM_CODE) { }
 
     public override string ProviderDescription =>
         "AES-256-GCM authenticated encryption. A 12-byte nonce is randomly generated per operation "

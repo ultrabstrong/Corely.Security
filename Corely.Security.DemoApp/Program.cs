@@ -458,7 +458,9 @@ internal class Program
 internal sealed class DemoHashProvider : SaltedHashProviderBase
 {
     // Unique demo provider name (not conflicting with built-in providers).
-    public override string ProviderName => "DemoHash";
+    public DemoHashProvider()
+        : base("DemoHash") { }
+
     public override string ProviderDescription => "Demo hash provider for testing";
 
     protected override byte[] HashInternal(byte[] value)
@@ -468,7 +470,9 @@ internal sealed class DemoHashProvider : SaltedHashProviderBase
 internal sealed class DemoSymmetricEncryptionProvider : SymmetricEncryptionProviderBase
 {
     // Unique demo provider name (built-in AES uses "AES-256-CBC-PKCS7").
-    public override string ProviderName => "DemoSymEnc";
+    public DemoSymmetricEncryptionProvider()
+        : base("DemoSymEnc") { }
+
     public override string ProviderDescription => "Demo symmetric encryption provider for testing";
     protected override string DecryptInternal(string value, string key) => value;
     protected override string EncryptInternal(string value, string key) => value;
@@ -478,7 +482,9 @@ internal sealed class DemoSymmetricEncryptionProvider : SymmetricEncryptionProvi
 internal sealed class DemoAsymmetricEncryptionProvider : AsymmetricEncryptionProviderBase
 {
     // Unique demo provider name (built-in RSA uses "RSA-2048-OAEP-SHA256").
-    public override string ProviderName => "DemoAsymEnc";
+    public DemoAsymmetricEncryptionProvider()
+        : base("DemoAsymEnc") { }
+
     public override string ProviderDescription => "Demo asymmetric encryption provider for testing";
     protected override string DecryptInternal(string value, string privateKey) => value;
     protected override string EncryptInternal(string value, string publicKey) => value;
@@ -488,10 +494,10 @@ internal sealed class DemoAsymmetricEncryptionProvider : AsymmetricEncryptionPro
 internal sealed class DemoSymmetricSignatureProvider : SymmetricSignatureProviderBase
 {
     // Unique demo provider name (built-in HMAC SHA256 uses "HMAC-SHA256").
-    public override string ProviderName => "DemoSymSig";
     public override string ProviderDescription => "Demo symmetric signature provider for testing";
     private readonly string _signatureValue;
-    public DemoSymmetricSignatureProvider(string signatureValue) => _signatureValue = signatureValue;
+    public DemoSymmetricSignatureProvider(string signatureValue)
+        : base("DemoSymSig") => _signatureValue = signatureValue;
     protected override string SignInternal(string value, string key) => _signatureValue;
     protected override bool VerifyInternal(string value, string signature, string key) => signature == _signatureValue;
     public override ISymmetricKeyProvider GetSymmetricKeyProvider() => new DemoSymmetricKeyProvider();
@@ -501,10 +507,10 @@ internal sealed class DemoSymmetricSignatureProvider : SymmetricSignatureProvide
 internal sealed class DemoAsymmetricSignatureProvider : AsymmetricSignatureProviderBase
 {
     // Unique demo provider name (built-in ECDSA/RSA use "ECDSA-P256-SHA256"/"RSA-2048-PKCS1-SHA256").
-    public override string ProviderName => "DemoAsymSig";
     public override string ProviderDescription => "Demo asymmetric signature provider for testing";
     private readonly string _signatureValue;
-    public DemoAsymmetricSignatureProvider(string signatureValue) => _signatureValue = signatureValue;
+    public DemoAsymmetricSignatureProvider(string signatureValue)
+        : base("DemoAsymSig") => _signatureValue = signatureValue;
     protected override string SignInternal(string value, string privateKey) => _signatureValue;
     protected override bool VerifyInternal(string value, string signature, string publicKey) => signature == _signatureValue;
     public override SigningCredentials GetSigningCredentials(string key, bool isKeyPrivate) => throw new NotSupportedException();

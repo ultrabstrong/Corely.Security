@@ -5,7 +5,8 @@ namespace Corely.Security.Encryption.Providers;
 
 public sealed class AesEncryptionProvider : SymmetricEncryptionProviderBase
 {
-    public override string ProviderName => SymmetricEncryptionConstants.AES_CODE;
+    public AesEncryptionProvider()
+        : base(SymmetricEncryptionConstants.AES_CODE) { }
 
     public override string ProviderDescription =>
         "AES encryption using CBC mode with PKCS7 padding. A 16-byte IV is randomly generated per operation and prepended to the ciphertext. Output format: Base64([16-byte IV | ciphertext]). Keys are Base64-encoded.";

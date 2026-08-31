@@ -8,20 +8,27 @@ public abstract class SaltedHashProviderBase : IHashProvider
     private const int SALT_SIZE = 16;
     private const int EXPECTED_PART_COUNT = 2;
 
-    public abstract string ProviderName { get; }
+    public string ProviderName { get; }
 
     public virtual string ProviderDescription => GetType().Name;
 
-    public SaltedHashProviderBase()
+    // The name is supplied by the derived constructor rather than read from an abstract
+    // property. Calling a virtual member from a base constructor observes the derived type
+    // before its fields are assigned, so a name computed from constructor arguments was
+    // either half-formed or null at the moment it was validated.
+    protected SaltedHashProviderBase(string providerName)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(ProviderName, nameof(ProviderName));
-        if (ProviderName.Contains(':'))
+        ArgumentException.ThrowIfNullOrWhiteSpace(providerName, nameof(providerName));
+
+        if (providerName.Contains(':'))
         {
             throw new HashException($"Hash provider name cannot contain ':'")
             {
                 Reason = HashException.ErrorReason.InvalidTypeCode
             };
         }
+
+        ProviderName = providerName;
     }
 
     public string Hash(string value)

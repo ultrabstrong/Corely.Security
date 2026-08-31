@@ -7,7 +7,8 @@ namespace Corely.Security.Signature.Providers;
 
 public sealed class HmacSha256SignatureProvider : SymmetricSignatureProviderBase
 {
-    public override string ProviderName => SymmetricSignatureConstants.HMAC_SHA256_CODE;
+    public HmacSha256SignatureProvider()
+        : base(SymmetricSignatureConstants.HMAC_SHA256_CODE) { }
 
     public override string ProviderDescription =>
         "HMAC-SHA256 message authentication. Key is Base64-encoded. Signature output is Base64-encoded.";
