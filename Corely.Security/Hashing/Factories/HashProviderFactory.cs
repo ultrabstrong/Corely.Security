@@ -6,6 +6,7 @@ public class HashProviderFactory : IHashProviderFactory
 {
     private readonly Dictionary<string, IHashProvider> _providers = new()
         {
+            { HashConstants.PBKDF2_SHA256_CODE, new Pbkdf2HashProvider() },
             { HashConstants.SALTED_SHA256_CODE, new Sha256SaltedHashProvider() },
             { HashConstants.SALTED_SHA512_CODE, new Sha512SaltedHashProvider() }
         };

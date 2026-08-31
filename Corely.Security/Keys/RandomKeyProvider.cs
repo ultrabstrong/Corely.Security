@@ -35,7 +35,14 @@ internal sealed class RandomKeyProvider : ISymmetricKeyProvider
             return false;
         }
 
-        var keyBytes = Convert.FromBase64String(key);
-        return keyBytes.Length == _keySize;
+        // A validity check must answer the question, not throw it back at the caller.
+        try
+        {
+            return Convert.FromBase64String(key).Length == _keySize;
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
     }
 }

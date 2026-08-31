@@ -13,6 +13,7 @@ public class SymmetricEncryptionProviderFactory : ISymmetricEncryptionProviderFa
 
         _defaultProviderCode = defaultProviderCode;
         _providers.Add(SymmetricEncryptionConstants.AES_CODE, new AesEncryptionProvider());
+        _providers.Add(SymmetricEncryptionConstants.AES_GCM_CODE, new AesGcmEncryptionProvider());
     }
 
     public void AddProvider(string providerCode, ISymmetricEncryptionProvider provider)

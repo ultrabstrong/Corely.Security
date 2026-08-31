@@ -1,11 +1,20 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Corely.Security.Hashing.Providers;
 
+/// <summary>
+/// Single-round salted hashing.
+///
+/// Suitable for high-entropy values such as randomly generated tokens, where the input space is
+/// already infeasible to search. NOT suitable for user-chosen passwords: a single round is fast by
+/// design, and salting only defeats rainbow tables, not per-user brute force. Use
+/// <see cref="Pbkdf2HashProvider"/> for passwords.
+/// </summary>
 public abstract class SaltedHashProviderBase : IHashProvider
 {
     private const int SALT_SIZE = 16;
+    private const int EXPECTED_PART_COUNT = 2;
 
     public abstract string ProviderName { get; }
 
@@ -33,15 +42,7 @@ public abstract class SaltedHashProviderBase : IHashProvider
         return FormatHashedValue(salt, hashedValue);
     }
 
-    private static byte[] CreateSalt()
-    {
-        byte[] salt = new byte[SALT_SIZE];
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(salt);
-        }
-        return salt;
-    }
+    private static byte[] CreateSalt() => RandomNumberGenerator.GetBytes(SALT_SIZE);
 
     private static byte[] CreateSaltedValue(byte[] salt, string value)
     {
@@ -60,53 +61,55 @@ public abstract class SaltedHashProviderBase : IHashProvider
         ArgumentNullException.ThrowIfNull(value, nameof(value));
         ArgumentNullException.ThrowIfNull(originalHash, nameof(originalHash));
 
-        byte[] salt;
-        try
-        {
-            salt = ValidateForSalt(originalHash);
-        }
-        catch (HashException)
+        if (!TryParse(originalHash, out var salt, out var expectedHash))
         {
             return false;
         }
 
-        var saltedValue = CreateSaltedValue(salt, value);
-        var hashedValue = HashInternal(saltedValue);
-        var finalHash = FormatHashedValue(salt, hashedValue);
+        var actualHash = HashInternal(CreateSaltedValue(salt, value));
 
-        return finalHash == originalHash;
+        // Constant-time comparison of the digests. A short-circuiting comparison leaks how many
+        // leading bytes matched.
+        return CryptographicOperations.FixedTimeEquals(actualHash, expectedHash);
     }
 
-    private byte[] ValidateForSalt(string hash)
+    /// <summary>
+    /// Parses without throwing. A malformed or corrupted stored hash must produce a failed
+    /// verification, never an exception escaping the authentication path - base64 decoding of a
+    /// corrupted value would otherwise throw <see cref="FormatException"/>.
+    /// </summary>
+    private bool TryParse(string hash, out byte[] salt, out byte[] expectedHash)
     {
-        if (!hash.StartsWith(ProviderName))
+        salt = [];
+        expectedHash = [];
+
+        var parts = hash.Split(':');
+
+        // Exact match rather than StartsWith: a provider name that is a prefix of another would
+        // otherwise accept the wrong format.
+        if (parts.Length != EXPECTED_PART_COUNT || parts[0] != ProviderName)
         {
-            throw new HashException($"Hash must start with {ProviderName}")
-            {
-                Reason = HashException.ErrorReason.InvalidFormat
-            };
+            return false;
         }
 
-        string[] parts = hash.Split(':');
-        if (parts.Length != 2
-            || string.IsNullOrWhiteSpace(parts[1]))
+        byte[] hashBytes;
+        try
         {
-            throw new HashException($"Hash must be in format hashTypeCode:hashedValue")
-            {
-                Reason = HashException.ErrorReason.InvalidFormat
-            };
+            hashBytes = Convert.FromBase64String(parts[1]);
+        }
+        catch (FormatException)
+        {
+            return false;
         }
 
-        byte[] hashBytes = Convert.FromBase64String(parts[1]);
-        if (hashBytes.Length < SALT_SIZE)
+        if (hashBytes.Length <= SALT_SIZE)
         {
-            throw new HashException($"Hashed value must be at least {SALT_SIZE} bytes")
-            {
-                Reason = HashException.ErrorReason.InvalidFormat
-            };
+            return false;
         }
 
-        return hashBytes[..SALT_SIZE];
+        salt = hashBytes[..SALT_SIZE];
+        expectedHash = hashBytes[SALT_SIZE..];
+        return true;
     }
 
     protected abstract byte[] HashInternal(byte[] value);

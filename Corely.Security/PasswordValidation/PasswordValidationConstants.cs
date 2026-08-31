@@ -1,8 +1,9 @@
-﻿namespace Corely.Security.Password;
+namespace Corely.Security.Password;
 
 public static class PasswordValidationConstants
 {
     public const string PASSWORD_TOO_SHORT = "Password is too short.";
+    public const string PASSWORD_TOO_LONG = "Password is too long.";
     public const string PASSWORD_MISSING_UPPERCASE = "Password does not contain an uppercase letter.";
     public const string PASSWORD_MISSING_LOWERCASE = "Password does not contain a lowercase letter.";
     public const string PASSWORD_MISSING_DIGIT = "Password does not contain a digit.";

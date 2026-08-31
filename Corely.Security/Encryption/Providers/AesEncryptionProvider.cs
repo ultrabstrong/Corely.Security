@@ -42,6 +42,14 @@ public sealed class AesEncryptionProvider : SymmetricEncryptionProviderBase
         {
             byte[] fullCipher = Convert.FromBase64String(value);
 
+            if (fullCipher.Length < aes.IV.Length)
+            {
+                throw new EncryptionException("Encrypted value is too short to contain an IV")
+                {
+                    Reason = EncryptionException.ErrorReason.InvalidFormat,
+                };
+            }
+
             byte[] iv = new byte[aes.IV.Length];
             byte[] cipherText = new byte[fullCipher.Length - iv.Length];
 

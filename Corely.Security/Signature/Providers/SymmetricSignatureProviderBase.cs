@@ -30,13 +30,38 @@ public abstract class SymmetricSignatureProviderBase : ISymmetricSignatureProvid
         return SignInternal(data, key);
     }
 
+    /// <summary>
+    /// Verifies against the current key, then falls back through earlier key versions.
+    ///
+    /// Without the fallback, rotating the signing key silently invalidates every signature issued
+    /// before the rotation - unlike encryption, the signature format carries no key version, so
+    /// there is nothing in the value itself to select the right key. Trying older versions is what
+    /// makes rotation survivable.
+    /// </summary>
     public bool Verify(string data, string signature, ISymmetricKeyStoreProvider keyStoreProvider)
     {
         ArgumentNullException.ThrowIfNull(data, nameof(data));
         ArgumentNullException.ThrowIfNull(signature, nameof(signature));
-        var key = keyStoreProvider.GetCurrentKey();
-        return VerifyInternal(data, signature, key);
 
+        for (var version = keyStoreProvider.GetCurrentVersion(); version >= 1; version--)
+        {
+            string key;
+            try
+            {
+                key = keyStoreProvider.Get(version);
+            }
+            catch (KeyStoreException)
+            {
+                continue;
+            }
+
+            if (VerifyInternal(data, signature, key))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public abstract ISymmetricKeyProvider GetSymmetricKeyProvider();

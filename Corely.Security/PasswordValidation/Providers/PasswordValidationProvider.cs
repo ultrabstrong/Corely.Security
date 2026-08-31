@@ -27,13 +27,18 @@ public sealed class PasswordValidationProvider : IPasswordValidationProvider
         if (_options.RequireLowercase) patternBuilder.Append("(?=.*[a-z])");
         if (_options.RequireDigit) patternBuilder.Append("(?=.*[0-9])");
         if (_options.RequireNonAlphanumeric) patternBuilder.Append("(?=.*[^A-Za-z0-9])");
-        patternBuilder.Append($".{{{_options.MinimumLength},}}$");
+        patternBuilder.Append($".{{{_options.MinimumLength},{_options.MaximumLength}}}$");
 
-        return new Regex(patternBuilder.ToString());
+        // Singleline so '.' matches newlines. Without it a password containing a line break fails
+        // the pattern while the detailed pass finds nothing wrong, producing an invalid result
+        // with no stated reason.
+        return new Regex(patternBuilder.ToString(), RegexOptions.Singleline);
     }
 
     public PasswordValidationResult ValidatePassword(string password)
     {
+        ArgumentNullException.ThrowIfNull(password, nameof(password));
+
         if (Regex.IsMatch(password))
         {
             return new(true, []);
@@ -64,6 +69,10 @@ public sealed class PasswordValidationProvider : IPasswordValidationProvider
         if (password.Length < _options.MinimumLength)
         {
             validationResults.Add(PasswordValidationConstants.PASSWORD_TOO_SHORT);
+        }
+        if (password.Length > _options.MaximumLength)
+        {
+            validationResults.Add(PasswordValidationConstants.PASSWORD_TOO_LONG);
         }
         if (!hasUppercase)
         {
