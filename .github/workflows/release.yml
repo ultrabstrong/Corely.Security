@@ -26,9 +26,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # The library targets net8.0; the 10.0.x SDK is needed because xunit.v3 runs on
+      # Microsoft.Testing.Platform, whose `dotnet test` mode ships in that SDK. The 8.0.x runtime
+      # is what actually executes the net8.0 test assembly.
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: |
+            8.0.x
+            10.0.x
 
       - name: Restore
         run: dotnet restore Corely.Security.sln
@@ -37,7 +42,7 @@ jobs:
         run: dotnet build Corely.Security.sln --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test Corely.Security.sln --configuration Release --no-build
+        run: dotnet test --solution Corely.Security.sln --configuration Release --no-build
 
       # Version comes from the csproj, matching how these packages have always been versioned.
       # The tag is the trigger, not the source of truth.
