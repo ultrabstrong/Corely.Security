@@ -7,7 +7,7 @@ namespace Corely.Security.Signature.Providers;
 
 public sealed class RsaSignatureProvider : AsymmetricSignatureProviderBase
 {
-    public override string ProviderName => AsymmetricSignatureConstants.RSA_SHA256_CODE;
+    public override string ProviderName => $"RSA-2048-PKCS1-{_hashAlgorithm.Name}";
 
     public override string ProviderDescription =>
         "RSA digital signature with PKCS#1 v1.5 padding. Keys use PKCS#8 (private) and SubjectPublicKeyInfo (public) format, Base64-encoded. Signature is Base64-encoded.";

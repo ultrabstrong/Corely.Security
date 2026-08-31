@@ -7,7 +7,7 @@ namespace Corely.Security.Signature.Providers;
 
 public sealed class ECDsaSignatureProvider : AsymmetricSignatureProviderBase
 {
-    public override string ProviderName => AsymmetricSignatureConstants.ECDSA_SHA256_CODE;
+    public override string ProviderName => $"ECDSA-P256-{_hashAlgorithm.Name}";
 
     public override string ProviderDescription =>
         "ECDSA digital signature using the P-256 curve. Signatures are IEEE P1363 (the raw r and s "

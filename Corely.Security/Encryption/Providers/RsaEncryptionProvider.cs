@@ -6,7 +6,28 @@ namespace Corely.Security.Encryption.Providers;
 
 public sealed class RsaEncryptionProvider : AsymmetricEncryptionProviderBase
 {
-    public override string ProviderName => AsymmetricEncryptionConstants.RSA_CODE;
+    // This name is the prefix on every stored value, so the mapping is explicit rather than
+    // ToString(): OaepSHA256 must keep rendering "RSA-2048-OAEP-SHA256" or existing ciphertext
+    // stops being readable.
+    public override string ProviderName => $"RSA-2048-{PaddingName}";
+
+    private string PaddingName
+    {
+        get
+        {
+            // AsymmetricEncryptionProviderBase validates ProviderName from its own constructor,
+            // which runs before this field is assigned. The fallback is only ever observed during
+            // that validation, never by a caller.
+            if (_rsaEncryptionPadding is null)
+            {
+                return "OAEP-SHA256";
+            }
+
+            return _rsaEncryptionPadding.Mode == RSAEncryptionPaddingMode.Oaep
+                ? $"OAEP-{_rsaEncryptionPadding.OaepHashAlgorithm.Name}"
+                : "PKCS1";
+        }
+    }
 
     public override string ProviderDescription =>
         "RSA encryption with OAEP-SHA256 padding. Keys use PKCS#8 (private) and SubjectPublicKeyInfo (public) format, Base64-encoded. Output is Base64-encoded.";
