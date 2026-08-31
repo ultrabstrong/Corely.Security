@@ -29,7 +29,7 @@ graph TD
 
     D --> K["Encrypted Values (providerName:keyVersion:cipher)"]
     E --> K
-    F --> L["Signatures (providerName:signature)"]
+    F --> L["Signatures (bare signature, no prefix)"]
     G --> L
     C --> M["Hashes (providerName:base64SaltPlusHash)"]
 
@@ -68,15 +68,17 @@ Each topic below maps to a runnable demo in `Corely.Security.DemoApp/Program.cs`
 - [Password Validation](password-validation.md)
 
 ## Value Encoding Formats
-The library prefixes encoded values with a human-readable provider name (and sometimes key version) so factories can auto-resolve providers.
+Hashes and encrypted values are prefixed with a human-readable provider name (and, for
+encryption, a key version) so factories can auto-resolve providers. Signatures are not: they are
+verified against a provider and key store the caller already chose.
 
 | Feature | Format |
 |---------|--------|
 | Hash | `providerName:base64SaltPlusHash` |
 | Symmetric Encryption | `providerName:keyVersion:cipherBase64` |
 | Asymmetric Encryption | `providerName:keyVersion:cipherBase64` |
-| Symmetric Signature | `providerName:signatureBase64` |
-| Asymmetric Signature | `providerName:signatureBase64` |
+| Symmetric Signature | `signatureBase64` (no prefix) |
+| Asymmetric Signature | `signatureBase64` (no prefix) |
 
 ## Quick Start
 ```csharp

@@ -10,7 +10,9 @@ var keyStore = new InMemorySymmetricKeyStoreProvider(provider.GetSymmetricKeyPro
 var sig = provider.Sign("payload", keyStore);
 var ok = provider.Verify("payload", sig, keyStore);
 ```
-Format: `providerName:base64Signature`. Note: HMAC SHA256 raw output is 32 bytes (Base64 length ~44 chars).
+Format: bare `base64Signature` - unlike encrypted values and hashes, signatures carry no
+provider-name prefix and no key version. Note: HMAC SHA256 raw output is 32 bytes (Base64
+length ~44 chars).
 
 Rotation: add a new key; subsequent signatures use the latest key version. Existing signatures validate against stored version (the in-memory store keeps all versions).
 
