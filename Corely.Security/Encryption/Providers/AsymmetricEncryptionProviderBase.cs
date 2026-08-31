@@ -41,17 +41,14 @@ public abstract class AsymmetricEncryptionProviderBase : IAsymmetricEncryptionPr
 
     private (string, int) ValidateForKeyVersion(string value)
     {
-        if (!value.StartsWith(ProviderName))
-        {
-            throw new EncryptionException($"Value must start with {ProviderName}")
-            {
-                Reason = EncryptionException.ErrorReason.InvalidFormat
-            };
-        }
-
+        // The prefix is deliberately not checked against ProviderName. The factory already routed
+        // this value here by that prefix, so re-checking it only forbids a provider from reading
+        // values written under a name it has since moved on from - which is exactly what makes
+        // renaming a provider impossible without stranding stored data.
         string[] parts = value.Split(':');
 
         if (parts.Length != 3
+            || string.IsNullOrWhiteSpace(parts[0])
             || string.IsNullOrWhiteSpace(parts[2])
             || !int.TryParse(parts[1], out var keyVersion))
         {
