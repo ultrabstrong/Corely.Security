@@ -1,6 +1,5 @@
-﻿using Corely.Security.Keys;
-using Corely.Security.UnitTests.ClassData;
 using System.Security.Cryptography;
+using Corely.Security.Keys;
 
 namespace Corely.Security.UnitTests.Keys;
 
@@ -9,39 +8,46 @@ public class AesKeyProviderTests
     private readonly AesKeyProvider _aesKeyProvider = new();
 
     [Fact]
-    public void GetKey_ReturnsValidKeyKey()
+    public void CreateKey_ReturnsAKeyAesAccepts()
     {
         var key = _aesKeyProvider.CreateKey();
-        using (Aes aes = Aes.Create())
-        {
-            try
-            {
-                aes.Key = Convert.FromBase64String(key);
-            }
-            catch (Exception)
-            {
-                Assert.Fail("Aes key invalid");
-            }
-        }
+
+        using var aes = Aes.Create();
+        var ex = Record.Exception(() => aes.Key = key);
+
+        Assert.Null(ex);
+    }
+
+    [Fact]
+    public void CreateKey_Returns256Bits()
+    {
+        Assert.Equal(32, _aesKeyProvider.CreateKey().Length);
     }
 
     [Fact]
     public void IsKeyValid_ReturnsTrue_WithKeyFromCreateKey()
     {
-        var key = _aesKeyProvider.CreateKey();
-        Assert.True(_aesKeyProvider.IsKeyValid(key));
+        Assert.True(_aesKeyProvider.IsKeyValid(_aesKeyProvider.CreateKey()));
     }
 
-    [Theory, ClassData(typeof(NullEmptyAndWhitespace))]
-    public void IsKeyValid_ReturnsFalse_WithNullOrWhitespaceKey(string key)
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(15)]
+    [InlineData(31)]
+    [InlineData(33)]
+    [InlineData(64)]
+    public void IsKeyValid_ReturnsFalse_ForLengthsAesRejects(int length)
     {
-        Assert.False(_aesKeyProvider.IsKeyValid(key));
+        Assert.False(_aesKeyProvider.IsKeyValid(new byte[length]));
     }
 
-    [Fact]
-    public void IsKeyValid_ReturnsFalseForInvalidKey()
+    [Theory]
+    [InlineData(16)]
+    [InlineData(24)]
+    [InlineData(32)]
+    public void IsKeyValid_ReturnsTrue_ForLengthsAesAccepts(int length)
     {
-        var isValid = _aesKeyProvider.IsKeyValid("asdf");
-        Assert.False(isValid);
+        Assert.True(_aesKeyProvider.IsKeyValid(new byte[length]));
     }
 }

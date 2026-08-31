@@ -19,39 +19,37 @@ public sealed class RsaSignatureProvider : AsymmetricSignatureProviderBase
         _hashAlgorithm = hashAlgorithm;
     }
 
-    protected override string SignInternal(string value, string privateKey)
+    protected override string SignInternal(string value, ReadOnlySpan<byte> privateKey)
     {
-        var privateKeyBytes = Convert.FromBase64String(privateKey);
         var dataToSign = Encoding.UTF8.GetBytes(value);
 
         using (var rsa = RSA.Create())
         {
-            rsa.ImportPkcs8PrivateKey(privateKeyBytes, out _);
+            rsa.ImportPkcs8PrivateKey(privateKey, out _);
             var signedBytes = rsa.SignData(dataToSign, _hashAlgorithm, RSASignaturePadding.Pkcs1);
             return Convert.ToBase64String(signedBytes);
         }
     }
 
-    protected override bool VerifyInternal(string value, string signature, string publicKey)
+    protected override bool VerifyInternal(string value, string signature, ReadOnlySpan<byte> publicKey)
     {
-        var publicKeyBytes = Convert.FromBase64String(publicKey);
         var dataToVerify = Encoding.UTF8.GetBytes(value);
         var signatureBytes = Convert.FromBase64String(signature);
 
         using (var rsa = RSA.Create())
         {
-            rsa.ImportSubjectPublicKeyInfo(publicKeyBytes, out _);
+            rsa.ImportSubjectPublicKeyInfo(publicKey, out _);
             return rsa.VerifyData(dataToVerify, signatureBytes, _hashAlgorithm, RSASignaturePadding.Pkcs1);
         }
     }
 
-    public override SigningCredentials GetSigningCredentials(string key, bool isKeyPrivate)
+    public override SigningCredentials GetSigningCredentials(ReadOnlySpan<byte> key, bool isKeyPrivate)
     {
         var rsa = RSA.Create();
         if (isKeyPrivate)
-            rsa.ImportPkcs8PrivateKey(Convert.FromBase64String(key), out _);
+            rsa.ImportPkcs8PrivateKey(key, out _);
         else
-            rsa.ImportSubjectPublicKeyInfo(Convert.FromBase64String(key), out _);
+            rsa.ImportSubjectPublicKeyInfo(key, out _);
         return new SigningCredentials(new RsaSecurityKey(rsa), SecurityAlgorithms.RsaSha256);
     }
 

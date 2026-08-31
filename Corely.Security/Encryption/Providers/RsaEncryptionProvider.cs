@@ -27,27 +27,25 @@ public sealed class RsaEncryptionProvider : AsymmetricEncryptionProviderBase
             ? $"OAEP-{padding.OaepHashAlgorithm.Name}"
             : "PKCS1";
 
-    protected override string DecryptInternal(string value, string privateKey)
+    protected override string DecryptInternal(string value, ReadOnlySpan<byte> privateKey)
     {
-        var privateKeyBytes = Convert.FromBase64String(privateKey);
         var encryptedBytes = Convert.FromBase64String(value);
 
         using (var rsa = RSA.Create())
         {
-            rsa.ImportPkcs8PrivateKey(privateKeyBytes, out _);
+            rsa.ImportPkcs8PrivateKey(privateKey, out _);
             var decryptedBytes = rsa.Decrypt(encryptedBytes, _rsaEncryptionPadding);
             return Encoding.UTF8.GetString(decryptedBytes);
         }
     }
 
-    protected override string EncryptInternal(string value, string publicKey)
+    protected override string EncryptInternal(string value, ReadOnlySpan<byte> publicKey)
     {
-        var publicKeyBytes = Convert.FromBase64String(publicKey);
         var dataToEncrypt = Encoding.UTF8.GetBytes(value);
 
         using (var rsa = RSA.Create())
         {
-            rsa.ImportSubjectPublicKeyInfo(publicKeyBytes, out _);
+            rsa.ImportSubjectPublicKeyInfo(publicKey, out _);
             var encryptedBytes = rsa.Encrypt(dataToEncrypt, _rsaEncryptionPadding);
             return Convert.ToBase64String(encryptedBytes);
         }

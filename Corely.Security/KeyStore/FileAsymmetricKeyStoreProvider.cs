@@ -1,4 +1,8 @@
-﻿namespace Corely.Security.KeyStore;
+using System.Buffers;
+using System.Buffers.Text;
+using System.Security.Cryptography;
+
+namespace Corely.Security.KeyStore;
 
 public class FileAsymmetricKeyStoreProvider : IAsymmetricKeyStoreProvider
 {
@@ -13,7 +17,7 @@ public class FileAsymmetricKeyStoreProvider : IAsymmetricKeyStoreProvider
 
     public int GetCurrentVersion() => ONLY_VERSION;
 
-    public (string PublicKey, string PrivateKey) Get(int version)
+    public (byte[] PublicKey, byte[] PrivateKey) Get(int version)
     {
         if (version != ONLY_VERSION)
         {
@@ -29,24 +33,74 @@ public class FileAsymmetricKeyStoreProvider : IAsymmetricKeyStoreProvider
         return ReadKeys();
     }
 
-    public (string PublicKey, string PrivateKey) GetCurrentKeys() => ReadKeys();
+    public (byte[] PublicKey, byte[] PrivateKey) GetCurrentKeys() => ReadKeys();
 
-    private (string PublicKey, string PrivateKey) ReadKeys()
+    // Read as bytes and decode in place. Going through File.ReadAllText would put the private key
+    // into a string, which cannot be zeroed and lives until the GC happens to collect it.
+    private (byte[] PublicKey, byte[] PrivateKey) ReadKeys()
     {
-        var keys = GetFileContents().Split(Environment.NewLine);
+        var fileBytes = GetFileBytes();
 
-        if (keys.Length < 2)
+        try
         {
-            throw new KeyStoreException(
-                "Key file must contain a public key and a private key on separate lines."
-            )
+            var lines = SplitLines(fileBytes);
+            if (lines.Count < 2)
+            {
+                throw new KeyStoreException(
+                    "Key file must contain a public key and a private key on separate lines."
+                )
+                {
+                    Reason = KeyStoreException.ErrorReason.CurrentKeyNotFound,
+                };
+            }
+
+            return (Decode(fileBytes, lines[0]), Decode(fileBytes, lines[1]));
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(fileBytes);
+        }
+    }
+
+    private static List<(int Start, int Length)> SplitLines(byte[] bytes)
+    {
+        List<(int, int)> lines = [];
+        var start = 0;
+        for (var i = 0; i <= bytes.Length; i++)
+        {
+            if (i == bytes.Length || bytes[i] == (byte)'\n')
+            {
+                var end = i;
+                if (end > start && bytes[end - 1] == (byte)'\r') end--;
+                if (end > start) lines.Add((start, end - start));
+                start = i + 1;
+            }
+        }
+        return lines;
+    }
+
+    private static byte[] Decode(byte[] source, (int Start, int Length) line)
+    {
+        var span = source.AsSpan(line.Start, line.Length);
+        var decoded = new byte[Base64.GetMaxDecodedFromUtf8Length(span.Length)];
+
+        var status = Base64.DecodeFromUtf8(span, decoded, out _, out var written);
+        if (status != OperationStatus.Done)
+        {
+            CryptographicOperations.ZeroMemory(decoded);
+            throw new KeyStoreException("Key file does not contain valid Base64.")
             {
                 Reason = KeyStoreException.ErrorReason.CurrentKeyNotFound,
             };
         }
 
-        return (keys[0], keys[1]);
+        var key = decoded[..written];
+        if (written != decoded.Length)
+        {
+            CryptographicOperations.ZeroMemory(decoded);
+        }
+        return key;
     }
 
-    protected virtual string GetFileContents() => File.ReadAllText(_filePath);
+    protected virtual byte[] GetFileBytes() => File.ReadAllBytes(_filePath);
 }

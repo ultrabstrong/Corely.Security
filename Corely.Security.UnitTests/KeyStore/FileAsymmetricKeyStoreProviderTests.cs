@@ -1,5 +1,7 @@
-﻿using AutoFixture;
+using System.Text;
+using AutoFixture;
 using Corely.Security.KeyStore;
+using Corely.Security.Keys;
 using Moq.Protected;
 
 namespace Corely.Security.UnitTests.KeyStore;
@@ -8,39 +10,79 @@ public class FileAsymmetricKeyStoreProviderTests
 {
     private readonly Fixture _fixture = new();
     private readonly FileAsymmetricKeyStoreProvider _fileKeyStoreProvider;
-    private readonly string _filePublicKey;
-    private readonly string _filePrivateKey;
+    private readonly byte[] _filePublicKey;
+    private readonly byte[] _filePrivateKey;
 
     public FileAsymmetricKeyStoreProviderTests()
     {
-        _filePublicKey = _fixture.Create<string>();
-        _filePrivateKey = _fixture.Create<string>();
-        var fileKeyStoreProvider = new Mock<FileAsymmetricKeyStoreProvider>(_fixture.Create<string>());
-        fileKeyStoreProvider.Protected()
-            .Setup<string>("GetFileContents")
-            .Returns(() => $"{_filePublicKey}{Environment.NewLine}{_filePrivateKey}");
-        _fileKeyStoreProvider = fileKeyStoreProvider.Object;
+        (_filePublicKey, _filePrivateKey) = new EcdsaKeyProvider().CreateKeys();
+        _fileKeyStoreProvider = MockReading(
+            Convert.ToBase64String(_filePublicKey)
+                + Environment.NewLine
+                + Convert.ToBase64String(_filePrivateKey)
+        );
+    }
+
+    private FileAsymmetricKeyStoreProvider MockReading(string fileContents)
+    {
+        var mock = new Mock<FileAsymmetricKeyStoreProvider>(_fixture.Create<string>());
+        mock.Protected()
+            .Setup<byte[]>("GetFileBytes")
+            .Returns(() => Encoding.UTF8.GetBytes(fileContents));
+        return mock.Object;
     }
 
     [Fact]
-    public void GetCurrentKey_ReturnsKey()
+    public void GetCurrentKeys_ReturnsDecodedKeys()
     {
         var (publicKey, privateKey) = _fileKeyStoreProvider.GetCurrentKeys();
+
         Assert.Equal(_filePublicKey, publicKey);
         Assert.Equal(_filePrivateKey, privateKey);
     }
 
     [Fact]
+    public void GetCurrentKeys_ReadsBothLineEndings()
+    {
+        var provider = MockReading(
+            Convert.ToBase64String(_filePublicKey)
+                + "\n"
+                + Convert.ToBase64String(_filePrivateKey)
+                + "\n"
+        );
+
+        var (publicKey, privateKey) = provider.GetCurrentKeys();
+
+        Assert.Equal(_filePublicKey, publicKey);
+        Assert.Equal(_filePrivateKey, privateKey);
+    }
+
+    [Fact]
+    public void GetCurrentKeys_Throws_WithOnlyOneLine()
+    {
+        var provider = MockReading(Convert.ToBase64String(_filePublicKey));
+
+        var ex = Record.Exception(() => provider.GetCurrentKeys());
+
+        Assert.NotNull(ex);
+        Assert.IsType<KeyStoreException>(ex);
+        Assert.Equal(
+            KeyStoreException.ErrorReason.CurrentKeyNotFound,
+            ((KeyStoreException)ex).Reason
+        );
+    }
+
+    [Fact]
     public void GetCurrentVersion_ReturnsVersion1()
     {
-        var version = _fileKeyStoreProvider.GetCurrentVersion();
-        Assert.Equal(1, version);
+        Assert.Equal(1, _fileKeyStoreProvider.GetCurrentVersion());
     }
 
     [Fact]
     public void Get_ReturnsTheKeys_ForTheOnlyVersion()
     {
         var (publicKey, privateKey) = _fileKeyStoreProvider.Get(1);
+
         Assert.Equal(_filePublicKey, publicKey);
         Assert.Equal(_filePrivateKey, privateKey);
     }

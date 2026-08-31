@@ -21,5 +21,5 @@ public interface ISymmetricSignatureProvider
     ISymmetricKeyProvider GetSymmetricKeyProvider();
     string Sign(string data, ISymmetricKeyStoreProvider keyStoreProvider);
     bool Verify(string data, string signature, ISymmetricKeyStoreProvider keyStoreProvider);
-    SigningCredentials GetSigningCredentials(string key);
+    SigningCredentials GetSigningCredentials(ReadOnlySpan<byte> key);
 }

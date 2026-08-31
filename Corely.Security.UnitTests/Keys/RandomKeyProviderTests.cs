@@ -1,19 +1,15 @@
-﻿using Corely.Security.Keys;
-using Corely.Security.UnitTests.ClassData;
+using Corely.Security.Keys;
 
 namespace Corely.Security.UnitTests.Keys;
 
 public class RandomKeyProviderTests
 {
-    private readonly RandomKeyProvider _hmacSha256KeyProvider = new();
+    private readonly RandomKeyProvider _randomKeyProvider = new();
 
     [Fact]
-    public void Constructor_UseDefaultKeySize()
+    public void Constructor_UsesDefaultKeySize()
     {
-        var keyProvider = new RandomKeyProvider();
-        var key = keyProvider.CreateKey();
-        var keyBytes = Convert.FromBase64String(key);
-        Assert.Equal(RandomKeyProvider.DEFAULT_KEY_SIZE, keyBytes.Length);
+        Assert.Equal(RandomKeyProvider.DEFAULT_KEY_SIZE, new RandomKeyProvider().CreateKey().Length);
     }
 
     [Theory]
@@ -27,41 +23,30 @@ public class RandomKeyProviderTests
     }
 
     [Fact]
-    public void GetKey_ReturnsValidKeyKey()
+    public void CreateKey_UsesKeyLength_FromConstructor()
     {
-        var key = _hmacSha256KeyProvider.CreateKey();
-
-        var keyBytes = Convert.FromBase64String(key);
-        Assert.Equal(RandomKeyProvider.DEFAULT_KEY_SIZE, keyBytes.Length);
+        Assert.Equal(64, new RandomKeyProvider(64).CreateKey().Length);
     }
 
     [Fact]
-    public void GetKey_UsesKeyLength_FromConstructor()
+    public void CreateKey_ReturnsADistinctKeyEachTime()
     {
-        var keySize = 64;
-        var keyProvider = new RandomKeyProvider(keySize);
-        var key = keyProvider.CreateKey();
-        var keyBytes = Convert.FromBase64String(key);
-        Assert.Equal(keySize, keyBytes.Length);
+        Assert.NotEqual(_randomKeyProvider.CreateKey(), _randomKeyProvider.CreateKey());
     }
 
     [Fact]
     public void IsKeyValid_ReturnsTrue_WithKeyFromCreateKey()
     {
-        var key = _hmacSha256KeyProvider.CreateKey();
-        Assert.True(_hmacSha256KeyProvider.IsKeyValid(key));
+        Assert.True(_randomKeyProvider.IsKeyValid(_randomKeyProvider.CreateKey()));
     }
 
-    [Theory, ClassData(typeof(NullEmptyAndWhitespace))]
-    public void IsKeyValid_ReturnsFalse_WithNullOrWhitespaceKey(string key)
+    [Theory]
+    [InlineData(0)]
+    [InlineData(16)]
+    [InlineData(31)]
+    [InlineData(33)]
+    public void IsKeyValid_ReturnsFalse_ForTheWrongLength(int length)
     {
-        Assert.False(_hmacSha256KeyProvider.IsKeyValid(key));
-    }
-
-    [Fact]
-    public void IsKeyValid_ReturnsFalseForInvalidKey()
-    {
-        var isValid = _hmacSha256KeyProvider.IsKeyValid("asdf");
-        Assert.False(isValid);
+        Assert.False(_randomKeyProvider.IsKeyValid(new byte[length]));
     }
 }

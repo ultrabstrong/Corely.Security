@@ -12,12 +12,12 @@ public class SymmetricSignatureProviderBaseTests : SymmetricSignatureProviderGen
     {
         private readonly Fixture _fixture = new();
 
-        public string CreateKey()
+        public byte[] CreateKey()
         {
-            return _fixture.Create<string>();
+            return _fixture.Create<byte[]>();
         }
 
-        public bool IsKeyValid(string key) => true;
+        public bool IsKeyValid(ReadOnlySpan<byte> key) => true;
     }
 
     private class MockSignatureProvider : SymmetricSignatureProviderBase
@@ -31,19 +31,19 @@ public class SymmetricSignatureProviderBaseTests : SymmetricSignatureProviderGen
         private string lastSignature = string.Empty;
 
         public override ISymmetricKeyProvider GetSymmetricKeyProvider() => _mockKeyProvider;
-        public override SigningCredentials GetSigningCredentials(string key) => null!;
+        public override SigningCredentials GetSigningCredentials(ReadOnlySpan<byte> key) => null!;
 
-        protected override string SignInternal(string value, string key)
+        protected override string SignInternal(string value, ReadOnlySpan<byte> key)
         {
             lastValue = value;
-            lastSignature = $"{value}{key}";
+            lastSignature = $"{value}{Convert.ToBase64String(key)}";
             return lastSignature;
         }
 
-        protected override bool VerifyInternal(string value, string signature, string key) =>
+        protected override bool VerifyInternal(string value, string signature, ReadOnlySpan<byte> key) =>
             lastValue == value
             && lastSignature == signature
-            && lastSignature.EndsWith(key);
+            && lastSignature.EndsWith(Convert.ToBase64String(key));
     }
 
     private abstract class MockSymmetricSignatureProviderBase : SymmetricSignatureProviderBase
@@ -52,9 +52,9 @@ public class SymmetricSignatureProviderBaseTests : SymmetricSignatureProviderGen
             : base(providerName) { }
 
         public override ISymmetricKeyProvider GetSymmetricKeyProvider() => null!;
-        public override SigningCredentials GetSigningCredentials(string key) => null!;
-        protected override string SignInternal(string value, string key) => value;
-        protected override bool VerifyInternal(string value, string signature, string key) => false;
+        public override SigningCredentials GetSigningCredentials(ReadOnlySpan<byte> key) => null!;
+        protected override string SignInternal(string value, ReadOnlySpan<byte> key) => value;
+        protected override bool VerifyInternal(string value, string signature, ReadOnlySpan<byte> key) => false;
     }
 
     private class NullMockSignatureProvider : MockSymmetricSignatureProviderBase

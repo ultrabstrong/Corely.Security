@@ -11,9 +11,10 @@ public sealed class AsymmetricEncryptionProviderBaseTests : AsymmetricEncryption
     {
         private readonly Fixture _fixture = new();
 
-        public (string PublicKey, string PrivateKey) CreateKeys() => _fixture.Create<(string, string)>();
+        public (byte[] PublicKey, byte[] PrivateKey) CreateKeys() =>
+            (_fixture.Create<byte[]>(), _fixture.Create<byte[]>());
 
-        public bool IsKeyValid(string publicKey, string privateKey) => true;
+        public bool IsKeyValid(ReadOnlySpan<byte> publicKey, ReadOnlySpan<byte> privateKey) => true;
     }
 
     private class MockEncryptionProvider : AsymmetricEncryptionProviderBase
@@ -23,8 +24,8 @@ public sealed class AsymmetricEncryptionProviderBaseTests : AsymmetricEncryption
 
         private readonly MockAsymmetricKeyProvider _mockKeyProvider = new();
         public override IAsymmetricKeyProvider GetAsymmetricKeyProvider() => _mockKeyProvider;
-        protected override string EncryptInternal(string value, string key) => $"{Guid.NewGuid()}{value}";
-        protected override string DecryptInternal(string value, string key) => value[36..];
+        protected override string EncryptInternal(string value, ReadOnlySpan<byte> key) => $"{Guid.NewGuid()}{value}";
+        protected override string DecryptInternal(string value, ReadOnlySpan<byte> key) => value[36..];
     }
 
     private abstract class MockAsymmetricEncryptionProviderBase : AsymmetricEncryptionProviderBase
@@ -33,8 +34,8 @@ public sealed class AsymmetricEncryptionProviderBaseTests : AsymmetricEncryption
             : base(providerName) { }
 
         public override IAsymmetricKeyProvider GetAsymmetricKeyProvider() => null!;
-        protected override string EncryptInternal(string value, string key) => value;
-        protected override string DecryptInternal(string value, string key) => value;
+        protected override string EncryptInternal(string value, ReadOnlySpan<byte> key) => value;
+        protected override string DecryptInternal(string value, ReadOnlySpan<byte> key) => value;
     }
 
     private class NullMockEncryptionProvider : MockAsymmetricEncryptionProviderBase

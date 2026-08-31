@@ -1,4 +1,6 @@
-﻿using AutoFixture;
+using System.Security.Cryptography;
+using System.Text;
+using AutoFixture;
 using Corely.Security.KeyStore;
 using Moq.Protected;
 
@@ -8,37 +10,61 @@ public class FileSymmetricKeyStoreProviderTests
 {
     private readonly Fixture _fixture = new();
     private readonly FileSymmetricKeyStoreProvider _fileKeyStoreProvider;
-    private readonly string _fileKey;
+    private readonly byte[] _fileKey = RandomNumberGenerator.GetBytes(32);
 
     public FileSymmetricKeyStoreProviderTests()
     {
-        _fileKey = _fixture.Create<string>();
-        var fileKeyStoreProvider = new Mock<FileSymmetricKeyStoreProvider>(_fixture.Create<string>());
-        fileKeyStoreProvider.Protected()
-            .Setup<string>("GetFileContents")
-            .Returns(() => _fileKey);
-        _fileKeyStoreProvider = fileKeyStoreProvider.Object;
+        _fileKeyStoreProvider = MockReading(Convert.ToBase64String(_fileKey));
+    }
+
+    private FileSymmetricKeyStoreProvider MockReading(string fileContents)
+    {
+        var mock = new Mock<FileSymmetricKeyStoreProvider>(_fixture.Create<string>());
+        mock.Protected()
+            .Setup<byte[]>("GetFileBytes")
+            .Returns(() => Encoding.UTF8.GetBytes(fileContents));
+        return mock.Object;
     }
 
     [Fact]
-    public void GetCurrentKey_ReturnsKey()
+    public void GetCurrentKey_ReturnsDecodedKey()
     {
-        var key = _fileKeyStoreProvider.GetCurrentKey();
-        Assert.Equal(_fileKey, key);
+        Assert.Equal(_fileKey, _fileKeyStoreProvider.GetCurrentKey());
+    }
+
+    // Key files are written by hand and by editors that append a newline.
+    [Theory]
+    [InlineData("\n")]
+    [InlineData("\r\n")]
+    [InlineData("  ")]
+    public void GetCurrentKey_IgnoresSurroundingWhitespace(string suffix)
+    {
+        var provider = MockReading(Convert.ToBase64String(_fileKey) + suffix);
+
+        Assert.Equal(_fileKey, provider.GetCurrentKey());
+    }
+
+    [Fact]
+    public void GetCurrentKey_Throws_WhenFileIsNotBase64()
+    {
+        var provider = MockReading("not base64 !!!");
+
+        var ex = Record.Exception(provider.GetCurrentKey);
+
+        Assert.NotNull(ex);
+        Assert.IsType<KeyStoreException>(ex);
     }
 
     [Fact]
     public void GetCurrentVersion_ReturnsVersion1()
     {
-        var version = _fileKeyStoreProvider.GetCurrentVersion();
-        Assert.Equal(1, version);
+        Assert.Equal(1, _fileKeyStoreProvider.GetCurrentVersion());
     }
 
     [Fact]
     public void Get_ReturnsTheKey_ForTheOnlyVersion()
     {
-        var key = _fileKeyStoreProvider.Get(1);
-        Assert.Equal(_fileKey, key);
+        Assert.Equal(_fileKey, _fileKeyStoreProvider.Get(1));
     }
 
     [Theory]

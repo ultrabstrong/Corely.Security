@@ -13,9 +13,9 @@ public class RsaKeyProviderTests
         var rsaKeyProvider = new RsaKeyProvider();
         var (publicKey, _) = rsaKeyProvider.CreateKeys();
 
-        using (var rsa = new RSACryptoServiceProvider())
+        using (var rsa = RSA.Create())
         {
-            rsa.ImportSubjectPublicKeyInfo(Convert.FromBase64String(publicKey), out _);
+            rsa.ImportSubjectPublicKeyInfo(publicKey, out _);
             Assert.Equal(RsaKeyProvider.DEFAULT_KEY_SIZE, rsa.KeySize);
         }
     }
@@ -50,7 +50,7 @@ public class RsaKeyProviderTests
     public void IsKeyValid_ReturnsFalse_ForInvalidPrivateKey()
     {
         var (publicKey, _) = _rsaKeyProvider.CreateKeys();
-        var invalidKey = Convert.ToBase64String(new byte[256]);
+        var invalidKey = new byte[256];
         var isValid = _rsaKeyProvider.IsKeyValid(publicKey, invalidKey);
         Assert.False(isValid);
     }
@@ -59,7 +59,7 @@ public class RsaKeyProviderTests
     public void IsKeyValid_ReturnsFalse_ForInvalidPublicKey()
     {
         _rsaKeyProvider.CreateKeys();
-        var invalidKey = Convert.ToBase64String(new byte[256]);
+        var invalidKey = new byte[256];
         var isValid = _rsaKeyProvider.IsKeyValid(invalidKey, invalidKey);
         Assert.False(isValid);
     }
@@ -70,9 +70,9 @@ public class RsaKeyProviderTests
         var rsaKeyProvider = new RsaKeyProvider(4096);
         var (publicKey, _) = rsaKeyProvider.CreateKeys();
 
-        using (var rsa = new RSACryptoServiceProvider())
+        using (var rsa = RSA.Create())
         {
-            rsa.ImportSubjectPublicKeyInfo(Convert.FromBase64String(publicKey), out _);
+            rsa.ImportSubjectPublicKeyInfo(publicKey, out _);
             Assert.Equal(4096, rsa.KeySize);
         }
     }

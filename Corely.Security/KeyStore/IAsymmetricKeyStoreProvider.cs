@@ -1,8 +1,16 @@
-﻿namespace Corely.Security.KeyStore;
+namespace Corely.Security.KeyStore;
 
 public interface IAsymmetricKeyStoreProvider
 {
     int GetCurrentVersion();
-    (string PublicKey, string PrivateKey) Get(int version);
-    (string PublicKey, string PrivateKey) GetCurrentKeys();
+
+    /// <summary>
+    /// Returns the key pair for <paramref name="version"/>. The caller owns the returned arrays
+    /// and is responsible for zeroing the private key; the provider base classes do this
+    /// automatically.
+    /// </summary>
+    (byte[] PublicKey, byte[] PrivateKey) Get(int version);
+
+    /// <inheritdoc cref="Get(int)"/>
+    (byte[] PublicKey, byte[] PrivateKey) GetCurrentKeys();
 }

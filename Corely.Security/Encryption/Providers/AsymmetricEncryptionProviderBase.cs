@@ -1,4 +1,5 @@
-﻿using Corely.Security.Keys;
+﻿using System.Security.Cryptography;
+using Corely.Security.Keys;
 using Corely.Security.KeyStore;
 
 namespace Corely.Security.Encryption.Providers;
@@ -31,7 +32,8 @@ public abstract class AsymmetricEncryptionProviderBase : IAsymmetricEncryptionPr
     public string Encrypt(string value, IAsymmetricKeyStoreProvider keyStoreProvider)
     {
         ArgumentNullException.ThrowIfNull(value, nameof(value));
-        var (publicKey, _) = keyStoreProvider.GetCurrentKeys();
+        var (publicKey, privateKey) = keyStoreProvider.GetCurrentKeys();
+        CryptographicOperations.ZeroMemory(privateKey);
         var encryptedValue = EncryptInternal(value, publicKey);
         var version = keyStoreProvider.GetCurrentVersion();
         return FormatEncryptedValue(encryptedValue, version);
@@ -42,7 +44,14 @@ public abstract class AsymmetricEncryptionProviderBase : IAsymmetricEncryptionPr
         ArgumentException.ThrowIfNullOrWhiteSpace(value, nameof(value));
         (var encryptedValue, var version) = ValidateForKeyVersion(value);
         var (_, privateKey) = keyStoreProvider.Get(version);
-        return DecryptInternal(encryptedValue, privateKey);
+        try
+        {
+            return DecryptInternal(encryptedValue, privateKey);
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(privateKey);
+        }
     }
 
     private (string, int) ValidateForKeyVersion(string value)
@@ -72,9 +81,19 @@ public abstract class AsymmetricEncryptionProviderBase : IAsymmetricEncryptionPr
         (var encryptedValue, var version) = ValidateForKeyVersion(value);
 
         var (_, privateKey) = keyStoreProvider.Get(version);
-        var decrypted = DecryptInternal(encryptedValue, privateKey);
+        var (publicKey, currentPrivateKey) = keyStoreProvider.GetCurrentKeys();
+        CryptographicOperations.ZeroMemory(currentPrivateKey);
 
-        var (publicKey, _) = keyStoreProvider.GetCurrentKeys();
+        string decrypted;
+        try
+        {
+            decrypted = DecryptInternal(encryptedValue, privateKey);
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(privateKey);
+        }
+
         var updatedEncryptedValue = EncryptInternal(decrypted, publicKey);
 
         var currentVersion = keyStoreProvider.GetCurrentVersion();
@@ -93,7 +112,7 @@ public abstract class AsymmetricEncryptionProviderBase : IAsymmetricEncryptionPr
 
     public abstract IAsymmetricKeyProvider GetAsymmetricKeyProvider();
 
-    protected abstract string DecryptInternal(string value, string privateKey);
+    protected abstract string DecryptInternal(string value, ReadOnlySpan<byte> privateKey);
 
-    protected abstract string EncryptInternal(string value, string publicKey);
+    protected abstract string EncryptInternal(string value, ReadOnlySpan<byte> publicKey);
 }

@@ -13,11 +13,11 @@ public sealed class AesEncryptionProvider : SymmetricEncryptionProviderBase
 
     private readonly AesKeyProvider _aesKeyProvider = new();
 
-    protected override string EncryptInternal(string value, string key)
+    protected override string EncryptInternal(string value, ReadOnlySpan<byte> key)
     {
         using (Aes aes = Aes.Create())
         {
-            aes.Key = Convert.FromBase64String(key);
+            aes.Key = key.ToArray();
             aes.GenerateIV();
 
             using (ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV))
@@ -37,7 +37,7 @@ public sealed class AesEncryptionProvider : SymmetricEncryptionProviderBase
         }
     }
 
-    protected override string DecryptInternal(string value, string key)
+    protected override string DecryptInternal(string value, ReadOnlySpan<byte> key)
     {
         using (Aes aes = Aes.Create())
         {
@@ -58,7 +58,7 @@ public sealed class AesEncryptionProvider : SymmetricEncryptionProviderBase
             Buffer.BlockCopy(fullCipher, 0, iv, 0, iv.Length);
             Buffer.BlockCopy(fullCipher, iv.Length, cipherText, 0, cipherText.Length);
 
-            aes.Key = Convert.FromBase64String(key);
+            aes.Key = key.ToArray();
             aes.IV = iv;
 
             using (ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV))

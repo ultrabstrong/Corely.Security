@@ -1,4 +1,5 @@
-﻿using Corely.Security.Keys;
+﻿using System.Security.Cryptography;
+using Corely.Security.Keys;
 using Corely.Security.KeyStore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -33,7 +34,14 @@ public abstract class SymmetricSignatureProviderBase : ISymmetricSignatureProvid
     {
         ArgumentNullException.ThrowIfNull(data, nameof(data));
         var key = keyStoreProvider.GetCurrentKey();
-        return SignInternal(data, key);
+        try
+        {
+            return SignInternal(data, key);
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(key);
+        }
     }
 
     public bool Verify(string data, string signature, ISymmetricKeyStoreProvider keyStoreProvider)
@@ -43,7 +51,7 @@ public abstract class SymmetricSignatureProviderBase : ISymmetricSignatureProvid
 
         for (var version = keyStoreProvider.GetCurrentVersion(); version >= 1; version--)
         {
-            string key;
+            byte[] key;
             try
             {
                 key = keyStoreProvider.Get(version);
@@ -53,9 +61,16 @@ public abstract class SymmetricSignatureProviderBase : ISymmetricSignatureProvid
                 continue;
             }
 
-            if (VerifyInternal(data, signature, key))
+            try
             {
-                return true;
+                if (VerifyInternal(data, signature, key))
+                {
+                    return true;
+                }
+            }
+            finally
+            {
+                CryptographicOperations.ZeroMemory(key);
             }
         }
 
@@ -64,9 +79,9 @@ public abstract class SymmetricSignatureProviderBase : ISymmetricSignatureProvid
 
     public abstract ISymmetricKeyProvider GetSymmetricKeyProvider();
 
-    public abstract SigningCredentials GetSigningCredentials(string key);
+    public abstract SigningCredentials GetSigningCredentials(ReadOnlySpan<byte> key);
 
-    protected abstract string SignInternal(string value, string key);
+    protected abstract string SignInternal(string value, ReadOnlySpan<byte> key);
 
-    protected abstract bool VerifyInternal(string value, string signature, string key);
+    protected abstract bool VerifyInternal(string value, string signature, ReadOnlySpan<byte> key);
 }

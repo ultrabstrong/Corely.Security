@@ -21,5 +21,5 @@ public interface IAsymmetricSignatureProvider
     IAsymmetricKeyProvider GetAsymmetricKeyProvider();
     string Sign(string data, IAsymmetricKeyStoreProvider keyStoreProvider);
     bool Verify(string data, string signature, IAsymmetricKeyStoreProvider keyStoreProvider);
-    SigningCredentials GetSigningCredentials(string key, bool isKeyPrivate);
+    SigningCredentials GetSigningCredentials(ReadOnlySpan<byte> key, bool isKeyPrivate);
 }

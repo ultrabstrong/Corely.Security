@@ -92,9 +92,7 @@ public class SymmetricSignatureHardeningTests
 
     private sealed class RandomKeyProviderProxy
     {
-        public string CreateKey() =>
-            Convert.ToBase64String(
-                System.Security.Cryptography.RandomNumberGenerator.GetBytes(32)
-            );
+        public byte[] CreateKey() =>
+            System.Security.Cryptography.RandomNumberGenerator.GetBytes(32);
     }
 }

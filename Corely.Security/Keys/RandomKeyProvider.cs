@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 
 namespace Corely.Security.Keys;
 
@@ -12,36 +12,15 @@ internal sealed class RandomKeyProvider : ISymmetricKeyProvider
     {
         if (keySize < 1)
         {
-            throw new ArgumentOutOfRangeException(nameof(keySize), "Key size must be a positive number.");
+            throw new ArgumentOutOfRangeException(
+                nameof(keySize),
+                "Key size must be a positive number."
+            );
         }
         _keySize = keySize;
     }
 
-    public string CreateKey()
-    {
-        var keyBytes = new byte[_keySize];
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(keyBytes);
-        }
+    public byte[] CreateKey() => RandomNumberGenerator.GetBytes(_keySize);
 
-        return Convert.ToBase64String(keyBytes);
-    }
-
-    public bool IsKeyValid(string key)
-    {
-        if (string.IsNullOrWhiteSpace(key))
-        {
-            return false;
-        }
-
-        try
-        {
-            return Convert.FromBase64String(key).Length == _keySize;
-        }
-        catch (FormatException)
-        {
-            return false;
-        }
-    }
+    public bool IsKeyValid(ReadOnlySpan<byte> key) => key.Length == _keySize;
 }

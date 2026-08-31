@@ -12,13 +12,13 @@ public sealed class AsymmetricSignatureProviderBaseTests : AsymmetricSignaturePr
     {
         private readonly Fixture _fixture = new();
 
-        public (string PublicKey, string PrivateKey) CreateKeys()
+        public (byte[] PublicKey, byte[] PrivateKey) CreateKeys()
         {
-            var key = _fixture.Create<string>();
+            var key = _fixture.Create<byte[]>();
             return (key, key); // This allows mocking signature verification success / failure
         }
 
-        public bool IsKeyValid(string publicKey, string privateKey) => true;
+        public bool IsKeyValid(ReadOnlySpan<byte> publicKey, ReadOnlySpan<byte> privateKey) => true;
     }
 
     private class MockSignatureProvider : AsymmetricSignatureProviderBase
@@ -33,19 +33,19 @@ public sealed class AsymmetricSignatureProviderBaseTests : AsymmetricSignaturePr
 
         public override IAsymmetricKeyProvider GetAsymmetricKeyProvider() => _mockKeyProvider;
 
-        public override SigningCredentials GetSigningCredentials(string key, bool isKeyPrivate) => null!;
+        public override SigningCredentials GetSigningCredentials(ReadOnlySpan<byte> key, bool isKeyPrivate) => null!;
 
-        protected override string SignInternal(string value, string privateKey)
+        protected override string SignInternal(string value, ReadOnlySpan<byte> privateKey)
         {
             lastValue = value;
-            lastSignature = $"{value}{privateKey}";
+            lastSignature = $"{value}{Convert.ToBase64String(privateKey)}";
             return lastSignature;
         }
 
-        protected override bool VerifyInternal(string value, string signature, string publicKey) =>
+        protected override bool VerifyInternal(string value, string signature, ReadOnlySpan<byte> publicKey) =>
             lastValue == value
             && lastSignature == signature
-            && lastSignature.EndsWith(publicKey);
+            && lastSignature.EndsWith(Convert.ToBase64String(publicKey));
     }
 
     private abstract class MockAsymmetricSignatureProviderBase : AsymmetricSignatureProviderBase
@@ -54,9 +54,9 @@ public sealed class AsymmetricSignatureProviderBaseTests : AsymmetricSignaturePr
             : base(providerName) { }
 
         public override IAsymmetricKeyProvider GetAsymmetricKeyProvider() => null!;
-        public override SigningCredentials GetSigningCredentials(string key, bool isKeyPrivate) => null!;
-        protected override string SignInternal(string value, string privateKey) => value;
-        protected override bool VerifyInternal(string value, string signature, string publicKey) => false;
+        public override SigningCredentials GetSigningCredentials(ReadOnlySpan<byte> key, bool isKeyPrivate) => null!;
+        protected override string SignInternal(string value, ReadOnlySpan<byte> privateKey) => value;
+        protected override bool VerifyInternal(string value, string signature, ReadOnlySpan<byte> publicKey) => false;
     }
 
     private class NullMockSignatureProvider : MockAsymmetricSignatureProviderBase

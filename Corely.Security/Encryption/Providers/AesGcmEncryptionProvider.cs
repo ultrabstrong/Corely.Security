@@ -20,9 +20,8 @@ public sealed class AesGcmEncryptionProvider : SymmetricEncryptionProviderBase
 
     private readonly AesKeyProvider _aesKeyProvider = new();
 
-    protected override string EncryptInternal(string value, string key)
+    protected override string EncryptInternal(string value, ReadOnlySpan<byte> key)
     {
-        var keyBytes = Convert.FromBase64String(key);
         var plaintext = Encoding.UTF8.GetBytes(value);
 
         var nonce = RandomNumberGenerator.GetBytes(NONCE_SIZE);
@@ -31,12 +30,11 @@ public sealed class AesGcmEncryptionProvider : SymmetricEncryptionProviderBase
 
         try
         {
-            using var aesGcm = new AesGcm(keyBytes, TAG_SIZE);
+            using var aesGcm = new AesGcm(key, TAG_SIZE);
             aesGcm.Encrypt(nonce, plaintext, ciphertext, tag);
         }
         finally
         {
-            CryptographicOperations.ZeroMemory(keyBytes);
             CryptographicOperations.ZeroMemory(plaintext);
         }
 
@@ -48,9 +46,8 @@ public sealed class AesGcmEncryptionProvider : SymmetricEncryptionProviderBase
         return Convert.ToBase64String(output);
     }
 
-    protected override string DecryptInternal(string value, string key)
+    protected override string DecryptInternal(string value, ReadOnlySpan<byte> key)
     {
-        var keyBytes = Convert.FromBase64String(key);
         var input = Convert.FromBase64String(value);
 
         if (input.Length < NONCE_SIZE + TAG_SIZE)
@@ -68,13 +65,12 @@ public sealed class AesGcmEncryptionProvider : SymmetricEncryptionProviderBase
 
         try
         {
-            using var aesGcm = new AesGcm(keyBytes, TAG_SIZE);
+            using var aesGcm = new AesGcm(key, TAG_SIZE);
             aesGcm.Decrypt(nonce, ciphertext, tag, plaintext);
             return Encoding.UTF8.GetString(plaintext);
         }
         finally
         {
-            CryptographicOperations.ZeroMemory(keyBytes);
             CryptographicOperations.ZeroMemory(plaintext);
         }
     }

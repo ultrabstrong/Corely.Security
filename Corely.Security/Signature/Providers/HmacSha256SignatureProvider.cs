@@ -15,26 +15,16 @@ public sealed class HmacSha256SignatureProvider : SymmetricSignatureProviderBase
 
     private readonly RandomKeyProvider _randomKeyProvider = new();
 
-    protected override string SignInternal(string value, string key)
+    protected override string SignInternal(string value, ReadOnlySpan<byte> key)
     {
-        var keyBytes = Convert.FromBase64String(key);
         var dataToSign = Encoding.UTF8.GetBytes(value);
 
-        try
-        {
-            using var hmac = new HMACSHA256(keyBytes);
-            var signedBytes = hmac.ComputeHash(dataToSign);
-            return Convert.ToBase64String(signedBytes);
-        }
-        finally
-        {
-            CryptographicOperations.ZeroMemory(keyBytes);
-        }
+        using var hmac = new HMACSHA256(key.ToArray());
+        return Convert.ToBase64String(hmac.ComputeHash(dataToSign));
     }
 
-    protected override bool VerifyInternal(string value, string signature, string key)
+    protected override bool VerifyInternal(string value, string signature, ReadOnlySpan<byte> key)
     {
-        var keyBytes = Convert.FromBase64String(key);
         var dataToVerify = Encoding.UTF8.GetBytes(value);
 
         byte[] signatureBytes;
@@ -47,25 +37,16 @@ public sealed class HmacSha256SignatureProvider : SymmetricSignatureProviderBase
             return false;
         }
 
-        try
-        {
-            using var hmac = new HMACSHA256(keyBytes);
-            var computedSignatureBytes = hmac.ComputeHash(dataToVerify);
-
-            return CryptographicOperations.FixedTimeEquals(
-                signatureBytes,
-                computedSignatureBytes
-            );
-        }
-        finally
-        {
-            CryptographicOperations.ZeroMemory(keyBytes);
-        }
+        using var hmac = new HMACSHA256(key.ToArray());
+        return CryptographicOperations.FixedTimeEquals(
+            signatureBytes,
+            hmac.ComputeHash(dataToVerify)
+        );
     }
 
-    public override SigningCredentials GetSigningCredentials(string key)
+    public override SigningCredentials GetSigningCredentials(ReadOnlySpan<byte> key)
     {
-        var securityKey = new SymmetricSecurityKey(Convert.FromBase64String(key));
+        var securityKey = new SymmetricSecurityKey(key.ToArray());
         return new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
     }
 

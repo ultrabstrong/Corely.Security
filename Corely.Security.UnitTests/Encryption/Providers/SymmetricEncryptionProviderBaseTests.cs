@@ -8,8 +8,8 @@ public sealed class SymmetricEncryptionProviderBaseTests : SymmetricEncryptionPr
 {
     private class MockSymmetricKeyProvider : ISymmetricKeyProvider
     {
-        public string CreateKey() => string.Empty;
-        public bool IsKeyValid(string key) => true;
+        public byte[] CreateKey() => [];
+        public bool IsKeyValid(ReadOnlySpan<byte> key) => true;
     }
 
     private class MockEncryptionProvider : SymmetricEncryptionProviderBase
@@ -19,8 +19,8 @@ public sealed class SymmetricEncryptionProviderBaseTests : SymmetricEncryptionPr
 
         private readonly MockSymmetricKeyProvider _mockKeyProvider = new();
         public override ISymmetricKeyProvider GetSymmetricKeyProvider() => _mockKeyProvider;
-        protected override string EncryptInternal(string value, string key) => $"{Guid.NewGuid()}{value}";
-        protected override string DecryptInternal(string value, string key) => value[36..];
+        protected override string EncryptInternal(string value, ReadOnlySpan<byte> key) => $"{Guid.NewGuid()}{value}";
+        protected override string DecryptInternal(string value, ReadOnlySpan<byte> key) => value[36..];
     }
 
     private abstract class MockSymmetricEncryptionProviderBase : SymmetricEncryptionProviderBase
@@ -29,8 +29,8 @@ public sealed class SymmetricEncryptionProviderBaseTests : SymmetricEncryptionPr
             : base(providerName) { }
 
         public override ISymmetricKeyProvider GetSymmetricKeyProvider() => null!;
-        protected override string EncryptInternal(string value, string key) => value;
-        protected override string DecryptInternal(string value, string key) => value;
+        protected override string EncryptInternal(string value, ReadOnlySpan<byte> key) => value;
+        protected override string DecryptInternal(string value, ReadOnlySpan<byte> key) => value;
     }
 
     private class NullMockEncryptionProvider : MockSymmetricEncryptionProviderBase

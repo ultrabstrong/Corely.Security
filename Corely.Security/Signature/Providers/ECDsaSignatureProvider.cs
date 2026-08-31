@@ -21,39 +21,37 @@ public sealed class ECDsaSignatureProvider : AsymmetricSignatureProviderBase
         _hashAlgorithm = hashAlgorithm;
     }
 
-    protected override string SignInternal(string value, string privateKey)
+    protected override string SignInternal(string value, ReadOnlySpan<byte> privateKey)
     {
-        var privateKeyBytes = Convert.FromBase64String(privateKey);
         var dataToSign = Encoding.UTF8.GetBytes(value);
 
         using (var ecdsa = ECDsa.Create())
         {
-            ecdsa.ImportPkcs8PrivateKey(privateKeyBytes, out _);
+            ecdsa.ImportPkcs8PrivateKey(privateKey, out _);
             var signedBytes = ecdsa.SignData(dataToSign, _hashAlgorithm);
             return Convert.ToBase64String(signedBytes);
         }
     }
 
-    protected override bool VerifyInternal(string value, string signature, string publicKey)
+    protected override bool VerifyInternal(string value, string signature, ReadOnlySpan<byte> publicKey)
     {
-        var publicKeyBytes = Convert.FromBase64String(publicKey);
         var dataToVerify = Encoding.UTF8.GetBytes(value);
         var signatureBytes = Convert.FromBase64String(signature);
 
         using (var ecdsa = ECDsa.Create())
         {
-            ecdsa.ImportSubjectPublicKeyInfo(publicKeyBytes, out _);
+            ecdsa.ImportSubjectPublicKeyInfo(publicKey, out _);
             return ecdsa.VerifyData(dataToVerify, signatureBytes, _hashAlgorithm);
         }
     }
 
-    public override SigningCredentials GetSigningCredentials(string key, bool isKeyPrivate)
+    public override SigningCredentials GetSigningCredentials(ReadOnlySpan<byte> key, bool isKeyPrivate)
     {
         var ecdsa = ECDsa.Create();
         if (isKeyPrivate)
-            ecdsa.ImportPkcs8PrivateKey(Convert.FromBase64String(key), out _);
+            ecdsa.ImportPkcs8PrivateKey(key, out _);
         else
-            ecdsa.ImportSubjectPublicKeyInfo(Convert.FromBase64String(key), out _);
+            ecdsa.ImportSubjectPublicKeyInfo(key, out _);
         return new SigningCredentials(new ECDsaSecurityKey(ecdsa), SecurityAlgorithms.EcdsaSha256);
     }
 

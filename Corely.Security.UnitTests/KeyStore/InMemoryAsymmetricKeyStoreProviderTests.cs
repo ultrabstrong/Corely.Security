@@ -1,83 +1,83 @@
-﻿using AutoFixture;
 using Corely.Security.KeyStore;
+using Corely.Security.Keys;
 
 namespace Corely.Security.UnitTests.KeyStore;
 
 public class InMemoryAsymmetricKeyStoreProviderTests
 {
-    private readonly Fixture _fixture = new();
+    private static (byte[] PublicKey, byte[] PrivateKey) Keys() =>
+        new EcdsaKeyProvider().CreateKeys();
 
     [Fact]
     public void GetCurrentKeys_ReturnsKeys()
     {
-        var expectedPublicKey = _fixture.Create<string>();
-        var expectedPrivateKey = _fixture.Create<string>();
-        var keyStoreProvider = new InMemoryAsymmetricKeyStoreProvider(expectedPublicKey, expectedPrivateKey);
+        var (pub, priv) = Keys();
+        var keyStoreProvider = new InMemoryAsymmetricKeyStoreProvider(pub, priv);
 
-        var (publicKey, privateKey) = keyStoreProvider.GetCurrentKeys();
+        var (actualPublic, actualPrivate) = keyStoreProvider.GetCurrentKeys();
 
-        Assert.Equal(expectedPublicKey, publicKey);
-        Assert.Equal(expectedPrivateKey, privateKey);
+        Assert.Equal(pub, actualPublic);
+        Assert.Equal(priv, actualPrivate);
+    }
+
+    [Fact]
+    public void Constructor_AcceptsBase64Keys()
+    {
+        var (pub, priv) = Keys();
+
+        var keyStoreProvider = new InMemoryAsymmetricKeyStoreProvider(
+            Convert.ToBase64String(pub),
+            Convert.ToBase64String(priv)
+        );
+
+        var (actualPublic, actualPrivate) = keyStoreProvider.GetCurrentKeys();
+        Assert.Equal(pub, actualPublic);
+        Assert.Equal(priv, actualPrivate);
     }
 
     [Fact]
     public void GetCurrentVersion_ReturnsOne()
     {
-        var publicKey = _fixture.Create<string>();
-        var privateKey = _fixture.Create<string>();
-        var keyStoreProvider = new InMemoryAsymmetricKeyStoreProvider(publicKey, privateKey);
-
-        var currentVersion = keyStoreProvider.GetCurrentVersion();
-
-        Assert.Equal(1, currentVersion);
+        var (pub, priv) = Keys();
+        Assert.Equal(1, new InMemoryAsymmetricKeyStoreProvider(pub, priv).GetCurrentVersion());
     }
 
     [Fact]
     public void Add_IncrementsVersion()
     {
-        var expectedPublicKey = _fixture.Create<string>();
-        var expectedPrivateKey = _fixture.Create<string>();
-        var keyStoreProvider = new InMemoryAsymmetricKeyStoreProvider(expectedPublicKey, expectedPrivateKey);
+        var (pub, priv) = Keys();
+        var keyStoreProvider = new InMemoryAsymmetricKeyStoreProvider(pub, priv);
 
-        keyStoreProvider.Add(expectedPublicKey, expectedPrivateKey);
+        var (nextPublic, nextPrivate) = Keys();
+        keyStoreProvider.Add(nextPublic, nextPrivate);
 
-        var (publicKey, privateKey) = keyStoreProvider.GetCurrentKeys();
-        var currentVersion = keyStoreProvider.GetCurrentVersion();
-
-        Assert.Equal(expectedPublicKey, publicKey);
-        Assert.Equal(expectedPrivateKey, privateKey);
-        Assert.Equal(2, currentVersion);
+        Assert.Equal(2, keyStoreProvider.GetCurrentVersion());
     }
 
     [Fact]
     public void Get_ReturnsKey()
     {
-        var keyStoreProvider = new InMemoryAsymmetricKeyStoreProvider(
-            _fixture.Create<string>(),
-            _fixture.Create<string>());
+        var (firstPublic, firstPrivate) = Keys();
+        var (secondPublic, secondPrivate) = Keys();
+        var keyStoreProvider = new InMemoryAsymmetricKeyStoreProvider(firstPublic, firstPrivate);
+        keyStoreProvider.Add(secondPublic, secondPrivate);
 
-        var expectedPublicKey = _fixture.Create<string>();
-        var expectedPrivateKey = _fixture.Create<string>();
-
-        keyStoreProvider.Add(expectedPublicKey, expectedPrivateKey);
-        keyStoreProvider.Add(_fixture.Create<string>(), _fixture.Create<string>());
-
-        var (publicKey, privateKey) = keyStoreProvider.Get(2);
-
-        Assert.Equal(expectedPublicKey, publicKey);
-        Assert.Equal(expectedPrivateKey, privateKey);
+        Assert.Equal(firstPublic, keyStoreProvider.Get(1).PublicKey);
+        Assert.Equal(firstPrivate, keyStoreProvider.Get(1).PrivateKey);
+        Assert.Equal(secondPublic, keyStoreProvider.Get(2).PublicKey);
+        Assert.Equal(secondPrivate, keyStoreProvider.Get(2).PrivateKey);
     }
 
     [Fact]
     public void Get_Throws_WhenVersionIsInvalid()
     {
-        var keyStoreProvider = new InMemoryAsymmetricKeyStoreProvider(
-            _fixture.Create<string>(),
-            _fixture.Create<string>());
+        var (pub, priv) = Keys();
+        var keyStoreProvider = new InMemoryAsymmetricKeyStoreProvider(pub, priv);
 
         var ex = Record.Exception(() => keyStoreProvider.Get(2));
 
         Assert.NotNull(ex);
         Assert.IsType<KeyStoreException>(ex);
+        Assert.Equal(KeyStoreException.ErrorReason.InvalidVersion, ((KeyStoreException)ex).Reason);
     }
 }

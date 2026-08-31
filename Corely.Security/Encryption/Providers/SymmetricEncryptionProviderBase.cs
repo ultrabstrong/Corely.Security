@@ -1,4 +1,5 @@
-﻿using Corely.Security.Keys;
+﻿using System.Security.Cryptography;
+using Corely.Security.Keys;
 using Corely.Security.KeyStore;
 
 namespace Corely.Security.Encryption.Providers;
@@ -32,9 +33,16 @@ public abstract class SymmetricEncryptionProviderBase : ISymmetricEncryptionProv
     {
         ArgumentNullException.ThrowIfNull(value, nameof(value));
         var key = keyStoreProvider.GetCurrentKey();
-        var encryptedValue = EncryptInternal(value, key);
-        var version = keyStoreProvider.GetCurrentVersion();
-        return FormatEncryptedValue(encryptedValue, version);
+        try
+        {
+            var encryptedValue = EncryptInternal(value, key);
+            var version = keyStoreProvider.GetCurrentVersion();
+            return FormatEncryptedValue(encryptedValue, version);
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(key);
+        }
     }
 
     public string Decrypt(string value, ISymmetricKeyStoreProvider keyStoreProvider)
@@ -42,7 +50,14 @@ public abstract class SymmetricEncryptionProviderBase : ISymmetricEncryptionProv
         ArgumentException.ThrowIfNullOrWhiteSpace(value, nameof(value));
         (var encryptedValue, var version) = ValidateForKeyVersion(value);
         var key = keyStoreProvider.Get(version);
-        return DecryptInternal(encryptedValue, key);
+        try
+        {
+            return DecryptInternal(encryptedValue, key);
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(key);
+        }
     }
 
     private (string, int) ValidateForKeyVersion(string value)
@@ -72,13 +87,19 @@ public abstract class SymmetricEncryptionProviderBase : ISymmetricEncryptionProv
         (var encryptedValue, var version) = ValidateForKeyVersion(value);
 
         var decryptKey = keyStoreProvider.Get(version);
-        var decrypted = DecryptInternal(encryptedValue, decryptKey);
-
         var encryptKey = keyStoreProvider.GetCurrentKey();
-        var updatedEncryptedValue = EncryptInternal(decrypted, encryptKey);
-
-        var currentVersion = keyStoreProvider.GetCurrentVersion();
-        return FormatEncryptedValue(updatedEncryptedValue, currentVersion);
+        try
+        {
+            var decrypted = DecryptInternal(encryptedValue, decryptKey);
+            var updatedEncryptedValue = EncryptInternal(decrypted, encryptKey);
+            var currentVersion = keyStoreProvider.GetCurrentVersion();
+            return FormatEncryptedValue(updatedEncryptedValue, currentVersion);
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(decryptKey);
+            CryptographicOperations.ZeroMemory(encryptKey);
+        }
     }
 
     private string FormatEncryptedValue(string encryptedValue, int keyVersion)
@@ -93,7 +114,7 @@ public abstract class SymmetricEncryptionProviderBase : ISymmetricEncryptionProv
 
     public abstract ISymmetricKeyProvider GetSymmetricKeyProvider();
 
-    protected abstract string DecryptInternal(string value, string key);
+    protected abstract string DecryptInternal(string value, ReadOnlySpan<byte> key);
 
-    protected abstract string EncryptInternal(string value, string key);
+    protected abstract string EncryptInternal(string value, ReadOnlySpan<byte> key);
 }

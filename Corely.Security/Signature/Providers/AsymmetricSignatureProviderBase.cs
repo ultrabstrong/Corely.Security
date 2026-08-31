@@ -1,4 +1,5 @@
-﻿using Corely.Security.Keys;
+﻿using System.Security.Cryptography;
+using Corely.Security.Keys;
 using Corely.Security.KeyStore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -33,22 +34,30 @@ public abstract class AsymmetricSignatureProviderBase : IAsymmetricSignatureProv
     {
         ArgumentNullException.ThrowIfNull(data, nameof(data));
         var (_, privateKey) = keyStoreProvider.GetCurrentKeys();
-        return SignInternal(data, privateKey);
+        try
+        {
+            return SignInternal(data, privateKey);
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(privateKey);
+        }
     }
 
     public bool Verify(string data, string signature, IAsymmetricKeyStoreProvider keyStoreProvider)
     {
         ArgumentNullException.ThrowIfNull(data, nameof(data));
         ArgumentNullException.ThrowIfNull(signature, nameof(signature));
-        var (publicKey, _) = keyStoreProvider.GetCurrentKeys();
+        var (publicKey, privateKey) = keyStoreProvider.GetCurrentKeys();
+        CryptographicOperations.ZeroMemory(privateKey);
         return VerifyInternal(data, signature, publicKey);
     }
 
     public abstract IAsymmetricKeyProvider GetAsymmetricKeyProvider();
 
-    public abstract SigningCredentials GetSigningCredentials(string key, bool isKeyPrivate);
+    public abstract SigningCredentials GetSigningCredentials(ReadOnlySpan<byte> key, bool isKeyPrivate);
 
-    protected abstract string SignInternal(string value, string privateKey);
+    protected abstract string SignInternal(string value, ReadOnlySpan<byte> privateKey);
 
-    protected abstract bool VerifyInternal(string value, string signature, string publicKey);
+    protected abstract bool VerifyInternal(string value, string signature, ReadOnlySpan<byte> publicKey);
 }

@@ -26,7 +26,7 @@ public class EcdsaKeyProviderTests
     public void IsKeyValid_ReturnsFalse_ForInvalidPrivateKey()
     {
         var (publicKey, _) = _ecdsaKeyProvider.CreateKeys();
-        var invalidKey = Convert.ToBase64String(new byte[256]);
+        var invalidKey = new byte[256];
         var isValid = _ecdsaKeyProvider.IsKeyValid(publicKey, invalidKey);
         Assert.False(isValid);
     }
@@ -35,7 +35,7 @@ public class EcdsaKeyProviderTests
     public void IsKeyValid_ReturnsFalse_ForInvalidPublicKey()
     {
         _ecdsaKeyProvider.CreateKeys();
-        var invalidKey = Convert.ToBase64String(new byte[256]);
+        var invalidKey = new byte[256];
         var isValid = _ecdsaKeyProvider.IsKeyValid(invalidKey, invalidKey);
         Assert.False(isValid);
     }

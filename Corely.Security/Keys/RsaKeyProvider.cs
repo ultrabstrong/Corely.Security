@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 
 namespace Corely.Security.Keys;
 
@@ -12,62 +12,38 @@ internal sealed class RsaKeyProvider : IAsymmetricKeyProvider
     {
         if (keySize < 0 || keySize % 8 != 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(keySize), "Key size must be a positive multiple of 8.");
+            throw new ArgumentOutOfRangeException(
+                nameof(keySize),
+                "Key size must be a positive multiple of 8."
+            );
         }
         _keySize = keySize;
     }
 
-    public (string PublicKey, string PrivateKey) CreateKeys()
+    public (byte[] PublicKey, byte[] PrivateKey) CreateKeys()
     {
-        using (var rsa = new RSACryptoServiceProvider(_keySize))
-        {
-            try
-            {
-                rsa.PersistKeyInCsp = false;
-                var publicKey = GetPublicKey(rsa);
-                var privateKey = GetPrivateKey(rsa);
-                return (publicKey, privateKey);
-            }
-            finally
-            {
-                rsa.Clear();
-            }
-        }
+        using var rsa = RSA.Create(_keySize);
+        return (rsa.ExportSubjectPublicKeyInfo(), rsa.ExportPkcs8PrivateKey());
     }
 
-    public bool IsKeyValid(string publicKey, string privateKey)
+    public bool IsKeyValid(ReadOnlySpan<byte> publicKey, ReadOnlySpan<byte> privateKey)
     {
         try
         {
-            using (var rsa = new RSACryptoServiceProvider())
+            using var rsa = RSA.Create();
+
+            rsa.ImportSubjectPublicKeyInfo(publicKey, out _);
+            if (!rsa.ExportSubjectPublicKeyInfo().AsSpan().SequenceEqual(publicKey))
             {
-                var publicKeyBytes = Convert.FromBase64String(publicKey);
-                var privateKeyBytes = Convert.FromBase64String(privateKey);
-
-                rsa.ImportSubjectPublicKeyInfo(publicKeyBytes, out _);
-                var testPublicKey = GetPublicKey(rsa);
-
-                rsa.ImportPkcs8PrivateKey(privateKeyBytes, out _);
-                var testPrivateKey = GetPrivateKey(rsa);
-
-
-                return testPublicKey == publicKey &&
-                       testPrivateKey == privateKey;
+                return false;
             }
+
+            rsa.ImportPkcs8PrivateKey(privateKey, out _);
+            return rsa.ExportPkcs8PrivateKey().AsSpan().SequenceEqual(privateKey);
         }
         catch
         {
             return false;
         }
-    }
-
-    private static string GetPrivateKey(RSACryptoServiceProvider rsa)
-    {
-        return Convert.ToBase64String(rsa.ExportPkcs8PrivateKey());
-    }
-
-    private static string GetPublicKey(RSACryptoServiceProvider rsa)
-    {
-        return Convert.ToBase64String(rsa.ExportSubjectPublicKeyInfo());
     }
 }
