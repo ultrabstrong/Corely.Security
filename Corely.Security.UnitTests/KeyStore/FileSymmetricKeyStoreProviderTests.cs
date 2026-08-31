@@ -34,13 +34,23 @@ public class FileSymmetricKeyStoreProviderTests
         Assert.Equal(1, version);
     }
 
+    [Fact]
+    public void Get_ReturnsTheKey_ForTheOnlyVersion()
+    {
+        var key = _fileKeyStoreProvider.Get(1);
+        Assert.Equal(_fileKey, key);
+    }
+
     [Theory]
     [InlineData(0)]
-    [InlineData(1)]
     [InlineData(2)]
-    public void Get_ReturnsVersion1_WithAnyVersion(int version)
+    [InlineData(99)]
+    public void Get_Throws_ForAnyOtherVersion(int version)
     {
-        var key = _fileKeyStoreProvider.Get(version);
-        Assert.Equal(_fileKey, key);
+        var ex = Record.Exception(() => _fileKeyStoreProvider.Get(version));
+
+        Assert.NotNull(ex);
+        Assert.IsType<KeyStoreException>(ex);
+        Assert.Equal(KeyStoreException.ErrorReason.InvalidVersion, ((KeyStoreException)ex).Reason);
     }
 }

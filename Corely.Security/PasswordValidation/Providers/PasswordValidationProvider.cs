@@ -29,9 +29,6 @@ public sealed class PasswordValidationProvider : IPasswordValidationProvider
         if (_options.RequireNonAlphanumeric) patternBuilder.Append("(?=.*[^A-Za-z0-9])");
         patternBuilder.Append($".{{{_options.MinimumLength},{_options.MaximumLength}}}$");
 
-        // Singleline so '.' matches newlines. Without it a password containing a line break fails
-        // the pattern while the detailed pass finds nothing wrong, producing an invalid result
-        // with no stated reason.
         return new Regex(patternBuilder.ToString(), RegexOptions.Singleline);
     }
 

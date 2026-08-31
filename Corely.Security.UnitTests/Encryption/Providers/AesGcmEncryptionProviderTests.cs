@@ -36,10 +36,6 @@ public class AesGcmEncryptionProviderTests : SymmetricEncryptionProviderGenericT
     public override ISymmetricEncryptionProvider GetEncryptionProvider() =>
         new AesGcmEncryptionProvider();
 
-    /// <summary>
-    /// The property that distinguishes GCM from CBC, and the reason to prefer it: altering the
-    /// ciphertext is detected rather than silently producing different plaintext.
-    /// </summary>
     [Fact]
     public void Decrypt_Throws_WhenCiphertextIsTampered()
     {
@@ -59,7 +55,6 @@ public class AesGcmEncryptionProviderTests : SymmetricEncryptionProviderGenericT
 
         var parts = encrypted.Split(':');
         var payload = Convert.FromBase64String(parts[2]);
-        // The tag sits immediately after the 12-byte nonce.
         payload[12] ^= 0xFF;
         var tampered = $"{parts[0]}:{parts[1]}:{Convert.ToBase64String(payload)}";
 

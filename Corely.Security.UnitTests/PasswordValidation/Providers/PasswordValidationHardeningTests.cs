@@ -5,10 +5,6 @@ using Microsoft.Extensions.Options;
 
 namespace Corely.Security.UnitTests.PasswordValidation.Providers;
 
-/// <summary>
-/// An upper bound matters more now that password hashing is deliberately slow: without one, an
-/// arbitrarily long submitted password turns the work factor into a denial-of-service lever.
-/// </summary>
 public class PasswordValidationHardeningTests
 {
     private static PasswordValidationProvider CreateProvider(
@@ -70,11 +66,6 @@ public class PasswordValidationHardeningTests
         Assert.True(result.IsSuccess);
     }
 
-    /// <summary>
-    /// Previously the pattern rejected any password containing a line break while the detailed
-    /// pass found nothing wrong, yielding an invalid result with an empty failure list - the user
-    /// would be told no more than "invalid".
-    /// </summary>
     [Fact]
     public void ValidatePassword_WithANewline_ReportsAReasonOrPasses()
     {

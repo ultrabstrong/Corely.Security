@@ -35,7 +35,6 @@ internal sealed class RandomKeyProvider : ISymmetricKeyProvider
             return false;
         }
 
-        // A validity check must answer the question, not throw it back at the caller.
         try
         {
             return Convert.FromBase64String(key).Length == _keySize;

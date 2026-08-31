@@ -5,8 +5,6 @@ namespace Corely.Security.UnitTests.Hashing.Providers;
 
 public class Pbkdf2HashProviderTests : SaltedHashProviderGenericTests
 {
-    // A low work factor keeps the shared provider suite fast. The production default is asserted
-    // separately rather than paid for on every case.
     private const int TEST_ITERATIONS = 1_000;
 
     private readonly Pbkdf2HashProvider _provider = new(TEST_ITERATIONS);
@@ -53,8 +51,6 @@ public class Pbkdf2HashProviderTests : SaltedHashProviderGenericTests
         Assert.Throws<HashException>(() => new Pbkdf2HashProvider(-1));
     }
 
-    // --- work factor upgrades ------------------------------------------------------------------
-
     [Fact]
     public void NeedsRehash_IsFalse_ForAHashAtTheCurrentWorkFactor()
     {
@@ -88,7 +84,6 @@ public class Pbkdf2HashProviderTests : SaltedHashProviderGenericTests
     [Fact]
     public void AHashFromAnEarlierWorkFactor_StillVerifies()
     {
-        // The point of storing the iteration count: raising it must not invalidate existing hashes.
         var weak = new Pbkdf2HashProvider(TEST_ITERATIONS / 2).Hash("password");
 
         Assert.True(_provider.Verify("password", weak));
@@ -101,8 +96,6 @@ public class Pbkdf2HashProviderTests : SaltedHashProviderGenericTests
 
         Assert.False(_provider.Verify("password", shaHash));
     }
-
-    // --- malformed input -----------------------------------------------------------------------
 
     [Theory]
     [InlineData("PBKDF2-SHA256:notanumber:AAAA:AAAA")]
@@ -120,7 +113,6 @@ public class Pbkdf2HashProviderTests : SaltedHashProviderGenericTests
 
 file static class Pbkdf2HashProviderExtensions
 {
-    /// <summary>Reads the configured work factor back out of a produced hash.</summary>
     public static int Iterations(this Pbkdf2HashProvider provider) =>
         int.Parse(provider.Hash("probe").Split(':')[1]);
 }

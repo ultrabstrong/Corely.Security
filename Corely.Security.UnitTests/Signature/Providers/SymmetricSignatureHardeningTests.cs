@@ -4,10 +4,6 @@ using Corely.Security.Signature.Providers;
 
 namespace Corely.Security.UnitTests.Signature.Providers;
 
-/// <summary>
-/// Covers the two symmetric-signature defects: verification that broke on key rotation, and a
-/// non-constant-time comparison in a place where the caller controls the value being compared.
-/// </summary>
 public class SymmetricSignatureHardeningTests
 {
     private const string Data = "message-to-authenticate";
@@ -71,10 +67,6 @@ public class SymmetricSignatureHardeningTests
         Assert.False(_provider.Verify(Data, Convert.ToBase64String(bytes), keyStore));
     }
 
-    /// <summary>
-    /// A malformed signature is attacker-supplied input on the verification path. It must fail
-    /// closed, not throw FormatException out of base64 decoding.
-    /// </summary>
     [Theory]
     [InlineData("")]
     [InlineData("!!!not-base64!!!")]
@@ -98,7 +90,6 @@ public class SymmetricSignatureHardeningTests
     private static InMemorySymmetricKeyStoreProvider CreateKeyStore() =>
         new(new RandomKeyProviderProxy().CreateKey());
 
-    /// <summary>RandomKeyProvider is internal; this keeps the test to the public surface.</summary>
     private sealed class RandomKeyProviderProxy
     {
         public string CreateKey() =>

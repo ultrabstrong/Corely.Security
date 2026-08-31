@@ -37,14 +37,24 @@ public class FileAsymmetricKeyStoreProviderTests
         Assert.Equal(1, version);
     }
 
-    [Theory]
-    [InlineData(0)]
-    [InlineData(1)]
-    [InlineData(2)]
-    public void Get_ReturnsVersion1_WithAnyVersion(int version)
+    [Fact]
+    public void Get_ReturnsTheKeys_ForTheOnlyVersion()
     {
-        var (publicKey, privateKey) = _fileKeyStoreProvider.Get(version);
+        var (publicKey, privateKey) = _fileKeyStoreProvider.Get(1);
         Assert.Equal(_filePublicKey, publicKey);
         Assert.Equal(_filePrivateKey, privateKey);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(2)]
+    [InlineData(99)]
+    public void Get_Throws_ForAnyOtherVersion(int version)
+    {
+        var ex = Record.Exception(() => _fileKeyStoreProvider.Get(version));
+
+        Assert.NotNull(ex);
+        Assert.IsType<KeyStoreException>(ex);
+        Assert.Equal(KeyStoreException.ErrorReason.InvalidVersion, ((KeyStoreException)ex).Reason);
     }
 }

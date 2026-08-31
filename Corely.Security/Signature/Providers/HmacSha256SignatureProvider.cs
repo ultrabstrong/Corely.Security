@@ -27,7 +27,6 @@ public sealed class HmacSha256SignatureProvider : SymmetricSignatureProviderBase
         }
         finally
         {
-            // HMACSHA256 clears its own copy on dispose; this clears ours.
             CryptographicOperations.ZeroMemory(keyBytes);
         }
     }
@@ -52,9 +51,6 @@ public sealed class HmacSha256SignatureProvider : SymmetricSignatureProviderBase
             using var hmac = new HMACSHA256(keyBytes);
             var computedSignatureBytes = hmac.ComputeHash(dataToVerify);
 
-            // Constant-time comparison is essential here, not merely good practice: the caller
-            // supplies the signature, so a short-circuiting comparison lets an attacker discover
-            // it one byte at a time and forge a valid MAC.
             return CryptographicOperations.FixedTimeEquals(
                 signatureBytes,
                 computedSignatureBytes

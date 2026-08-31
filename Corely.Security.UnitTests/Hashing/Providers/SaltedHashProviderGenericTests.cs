@@ -79,11 +79,6 @@ public abstract class SaltedHashProviderGenericTests
         Assert.False(isVerified);
     }
 
-    /// <summary>
-    /// A corrupted stored hash must fail verification, not throw. Base64 decoding of a mangled
-    /// value throws FormatException, which previously escaped straight out of the authentication
-    /// path.
-    /// </summary>
     [Theory]
     [InlineData("")]
     [InlineData("not-a-hash-at-all")]
@@ -105,7 +100,6 @@ public abstract class SaltedHashProviderGenericTests
         var value = _fixture.Create<string>();
         var hash = HashProvider.Hash(value);
 
-        // Replace the payload with something that is not valid base64.
         var corrupted = $"{HashProvider.ProviderName}:!!!not-base64!!!";
 
         var isVerified = HashProvider.Verify(value, corrupted);

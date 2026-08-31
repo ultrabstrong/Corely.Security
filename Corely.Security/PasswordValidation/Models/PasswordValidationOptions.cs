@@ -4,9 +4,6 @@ public record PasswordValidationOptions
 {
     public const string NAME = "PasswordValidationOptions";
 
-    /// <summary>Default upper bound. Well above any real password, and low enough that a
-    /// deliberately slow password hash cannot be turned into a denial-of-service vector by
-    /// submitting a multi-megabyte input.</summary>
     public const int DEFAULT_MAXIMUM_LENGTH = 128;
 
     public int MinimumLength { get; init; } = 5;

@@ -3,21 +3,8 @@ using System.Text;
 
 namespace Corely.Security.Hashing.Providers;
 
-/// <summary>
-/// PBKDF2-HMAC-SHA256 password hashing.
-///
-/// Unlike the salted SHA providers, this is deliberately slow. Salting alone only prevents
-/// rainbow tables and cross-account amortisation; it does nothing against per-user offline brute
-/// force, and a single SHA-256 round is fast enough that commodity hardware tries billions of
-/// candidates per second. A tunable work factor is what makes a leaked hash expensive to attack.
-///
-/// Format: <c>PBKDF2-SHA256:{iterations}:{Base64(salt)}:{Base64(hash)}</c>. The iteration count is
-/// stored per hash so it can be raised later without invalidating existing hashes - callers
-/// upgrade them via <see cref="NeedsRehash"/> on the next successful verification.
-/// </summary>
 public sealed class Pbkdf2HashProvider : IHashProvider
 {
-    /// <summary>OWASP's current floor for PBKDF2-HMAC-SHA256.</summary>
     public const int DEFAULT_ITERATIONS = 600_000;
 
     private const int SALT_SIZE = 16;
@@ -84,10 +71,6 @@ public sealed class Pbkdf2HashProvider : IHashProvider
             HASH_SIZE
         );
 
-    /// <summary>
-    /// Parses without throwing. A malformed or corrupted stored hash must produce a failed
-    /// verification, never an exception escaping the authentication path.
-    /// </summary>
     private bool TryParse(string hash, out int iterations, out byte[] salt, out byte[] expected)
     {
         iterations = 0;

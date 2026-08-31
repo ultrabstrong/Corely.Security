@@ -4,16 +4,6 @@ using Corely.Security.Keys;
 
 namespace Corely.Security.Encryption.Providers;
 
-/// <summary>
-/// AES-256-GCM authenticated encryption.
-///
-/// Preferred over <see cref="AesEncryptionProvider"/> for anything new. CBC provides
-/// confidentiality but no integrity: an attacker can alter ciphertext without detection, and
-/// distinguishable decryption failures are what a padding oracle exploits. GCM authenticates the
-/// ciphertext, so tampering fails closed.
-///
-/// Format: Base64([12-byte nonce | 16-byte tag | ciphertext]).
-/// </summary>
 public sealed class AesGcmEncryptionProvider : SymmetricEncryptionProviderBase
 {
     private const int NONCE_SIZE = 12;
@@ -45,7 +35,6 @@ public sealed class AesGcmEncryptionProvider : SymmetricEncryptionProviderBase
         }
         finally
         {
-            // AesGcm clears its own copy on dispose; this clears ours.
             CryptographicOperations.ZeroMemory(keyBytes);
             CryptographicOperations.ZeroMemory(plaintext);
         }
@@ -79,7 +68,6 @@ public sealed class AesGcmEncryptionProvider : SymmetricEncryptionProviderBase
         try
         {
             using var aesGcm = new AesGcm(keyBytes, TAG_SIZE);
-            // Throws AuthenticationTagMismatchException if the ciphertext or tag was altered.
             aesGcm.Decrypt(nonce, ciphertext, tag, plaintext);
             return Encoding.UTF8.GetString(plaintext);
         }

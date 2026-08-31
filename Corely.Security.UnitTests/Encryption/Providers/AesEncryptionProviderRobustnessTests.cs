@@ -5,10 +5,6 @@ using Corely.Security.KeyStore;
 
 namespace Corely.Security.UnitTests.Encryption.Providers;
 
-/// <summary>
-/// A ciphertext shorter than the IV previously produced a negative array length rather than a
-/// clean failure.
-/// </summary>
 public class AesEncryptionProviderRobustnessTests
 {
     private readonly AesEncryptionProvider _provider = new();
