@@ -24,7 +24,12 @@ Validation helpers:
 ```csharp
 var valid = encProvider.GetSymmetricKeyProvider().IsKeyValid(symKey);
 ```
-Note: Keys are returned Base64-encoded; treat them as opaque—length indicates raw byte size only.
+Note: Keys are returned as `byte[]`. The caller owns the array and should zero it with
+`CryptographicOperations.ZeroMemory` once it has been persisted. Key material is never
+materialised as a `string` inside the library, because a string cannot be zeroed and
+survives in the heap until collected. Where a key arrives Base64-encoded - configuration,
+an environment variable, a database column - the in-memory key stores take a `string`
+overload; that string is the caller's to manage.
 
 Production note: For real deployments implement a custom key provider that sources material from a managed KMS / HSM / vault and plugs in via the existing provider interfaces (instead of in-memory demo providers).
 
