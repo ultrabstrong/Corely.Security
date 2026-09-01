@@ -2,6 +2,8 @@
 Corely.Security gives you small plug-in style building blocks for application "lock and key" needs. You ask a factory for a provider (hashing, encryption, signatures). That provider uses a key (from a key provider) fetched through a versioned key store so you can rotate keys later. Hashes and encrypted values come back self-describing (they start with the provider name, and for encryption a key version) so the library can figure out how to verify or decrypt them later without you tracking metadata; signatures are returned bare. You can plug in custom providers or real key management backends, and everything wires cleanly through dependency injection.
 
 
+> **Upgrading to 3.x?** 3.0 targets `net10.0` and drops `net8.0`; there are no API changes.
+>
 > **Upgrading from 1.x?** See [MIGRATION-2.0.md](MIGRATION-2.0.md). Key material moved from
 > Base64 `string` to `byte[]`/`ReadOnlySpan<byte>`, and custom providers now pass their name to
 > the base constructor. Data written by 1.x stays readable.
