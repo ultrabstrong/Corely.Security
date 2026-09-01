@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <OutputType>Exe</OutputType>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -11,10 +11,6 @@
 
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.18.1" />
-    <!-- AutoFixture reaches these through NETStandard.Library 1.6.1 at 4.3.0, which carries
-         High advisories. Pinning collapses the transitive resolution to the patched versions. -->
-    <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
     <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.10.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
     <PackageReference Include="Moq" Version="4.20.72" />
