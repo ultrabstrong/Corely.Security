@@ -9,7 +9,9 @@ namespace Corely.Security.UnitTests.Encryption.Factories;
 public class AsymmetricEncryptionProviderFactoryTests
 {
     private const string DEFAULT_PROVIDER_CODE = AsymmetricEncryptionConstants.RSA_CODE;
-    private readonly AsymmetricEncryptionProviderFactory _encryptionProviderFactory = new(DEFAULT_PROVIDER_CODE);
+    private readonly AsymmetricEncryptionProviderFactory _encryptionProviderFactory = new(
+        DEFAULT_PROVIDER_CODE
+    );
     private readonly Fixture _fixture = new();
 
     [Fact]
@@ -31,7 +33,9 @@ public class AsymmetricEncryptionProviderFactoryTests
         var provider = new Mock<IAsymmetricEncryptionProvider>().Object;
 
         _encryptionProviderFactory.AddProvider(providerCode, provider);
-        var ex = Record.Exception(() => _encryptionProviderFactory.AddProvider(providerCode, provider));
+        var ex = Record.Exception(() =>
+            _encryptionProviderFactory.AddProvider(providerCode, provider)
+        );
 
         Assert.NotNull(ex);
         Assert.IsType<EncryptionException>(ex);
@@ -44,12 +48,14 @@ public class AsymmetricEncryptionProviderFactoryTests
     {
         var provider = new Mock<IAsymmetricEncryptionProvider>().Object;
 
-        var ex = Record.Exception(() => _encryptionProviderFactory.AddProvider(providerCode, provider));
+        var ex = Record.Exception(() =>
+            _encryptionProviderFactory.AddProvider(providerCode, provider)
+        );
 
         Assert.NotNull(ex);
-        Assert.True(ex is ArgumentNullException
-            || ex is ArgumentException
-            || ex is EncryptionException);
+        Assert.True(
+            ex is ArgumentNullException || ex is ArgumentException || ex is EncryptionException
+        );
     }
 
     [Fact]
@@ -57,7 +63,9 @@ public class AsymmetricEncryptionProviderFactoryTests
     {
         var providerCode = _fixture.Create<string>();
 
-        var ex = Record.Exception(() => _encryptionProviderFactory.AddProvider(providerCode, null!));
+        var ex = Record.Exception(() =>
+            _encryptionProviderFactory.AddProvider(providerCode, null!)
+        );
 
         Assert.NotNull(ex);
         Assert.IsType<ArgumentNullException>(ex);
@@ -83,7 +91,9 @@ public class AsymmetricEncryptionProviderFactoryTests
         var providerCode = _fixture.Create<string>();
         var provider = new Mock<IAsymmetricEncryptionProvider>().Object;
 
-        var ex = Record.Exception(() => _encryptionProviderFactory.UpdateProvider(providerCode, provider));
+        var ex = Record.Exception(() =>
+            _encryptionProviderFactory.UpdateProvider(providerCode, provider)
+        );
 
         Assert.NotNull(ex);
         Assert.IsType<EncryptionException>(ex);
@@ -96,12 +106,14 @@ public class AsymmetricEncryptionProviderFactoryTests
     {
         var provider = new Mock<IAsymmetricEncryptionProvider>().Object;
 
-        var ex = Record.Exception(() => _encryptionProviderFactory.UpdateProvider(providerCode, provider));
+        var ex = Record.Exception(() =>
+            _encryptionProviderFactory.UpdateProvider(providerCode, provider)
+        );
 
         Assert.NotNull(ex);
-        Assert.True(ex is ArgumentNullException
-            || ex is ArgumentException
-            || ex is EncryptionException);
+        Assert.True(
+            ex is ArgumentNullException || ex is ArgumentException || ex is EncryptionException
+        );
     }
 
     [Fact]
@@ -109,7 +121,9 @@ public class AsymmetricEncryptionProviderFactoryTests
     {
         var providerCode = _fixture.Create<string>();
 
-        var ex = Record.Exception(() => _encryptionProviderFactory.UpdateProvider(providerCode, null!));
+        var ex = Record.Exception(() =>
+            _encryptionProviderFactory.UpdateProvider(providerCode, null!)
+        );
 
         Assert.NotNull(ex);
         Assert.IsType<ArgumentNullException>(ex);
@@ -141,16 +155,18 @@ public class AsymmetricEncryptionProviderFactoryTests
         var ex = Record.Exception(() => _encryptionProviderFactory.GetProvider(code));
 
         Assert.NotNull(ex);
-        Assert.True(ex is ArgumentNullException
-            || ex is ArgumentException
-            || ex is EncryptionException);
+        Assert.True(
+            ex is ArgumentNullException || ex is ArgumentException || ex is EncryptionException
+        );
     }
 
     [Theory, MemberData(nameof(GetProviderData))]
     public void GetProviderForDecrypting_ReturnsEncryptionProvider(string code, Type expectedType)
     {
         var encryptedValue = $"{code}:1:{_fixture.Create<string>()}";
-        var encryptionProvider = _encryptionProviderFactory.GetProviderForDecrypting(encryptedValue);
+        var encryptionProvider = _encryptionProviderFactory.GetProviderForDecrypting(
+            encryptedValue
+        );
 
         Assert.NotNull(encryptionProvider);
         Assert.IsType(expectedType, encryptionProvider);
@@ -165,9 +181,9 @@ public class AsymmetricEncryptionProviderFactoryTests
         var ex = Record.Exception(() => _encryptionProviderFactory.GetProviderForDecrypting(code));
 
         Assert.NotNull(ex);
-        Assert.True(ex is ArgumentNullException
-            || ex is ArgumentException
-            || ex is EncryptionException);
+        Assert.True(
+            ex is ArgumentNullException || ex is ArgumentException || ex is EncryptionException
+        );
     }
 
     [Fact]
@@ -189,6 +205,10 @@ public class AsymmetricEncryptionProviderFactoryTests
 
     public static IEnumerable<object[]> GetProviderData()
     {
-        yield return new object[] { AsymmetricEncryptionConstants.RSA_CODE, typeof(RsaEncryptionProvider) };
+        yield return new object[]
+        {
+            AsymmetricEncryptionConstants.RSA_CODE,
+            typeof(RsaEncryptionProvider),
+        };
     }
 }

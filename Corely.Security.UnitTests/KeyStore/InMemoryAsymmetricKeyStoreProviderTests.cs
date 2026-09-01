@@ -1,5 +1,5 @@
-using Corely.Security.KeyStore;
 using Corely.Security.Keys;
+using Corely.Security.KeyStore;
 
 namespace Corely.Security.UnitTests.KeyStore;
 

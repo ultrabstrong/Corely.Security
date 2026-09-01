@@ -1,5 +1,5 @@
-﻿using Corely.Security.Encryption.Providers;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
+using Corely.Security.Encryption.Providers;
 
 namespace Corely.Security.Encryption.Factories;
 
@@ -26,9 +26,11 @@ public class AsymmetricEncryptionProviderFactory : IAsymmetricEncryptionProvider
 
         if (_providers.ContainsKey(providerCode))
         {
-            throw new EncryptionException($"Asymmetric encryption provider code already exists: {providerCode}")
+            throw new EncryptionException(
+                $"Asymmetric encryption provider code already exists: {providerCode}"
+            )
             {
-                Reason = EncryptionException.ErrorReason.InvalidTypeCode
+                Reason = EncryptionException.ErrorReason.InvalidTypeCode,
             };
         }
 
@@ -43,9 +45,11 @@ public class AsymmetricEncryptionProviderFactory : IAsymmetricEncryptionProvider
 
         if (!_providers.ContainsKey(providerCode))
         {
-            throw new EncryptionException($"Asymmetric encryption provider code not found: {providerCode}")
+            throw new EncryptionException(
+                $"Asymmetric encryption provider code not found: {providerCode}"
+            )
             {
-                Reason = EncryptionException.ErrorReason.InvalidTypeCode
+                Reason = EncryptionException.ErrorReason.InvalidTypeCode,
             };
         }
 
@@ -59,7 +63,7 @@ public class AsymmetricEncryptionProviderFactory : IAsymmetricEncryptionProvider
         {
             throw new EncryptionException($"Asymmetric encryption type code cannot contain ':'")
             {
-                Reason = EncryptionException.ErrorReason.InvalidTypeCode
+                Reason = EncryptionException.ErrorReason.InvalidTypeCode,
             };
         }
     }
@@ -71,9 +75,11 @@ public class AsymmetricEncryptionProviderFactory : IAsymmetricEncryptionProvider
         ArgumentException.ThrowIfNullOrWhiteSpace(providerCode, nameof(providerCode));
         if (!_providers.TryGetValue(providerCode, out IAsymmetricEncryptionProvider? value))
         {
-            throw new EncryptionException($"Asymmetric encryption provider code not found: {providerCode}")
+            throw new EncryptionException(
+                $"Asymmetric encryption provider code not found: {providerCode}"
+            )
             {
-                Reason = EncryptionException.ErrorReason.InvalidTypeCode
+                Reason = EncryptionException.ErrorReason.InvalidTypeCode,
             };
         }
 
@@ -91,9 +97,7 @@ public class AsymmetricEncryptionProviderFactory : IAsymmetricEncryptionProvider
     public List<(string ProviderCode, Type ProviderType)> ListProviders()
     {
         return _providers
-            .Select(kvp => (
-                ProviderCode: kvp.Key,
-                ProviderType: kvp.Value.GetType()))
+            .Select(kvp => (ProviderCode: kvp.Key, ProviderType: kvp.Value.GetType()))
             .ToList();
     }
 }

@@ -1,8 +1,8 @@
-﻿using Corely.Security.Keys;
+﻿using System.Security.Cryptography;
+using Corely.Security.Keys;
 using Corely.Security.Signature;
 using Corely.Security.Signature.Providers;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography;
 
 namespace Corely.Security.UnitTests.Signature.Providers;
 
@@ -13,7 +13,10 @@ public class ECDsaSignatureProviderTests : AsymmetricSignatureProviderGenericTes
     [Fact]
     public override void ProviderName_ReturnsCorrectValue_ForImplementation()
     {
-        Assert.Equal(AsymmetricSignatureConstants.ECDSA_SHA256_CODE, _ecDsaSignatureProvider.ProviderName);
+        Assert.Equal(
+            AsymmetricSignatureConstants.ECDSA_SHA256_CODE,
+            _ecDsaSignatureProvider.ProviderName
+        );
     }
 
     [Fact]
@@ -37,9 +40,13 @@ public class ECDsaSignatureProviderTests : AsymmetricSignatureProviderGenericTes
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public void GetSigningCredentials_ReturnsCorrectSigningCredentials_ForImplementation(bool isKeyPrivate)
+    public void GetSigningCredentials_ReturnsCorrectSigningCredentials_ForImplementation(
+        bool isKeyPrivate
+    )
     {
-        var (publicKey, privateKey) = _ecDsaSignatureProvider.GetAsymmetricKeyProvider().CreateKeys();
+        var (publicKey, privateKey) = _ecDsaSignatureProvider
+            .GetAsymmetricKeyProvider()
+            .CreateKeys();
 
         var signingCredentials = isKeyPrivate
             ? _ecDsaSignatureProvider.GetSigningCredentials(privateKey, true)

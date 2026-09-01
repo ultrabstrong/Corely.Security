@@ -53,7 +53,11 @@ public abstract class SymmetricSignatureProviderGenericTests
         var data = _fixture.Create<string>();
         var signature = _signatureProvider.Sign(data, _keyStoreProvider);
 
-        var result = _signatureProvider.Verify(_fixture.Create<string>(), signature, _keyStoreProvider);
+        var result = _signatureProvider.Verify(
+            _fixture.Create<string>(),
+            signature,
+            _keyStoreProvider
+        );
 
         Assert.False(result);
     }
@@ -86,7 +90,9 @@ public abstract class SymmetricSignatureProviderGenericTests
     [Fact]
     public void Verify_Throws_WithNullData()
     {
-        var ex = Record.Exception(() => _signatureProvider.Verify(null!, _fixture.Create<string>(), _keyStoreProvider));
+        var ex = Record.Exception(() =>
+            _signatureProvider.Verify(null!, _fixture.Create<string>(), _keyStoreProvider)
+        );
         Assert.NotNull(ex);
         Assert.IsType<ArgumentNullException>(ex);
     }

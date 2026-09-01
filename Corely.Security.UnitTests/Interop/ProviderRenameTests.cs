@@ -1,8 +1,8 @@
 using Corely.Security.Encryption;
 using Corely.Security.Encryption.Factories;
 using Corely.Security.Encryption.Providers;
-using Corely.Security.KeyStore;
 using Corely.Security.Keys;
+using Corely.Security.KeyStore;
 
 namespace Corely.Security.UnitTests.Interop;
 
@@ -69,8 +69,8 @@ public class ProviderRenameTests
     [InlineData("name:1")]
     public void AMalformedValueIsStillRejected(string value)
     {
-        Assert.Throws<EncryptionException>(
-            () => new AesGcmEncryptionProvider().Decrypt(value, KeyStore())
+        Assert.Throws<EncryptionException>(() =>
+            new AesGcmEncryptionProvider().Decrypt(value, KeyStore())
         );
     }
 }

@@ -1,7 +1,7 @@
 using System.Text;
 using AutoFixture;
-using Corely.Security.KeyStore;
 using Corely.Security.Keys;
+using Corely.Security.KeyStore;
 using Moq.Protected;
 
 namespace Corely.Security.UnitTests.KeyStore;

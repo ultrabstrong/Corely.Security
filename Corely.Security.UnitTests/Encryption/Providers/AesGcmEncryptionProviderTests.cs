@@ -76,8 +76,7 @@ public class AesGcmEncryptionProviderTests : SymmetricEncryptionProviderGenericT
     public void Decrypt_Throws_WhenPayloadIsTooShortForNonceAndTag()
     {
         var keyStore = CreateKeyStore();
-        var truncated =
-            $"{_provider.ProviderName}:1:{Convert.ToBase64String(new byte[8])}";
+        var truncated = $"{_provider.ProviderName}:1:{Convert.ToBase64String(new byte[8])}";
 
         var ex = Record.Exception(() => _provider.Decrypt(truncated, keyStore));
 

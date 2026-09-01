@@ -1,8 +1,8 @@
 using System.Security.Cryptography;
 using Corely.Security.Encryption;
 using Corely.Security.Encryption.Factories;
-using Corely.Security.KeyStore;
 using Corely.Security.Encryption.Providers;
+using Corely.Security.KeyStore;
 using Corely.Security.Signature;
 using Corely.Security.Signature.Factories;
 using Corely.Security.Signature.Providers;
@@ -37,7 +37,10 @@ public class ProviderNamingTests
     [InlineData("SHA512", "ECDSA-SHA512")]
     public void Ecdsa_NameReflectsTheConfiguredHash(string hash, string expected)
     {
-        Assert.Equal(expected, new ECDsaSignatureProvider(new HashAlgorithmName(hash)).ProviderName);
+        Assert.Equal(
+            expected,
+            new ECDsaSignatureProvider(new HashAlgorithmName(hash)).ProviderName
+        );
     }
 
     [Theory]
@@ -81,14 +84,18 @@ public class ProviderNamingTests
     [Fact]
     public void TheFactoryStillResolvesLegacyNames()
     {
-        var encryption = new AsymmetricEncryptionProviderFactory(AsymmetricEncryptionConstants.RSA_CODE);
+        var encryption = new AsymmetricEncryptionProviderFactory(
+            AsymmetricEncryptionConstants.RSA_CODE
+        );
 
         Assert.Same(
             encryption.GetProvider(AsymmetricEncryptionConstants.RSA_CODE),
             encryption.GetProvider(AsymmetricEncryptionConstants.LEGACY_RSA_CODE)
         );
 
-        var signature = new AsymmetricSignatureProviderFactory(AsymmetricSignatureConstants.ECDSA_SHA256_CODE);
+        var signature = new AsymmetricSignatureProviderFactory(
+            AsymmetricSignatureConstants.ECDSA_SHA256_CODE
+        );
 
         Assert.Same(
             signature.GetProvider(AsymmetricSignatureConstants.ECDSA_SHA256_CODE),
@@ -104,7 +111,9 @@ public class ProviderNamingTests
     [Fact]
     public void AValueEncryptedUnderTheLegacyNameStillDecrypts()
     {
-        var factory = new AsymmetricEncryptionProviderFactory(AsymmetricEncryptionConstants.RSA_CODE);
+        var factory = new AsymmetricEncryptionProviderFactory(
+            AsymmetricEncryptionConstants.RSA_CODE
+        );
         var provider = factory.GetDefaultProvider();
         var (pub, priv) = provider.GetAsymmetricKeyProvider().CreateKeys();
         var keyStore = new InMemoryAsymmetricKeyStoreProvider(pub, priv);

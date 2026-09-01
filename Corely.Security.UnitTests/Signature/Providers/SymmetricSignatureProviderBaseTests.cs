@@ -31,6 +31,7 @@ public class SymmetricSignatureProviderBaseTests : SymmetricSignatureProviderGen
         private string lastSignature = string.Empty;
 
         public override ISymmetricKeyProvider GetSymmetricKeyProvider() => _mockKeyProvider;
+
         public override SigningCredentials GetSigningCredentials(ReadOnlySpan<byte> key) => null!;
 
         protected override string SignInternal(string value, ReadOnlySpan<byte> key)
@@ -40,7 +41,11 @@ public class SymmetricSignatureProviderBaseTests : SymmetricSignatureProviderGen
             return lastSignature;
         }
 
-        protected override bool VerifyInternal(string value, string signature, ReadOnlySpan<byte> key) =>
+        protected override bool VerifyInternal(
+            string value,
+            string signature,
+            ReadOnlySpan<byte> key
+        ) =>
             lastValue == value
             && lastSignature == signature
             && lastSignature.EndsWith(Convert.ToBase64String(key));
@@ -52,37 +57,40 @@ public class SymmetricSignatureProviderBaseTests : SymmetricSignatureProviderGen
             : base(providerName) { }
 
         public override ISymmetricKeyProvider GetSymmetricKeyProvider() => null!;
+
         public override SigningCredentials GetSigningCredentials(ReadOnlySpan<byte> key) => null!;
+
         protected override string SignInternal(string value, ReadOnlySpan<byte> key) => value;
-        protected override bool VerifyInternal(string value, string signature, ReadOnlySpan<byte> key) => false;
+
+        protected override bool VerifyInternal(
+            string value,
+            string signature,
+            ReadOnlySpan<byte> key
+        ) => false;
     }
 
     private class NullMockSignatureProvider : MockSymmetricSignatureProviderBase
     {
         public NullMockSignatureProvider()
             : base(null!) { }
-
     }
 
     private class EmptyMockSignatureProvider : MockSymmetricSignatureProviderBase
     {
         public EmptyMockSignatureProvider()
             : base(string.Empty) { }
-
     }
 
     private class WhitespaceMockSignatureProvider : MockSymmetricSignatureProviderBase
     {
         public WhitespaceMockSignatureProvider()
             : base(" ") { }
-
     }
 
     private class ColonMockSignatureProvider : MockSymmetricSignatureProviderBase
     {
         public ColonMockSignatureProvider()
             : base("as:df") { }
-
     }
 
     private const string TEST_PROVIDER_NAME = "00";

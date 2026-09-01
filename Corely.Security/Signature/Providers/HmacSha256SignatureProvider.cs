@@ -1,7 +1,7 @@
-﻿using Corely.Security.Keys;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
+using Corely.Security.Keys;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Corely.Security.Signature.Providers;
 

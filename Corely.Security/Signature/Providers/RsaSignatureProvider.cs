@@ -1,7 +1,7 @@
-﻿using Corely.Security.Keys;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
+using Corely.Security.Keys;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Corely.Security.Signature.Providers;
 
@@ -31,7 +31,11 @@ public sealed class RsaSignatureProvider : AsymmetricSignatureProviderBase
         }
     }
 
-    protected override bool VerifyInternal(string value, string signature, ReadOnlySpan<byte> publicKey)
+    protected override bool VerifyInternal(
+        string value,
+        string signature,
+        ReadOnlySpan<byte> publicKey
+    )
     {
         var dataToVerify = Encoding.UTF8.GetBytes(value);
         var signatureBytes = Convert.FromBase64String(signature);
@@ -39,11 +43,19 @@ public sealed class RsaSignatureProvider : AsymmetricSignatureProviderBase
         using (var rsa = RSA.Create())
         {
             rsa.ImportSubjectPublicKeyInfo(publicKey, out _);
-            return rsa.VerifyData(dataToVerify, signatureBytes, _hashAlgorithm, RSASignaturePadding.Pkcs1);
+            return rsa.VerifyData(
+                dataToVerify,
+                signatureBytes,
+                _hashAlgorithm,
+                RSASignaturePadding.Pkcs1
+            );
         }
     }
 
-    public override SigningCredentials GetSigningCredentials(ReadOnlySpan<byte> key, bool isKeyPrivate)
+    public override SigningCredentials GetSigningCredentials(
+        ReadOnlySpan<byte> key,
+        bool isKeyPrivate
+    )
     {
         var rsa = RSA.Create();
         if (isKeyPrivate)

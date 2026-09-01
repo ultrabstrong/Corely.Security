@@ -1,13 +1,15 @@
-﻿using Corely.Security.Encryption;
+﻿using System.Security.Cryptography;
+using Corely.Security.Encryption;
 using Corely.Security.Encryption.Providers;
 using Corely.Security.Keys;
-using System.Security.Cryptography;
 
 namespace Corely.Security.UnitTests.Encryption.Providers;
 
 public class RsaEncryptionProviderTests : AsymmetricEncryptionProviderGenericTests
 {
-    private readonly RsaEncryptionProvider _rsaEncryptionProvider = new(RSAEncryptionPadding.OaepSHA256);
+    private readonly RsaEncryptionProvider _rsaEncryptionProvider = new(
+        RSAEncryptionPadding.OaepSHA256
+    );
 
     [Fact]
     public override void ProviderName_ReturnsCorrectValue_ForImplementation()
@@ -32,6 +34,7 @@ public class RsaEncryptionProviderTests : AsymmetricEncryptionProviderGenericTes
         Assert.NotNull(keyProvider);
         Assert.IsType<RsaKeyProvider>(keyProvider);
     }
+
     public override IAsymmetricEncryptionProvider GetEncryptionProvider()
     {
         return new RsaEncryptionProvider(RSAEncryptionPadding.OaepSHA256);

@@ -24,7 +24,7 @@ public abstract class SaltedHashProviderBase : IHashProvider
         {
             throw new HashException($"Hash provider name cannot contain ':'")
             {
-                Reason = HashException.ErrorReason.InvalidTypeCode
+                Reason = HashException.ErrorReason.InvalidTypeCode,
             };
         }
 

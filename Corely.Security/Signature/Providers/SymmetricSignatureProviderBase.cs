@@ -23,7 +23,7 @@ public abstract class SymmetricSignatureProviderBase : ISymmetricSignatureProvid
         {
             throw new SignatureException($"Signature provider name cannot contain ':'")
             {
-                Reason = SignatureException.ErrorReason.InvalidTypeCode
+                Reason = SignatureException.ErrorReason.InvalidTypeCode,
             };
         }
 

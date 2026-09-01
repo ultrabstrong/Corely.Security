@@ -24,9 +24,11 @@ public class SymmetricEncryptionProviderFactory : ISymmetricEncryptionProviderFa
 
         if (_providers.ContainsKey(providerCode))
         {
-            throw new EncryptionException($"Symmetric encryption provider code already exists: {providerCode}")
+            throw new EncryptionException(
+                $"Symmetric encryption provider code already exists: {providerCode}"
+            )
             {
-                Reason = EncryptionException.ErrorReason.InvalidTypeCode
+                Reason = EncryptionException.ErrorReason.InvalidTypeCode,
             };
         }
 
@@ -41,9 +43,11 @@ public class SymmetricEncryptionProviderFactory : ISymmetricEncryptionProviderFa
 
         if (!_providers.ContainsKey(providerCode))
         {
-            throw new EncryptionException($"Symmetric encryption provider code not found: {providerCode}")
+            throw new EncryptionException(
+                $"Symmetric encryption provider code not found: {providerCode}"
+            )
             {
-                Reason = EncryptionException.ErrorReason.InvalidTypeCode
+                Reason = EncryptionException.ErrorReason.InvalidTypeCode,
             };
         }
 
@@ -57,7 +61,7 @@ public class SymmetricEncryptionProviderFactory : ISymmetricEncryptionProviderFa
         {
             throw new EncryptionException($"Symmetric encryption type code cannot contain ':'")
             {
-                Reason = EncryptionException.ErrorReason.InvalidTypeCode
+                Reason = EncryptionException.ErrorReason.InvalidTypeCode,
             };
         }
     }
@@ -75,7 +79,7 @@ public class SymmetricEncryptionProviderFactory : ISymmetricEncryptionProviderFa
 
         throw new EncryptionException($"Symmetric encryption provider code unknown: {providerCode}")
         {
-            Reason = EncryptionException.ErrorReason.InvalidTypeCode
+            Reason = EncryptionException.ErrorReason.InvalidTypeCode,
         };
     }
 
@@ -90,9 +94,7 @@ public class SymmetricEncryptionProviderFactory : ISymmetricEncryptionProviderFa
     public List<(string ProviderCode, Type ProviderType)> ListProviders()
     {
         return _providers
-            .Select(kvp => (
-                ProviderCode: kvp.Key,
-                ProviderType: kvp.Value.GetType()))
+            .Select(kvp => (ProviderCode: kvp.Key, ProviderType: kvp.Value.GetType()))
             .ToList();
     }
 }

@@ -2,7 +2,8 @@
 
 namespace Corely.Security.Encryption.Factories;
 
-public interface IAsymmetricEncryptionProviderFactory : IProviderFactory<IAsymmetricEncryptionProvider>
+public interface IAsymmetricEncryptionProviderFactory
+    : IProviderFactory<IAsymmetricEncryptionProvider>
 {
     IAsymmetricEncryptionProvider GetProviderForDecrypting(string value);
 }

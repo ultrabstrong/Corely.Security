@@ -11,15 +11,12 @@ public sealed class KeyStoreException : Exception
 
     public ErrorReason Reason { get; set; } = ErrorReason.Unknown;
 
-    public KeyStoreException() : base()
-    {
-    }
+    public KeyStoreException()
+        : base() { }
 
-    public KeyStoreException(string message) : base(message)
-    {
-    }
+    public KeyStoreException(string message)
+        : base(message) { }
 
-    public KeyStoreException(string message, Exception innerException) : base(message, innerException)
-    {
-    }
+    public KeyStoreException(string message, Exception innerException)
+        : base(message, innerException) { }
 }

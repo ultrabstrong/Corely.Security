@@ -9,7 +9,9 @@ namespace Corely.Security.UnitTests.Signature.Factories;
 public class AsymmetricSignatureProviderFactoryTests
 {
     private const string DEFAULT_PROVIDER_CODE = AsymmetricSignatureConstants.ECDSA_SHA256_CODE;
-    private readonly AsymmetricSignatureProviderFactory _signatureProviderFactory = new(DEFAULT_PROVIDER_CODE);
+    private readonly AsymmetricSignatureProviderFactory _signatureProviderFactory = new(
+        DEFAULT_PROVIDER_CODE
+    );
     private readonly Fixture _fixture = new();
 
     [Fact]
@@ -31,7 +33,9 @@ public class AsymmetricSignatureProviderFactoryTests
         var provider = new Mock<IAsymmetricSignatureProvider>().Object;
 
         _signatureProviderFactory.AddProvider(providerCode, provider);
-        var ex = Record.Exception(() => _signatureProviderFactory.AddProvider(providerCode, provider));
+        var ex = Record.Exception(() =>
+            _signatureProviderFactory.AddProvider(providerCode, provider)
+        );
 
         Assert.NotNull(ex);
         Assert.IsType<SignatureException>(ex);
@@ -44,12 +48,14 @@ public class AsymmetricSignatureProviderFactoryTests
     {
         var provider = new Mock<IAsymmetricSignatureProvider>().Object;
 
-        var ex = Record.Exception(() => _signatureProviderFactory.AddProvider(providerCode, provider));
+        var ex = Record.Exception(() =>
+            _signatureProviderFactory.AddProvider(providerCode, provider)
+        );
 
         Assert.NotNull(ex);
-        Assert.True(ex is ArgumentNullException
-            || ex is ArgumentException
-            || ex is SignatureException);
+        Assert.True(
+            ex is ArgumentNullException || ex is ArgumentException || ex is SignatureException
+        );
     }
 
     [Fact]
@@ -83,7 +89,9 @@ public class AsymmetricSignatureProviderFactoryTests
         var providerCode = _fixture.Create<string>();
         var provider = new Mock<IAsymmetricSignatureProvider>().Object;
 
-        var ex = Record.Exception(() => _signatureProviderFactory.UpdateProvider(providerCode, provider));
+        var ex = Record.Exception(() =>
+            _signatureProviderFactory.UpdateProvider(providerCode, provider)
+        );
 
         Assert.NotNull(ex);
         Assert.IsType<SignatureException>(ex);
@@ -96,12 +104,14 @@ public class AsymmetricSignatureProviderFactoryTests
     {
         var provider = new Mock<IAsymmetricSignatureProvider>().Object;
 
-        var ex = Record.Exception(() => _signatureProviderFactory.UpdateProvider(providerCode, provider));
+        var ex = Record.Exception(() =>
+            _signatureProviderFactory.UpdateProvider(providerCode, provider)
+        );
 
         Assert.NotNull(ex);
-        Assert.True(ex is ArgumentNullException
-            || ex is ArgumentException
-            || ex is SignatureException);
+        Assert.True(
+            ex is ArgumentNullException || ex is ArgumentException || ex is SignatureException
+        );
     }
 
     [Fact]
@@ -109,7 +119,9 @@ public class AsymmetricSignatureProviderFactoryTests
     {
         var providerCode = _fixture.Create<string>();
 
-        var ex = Record.Exception(() => _signatureProviderFactory.UpdateProvider(providerCode, null!));
+        var ex = Record.Exception(() =>
+            _signatureProviderFactory.UpdateProvider(providerCode, null!)
+        );
 
         Assert.NotNull(ex);
         Assert.IsType<ArgumentNullException>(ex);
@@ -142,12 +154,10 @@ public class AsymmetricSignatureProviderFactoryTests
         var ex = Record.Exception(() => _signatureProviderFactory.GetProvider(providerCode));
 
         Assert.NotNull(ex);
-        Assert.True(ex is ArgumentNullException
-            || ex is ArgumentException
-            || ex is SignatureException);
+        Assert.True(
+            ex is ArgumentNullException || ex is ArgumentException || ex is SignatureException
+        );
     }
-
-
 
     [Fact]
     public void ListProviders_ReturnsListOfProviders()
@@ -168,7 +178,15 @@ public class AsymmetricSignatureProviderFactoryTests
 
     public static IEnumerable<object[]> GetProviderData()
     {
-        yield return new object[] { AsymmetricSignatureConstants.ECDSA_SHA256_CODE, typeof(ECDsaSignatureProvider) };
-        yield return new object[] { AsymmetricSignatureConstants.RSA_SHA256_CODE, typeof(RsaSignatureProvider) };
+        yield return new object[]
+        {
+            AsymmetricSignatureConstants.ECDSA_SHA256_CODE,
+            typeof(ECDsaSignatureProvider),
+        };
+        yield return new object[]
+        {
+            AsymmetricSignatureConstants.RSA_SHA256_CODE,
+            typeof(RsaSignatureProvider),
+        };
     }
 }

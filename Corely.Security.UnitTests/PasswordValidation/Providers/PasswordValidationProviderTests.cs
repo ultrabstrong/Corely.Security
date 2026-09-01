@@ -7,14 +7,18 @@ namespace Corely.Security.UnitTests.PasswordValidation.Providers;
 
 public class PasswordValidationProviderTests
 {
-    private readonly PasswordValidationProvider _provider = new(Options.Create(new PasswordValidationOptions
-    {
-        MinimumLength = 8,
-        RequireUppercase = true,
-        RequireLowercase = true,
-        RequireDigit = true,
-        RequireNonAlphanumeric = true
-    }));
+    private readonly PasswordValidationProvider _provider = new(
+        Options.Create(
+            new PasswordValidationOptions
+            {
+                MinimumLength = 8,
+                RequireUppercase = true,
+                RequireLowercase = true,
+                RequireDigit = true,
+                RequireNonAlphanumeric = true,
+            }
+        )
+    );
 
     [Theory, MemberData(nameof(ValidatePassword_ReturnsExpectedResult_Data))]
     public void ValidatePassword_ReturnExpectedResult(string password, bool expectedIsValid)
@@ -25,14 +29,14 @@ public class PasswordValidationProviderTests
     }
 
     public static IEnumerable<object[]> ValidatePassword_ReturnsExpectedResult_Data() =>
-    [
-        ["Short1", false],
-        ["LongEnoughButNoDigitsOrUppercase1", false],
-        ["nouppercase1", false],
-        ["NOLOWERCASE1", false],
-        ["NoDigitPassword!", false],
-        ["ValidPa$sword1", true]
-    ];
+        [
+            ["Short1", false],
+            ["LongEnoughButNoDigitsOrUppercase1", false],
+            ["nouppercase1", false],
+            ["NOLOWERCASE1", false],
+            ["NoDigitPassword!", false],
+            ["ValidPa$sword1", true],
+        ];
 
     [Fact]
     public void ValidatePassword_IdentifiesMultipleFailures()
@@ -40,12 +44,12 @@ public class PasswordValidationProviderTests
         var password = string.Empty;
         var expectedResults = new[]
         {
-                PasswordValidationConstants.PASSWORD_TOO_SHORT,
-                PasswordValidationConstants.PASSWORD_MISSING_UPPERCASE,
-                PasswordValidationConstants.PASSWORD_MISSING_LOWERCASE,
-                PasswordValidationConstants.PASSWORD_MISSING_DIGIT,
-                PasswordValidationConstants.PASSWORD_MISSING_SPECIAL_CHARACTER
-            };
+            PasswordValidationConstants.PASSWORD_TOO_SHORT,
+            PasswordValidationConstants.PASSWORD_MISSING_UPPERCASE,
+            PasswordValidationConstants.PASSWORD_MISSING_LOWERCASE,
+            PasswordValidationConstants.PASSWORD_MISSING_DIGIT,
+            PasswordValidationConstants.PASSWORD_MISSING_SPECIAL_CHARACTER,
+        };
 
         var result = _provider.ValidatePassword(password);
 
@@ -75,7 +79,10 @@ public class PasswordValidationProviderTests
         var result = _provider.ValidatePassword(password);
 
         Assert.Single(result.ValidationFailures);
-        Assert.Equal(PasswordValidationConstants.PASSWORD_MISSING_UPPERCASE, result.ValidationFailures[0]);
+        Assert.Equal(
+            PasswordValidationConstants.PASSWORD_MISSING_UPPERCASE,
+            result.ValidationFailures[0]
+        );
     }
 
     [Fact]
@@ -86,7 +93,10 @@ public class PasswordValidationProviderTests
         var result = _provider.ValidatePassword(password);
 
         Assert.Single(result.ValidationFailures);
-        Assert.Equal(PasswordValidationConstants.PASSWORD_MISSING_LOWERCASE, result.ValidationFailures[0]);
+        Assert.Equal(
+            PasswordValidationConstants.PASSWORD_MISSING_LOWERCASE,
+            result.ValidationFailures[0]
+        );
     }
 
     [Fact]
@@ -97,7 +107,10 @@ public class PasswordValidationProviderTests
         var result = _provider.ValidatePassword(password);
 
         Assert.Single(result.ValidationFailures);
-        Assert.Equal(PasswordValidationConstants.PASSWORD_MISSING_DIGIT, result.ValidationFailures[0]);
+        Assert.Equal(
+            PasswordValidationConstants.PASSWORD_MISSING_DIGIT,
+            result.ValidationFailures[0]
+        );
     }
 
     [Fact]
@@ -108,6 +121,9 @@ public class PasswordValidationProviderTests
         var result = _provider.ValidatePassword(password);
 
         Assert.Single(result.ValidationFailures);
-        Assert.Equal(PasswordValidationConstants.PASSWORD_MISSING_SPECIAL_CHARACTER, result.ValidationFailures[0]);
+        Assert.Equal(
+            PasswordValidationConstants.PASSWORD_MISSING_SPECIAL_CHARACTER,
+            result.ValidationFailures[0]
+        );
     }
 }

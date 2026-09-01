@@ -6,20 +6,17 @@ public sealed class EncryptionException : Exception
     {
         Unknown,
         InvalidFormat,
-        InvalidTypeCode
+        InvalidTypeCode,
     }
 
     public ErrorReason Reason { get; set; } = ErrorReason.Unknown;
 
-    public EncryptionException() : base()
-    {
-    }
+    public EncryptionException()
+        : base() { }
 
-    public EncryptionException(string message) : base(message)
-    {
-    }
+    public EncryptionException(string message)
+        : base(message) { }
 
-    public EncryptionException(string message, Exception innerException) : base(message, innerException)
-    {
-    }
+    public EncryptionException(string message, Exception innerException)
+        : base(message, innerException) { }
 }

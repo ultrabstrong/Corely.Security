@@ -20,8 +20,10 @@ public class InMemoryAsymmetricKeyStoreProvider : IAsymmetricKeyStoreProvider
     /// span overload where the keys are already bytes.
     /// </summary>
     public InMemoryAsymmetricKeyStoreProvider(string base64PublicKey, string base64PrivateKey)
-        : this(Convert.FromBase64String(base64PublicKey), Convert.FromBase64String(base64PrivateKey))
-    { }
+        : this(
+            Convert.FromBase64String(base64PublicKey),
+            Convert.FromBase64String(base64PrivateKey)
+        ) { }
 
     public void Add(ReadOnlySpan<byte> publicKey, ReadOnlySpan<byte> privateKey)
     {

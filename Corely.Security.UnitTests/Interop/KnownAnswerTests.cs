@@ -114,8 +114,8 @@ public class KnownAnswerTests
             $"{SymmetricEncryptionConstants.AES_GCM_CODE}:1:{Convert.ToBase64String(payload)}";
         var keyStore = new InMemorySymmetricKeyStoreProvider(keyBase64);
 
-        Assert.ThrowsAny<Exception>(
-            () => new AesGcmEncryptionProvider().Decrypt(encrypted, keyStore)
+        Assert.ThrowsAny<Exception>(() =>
+            new AesGcmEncryptionProvider().Decrypt(encrypted, keyStore)
         );
     }
 }

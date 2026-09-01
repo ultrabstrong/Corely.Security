@@ -22,7 +22,7 @@ public abstract class AsymmetricEncryptionProviderBase : IAsymmetricEncryptionPr
         {
             throw new EncryptionException($"Asymmetric encryption provider name cannot contain ':'")
             {
-                Reason = EncryptionException.ErrorReason.InvalidTypeCode
+                Reason = EncryptionException.ErrorReason.InvalidTypeCode,
             };
         }
 
@@ -62,14 +62,18 @@ public abstract class AsymmetricEncryptionProviderBase : IAsymmetricEncryptionPr
         // renaming a provider impossible without stranding stored data.
         string[] parts = value.Split(':');
 
-        if (parts.Length != 3
+        if (
+            parts.Length != 3
             || string.IsNullOrWhiteSpace(parts[0])
             || string.IsNullOrWhiteSpace(parts[2])
-            || !int.TryParse(parts[1], out var keyVersion))
+            || !int.TryParse(parts[1], out var keyVersion)
+        )
         {
-            throw new EncryptionException("Value must be in format encryptionTypeCode:integer:encryptedValue")
+            throw new EncryptionException(
+                "Value must be in format encryptionTypeCode:integer:encryptedValue"
+            )
             {
-                Reason = EncryptionException.ErrorReason.InvalidFormat
+                Reason = EncryptionException.ErrorReason.InvalidFormat,
             };
         }
 

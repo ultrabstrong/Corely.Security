@@ -9,7 +9,10 @@ public class RandomKeyProviderTests
     [Fact]
     public void Constructor_UsesDefaultKeySize()
     {
-        Assert.Equal(RandomKeyProvider.DEFAULT_KEY_SIZE, new RandomKeyProvider().CreateKey().Length);
+        Assert.Equal(
+            RandomKeyProvider.DEFAULT_KEY_SIZE,
+            new RandomKeyProvider().CreateKey().Length
+        );
     }
 
     [Theory]

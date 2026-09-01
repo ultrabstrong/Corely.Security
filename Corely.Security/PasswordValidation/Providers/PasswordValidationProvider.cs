@@ -1,8 +1,8 @@
-﻿using Corely.Security.Password;
+﻿using System.Text;
+using System.Text.RegularExpressions;
+using Corely.Security.Password;
 using Corely.Security.PasswordValidation.Models;
 using Microsoft.Extensions.Options;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace Corely.Security.PasswordValidation.Providers;
 
@@ -23,10 +23,14 @@ public sealed class PasswordValidationProvider : IPasswordValidationProvider
         var patternBuilder = new StringBuilder();
 
         patternBuilder.Append('^');
-        if (_options.RequireUppercase) patternBuilder.Append("(?=.*[A-Z])");
-        if (_options.RequireLowercase) patternBuilder.Append("(?=.*[a-z])");
-        if (_options.RequireDigit) patternBuilder.Append("(?=.*[0-9])");
-        if (_options.RequireNonAlphanumeric) patternBuilder.Append("(?=.*[^A-Za-z0-9])");
+        if (_options.RequireUppercase)
+            patternBuilder.Append("(?=.*[A-Z])");
+        if (_options.RequireLowercase)
+            patternBuilder.Append("(?=.*[a-z])");
+        if (_options.RequireDigit)
+            patternBuilder.Append("(?=.*[0-9])");
+        if (_options.RequireNonAlphanumeric)
+            patternBuilder.Append("(?=.*[^A-Za-z0-9])");
         patternBuilder.Append($".{{{_options.MinimumLength},{_options.MaximumLength}}}$");
 
         return new Regex(patternBuilder.ToString(), RegexOptions.Singleline);
@@ -55,10 +59,14 @@ public sealed class PasswordValidationProvider : IPasswordValidationProvider
 
         foreach (var c in password)
         {
-            if (!hasUppercase && char.IsUpper(c)) hasUppercase = true;
-            if (!hasLowercase && char.IsLower(c)) hasLowercase = true;
-            if (!hasDigit && char.IsDigit(c)) hasDigit = true;
-            if (!hasSpecial && !char.IsLetterOrDigit(c)) hasSpecial = true;
+            if (!hasUppercase && char.IsUpper(c))
+                hasUppercase = true;
+            if (!hasLowercase && char.IsLower(c))
+                hasLowercase = true;
+            if (!hasDigit && char.IsDigit(c))
+                hasDigit = true;
+            if (!hasSpecial && !char.IsLetterOrDigit(c))
+                hasSpecial = true;
         }
 
         var validationResults = new List<string>();

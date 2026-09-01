@@ -1,9 +1,9 @@
-﻿using AutoFixture;
+﻿using System.Security.Cryptography;
+using AutoFixture;
 using Corely.Security.Encryption.Models;
 using Corely.Security.Encryption.Providers;
 using Corely.Security.Keys;
 using Corely.Security.KeyStore;
-using System.Security.Cryptography;
 
 namespace Corely.Security.UnitTests.Encryption.Models;
 

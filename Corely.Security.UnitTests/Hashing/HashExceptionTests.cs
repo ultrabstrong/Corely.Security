@@ -2,7 +2,4 @@
 
 namespace Corely.Security.UnitTests.Hashing;
 
-public class HashExceptionTests
-    : ExceptionTestsBase<HashException>
-{
-}
+public class HashExceptionTests : ExceptionTestsBase<HashException> { }

@@ -23,9 +23,14 @@ public sealed class AsymmetricEncryptionProviderBaseTests : AsymmetricEncryption
             : base(TEST_PROVIDER_NAME) { }
 
         private readonly MockAsymmetricKeyProvider _mockKeyProvider = new();
+
         public override IAsymmetricKeyProvider GetAsymmetricKeyProvider() => _mockKeyProvider;
-        protected override string EncryptInternal(string value, ReadOnlySpan<byte> key) => $"{Guid.NewGuid()}{value}";
-        protected override string DecryptInternal(string value, ReadOnlySpan<byte> key) => value[36..];
+
+        protected override string EncryptInternal(string value, ReadOnlySpan<byte> key) =>
+            $"{Guid.NewGuid()}{value}";
+
+        protected override string DecryptInternal(string value, ReadOnlySpan<byte> key) =>
+            value[36..];
     }
 
     private abstract class MockAsymmetricEncryptionProviderBase : AsymmetricEncryptionProviderBase
@@ -34,7 +39,9 @@ public sealed class AsymmetricEncryptionProviderBaseTests : AsymmetricEncryption
             : base(providerName) { }
 
         public override IAsymmetricKeyProvider GetAsymmetricKeyProvider() => null!;
+
         protected override string EncryptInternal(string value, ReadOnlySpan<byte> key) => value;
+
         protected override string DecryptInternal(string value, ReadOnlySpan<byte> key) => value;
     }
 
@@ -42,28 +49,24 @@ public sealed class AsymmetricEncryptionProviderBaseTests : AsymmetricEncryption
     {
         public NullMockEncryptionProvider()
             : base(null!) { }
-
     }
 
     private class EmptyMockEncryptionProvider : MockAsymmetricEncryptionProviderBase
     {
         public EmptyMockEncryptionProvider()
             : base(string.Empty) { }
-
     }
 
     private class WhitespaceMockEncryptionProvider : MockAsymmetricEncryptionProviderBase
     {
         public WhitespaceMockEncryptionProvider()
             : base(" ") { }
-
     }
 
     private class ColonMockEncryptionProvider : MockAsymmetricEncryptionProviderBase
     {
         public ColonMockEncryptionProvider()
             : base("as:df") { }
-
     }
 
     private const string TEST_PROVIDER_NAME = "00";

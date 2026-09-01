@@ -12,7 +12,10 @@ public class HmacSha256SignatureProviderTests : SymmetricSignatureProviderGeneri
     [Fact]
     public override void GetSymmetricKeyProvider_ReturnsCorrectKeyProvider_ForImplementation()
     {
-        Assert.Equal(SymmetricSignatureConstants.HMAC_SHA256_CODE, _hmacSha256SignatureProvider.ProviderName);
+        Assert.Equal(
+            SymmetricSignatureConstants.HMAC_SHA256_CODE,
+            _hmacSha256SignatureProvider.ProviderName
+        );
     }
 
     [Fact]

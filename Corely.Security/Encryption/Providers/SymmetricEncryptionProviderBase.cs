@@ -22,7 +22,7 @@ public abstract class SymmetricEncryptionProviderBase : ISymmetricEncryptionProv
         {
             throw new EncryptionException($"Symmetric encryption provider name cannot contain ':'")
             {
-                Reason = EncryptionException.ErrorReason.InvalidTypeCode
+                Reason = EncryptionException.ErrorReason.InvalidTypeCode,
             };
         }
 
@@ -68,14 +68,18 @@ public abstract class SymmetricEncryptionProviderBase : ISymmetricEncryptionProv
         // renaming a provider impossible without stranding stored data.
         string[] parts = value.Split(':');
 
-        if (parts.Length != 3
+        if (
+            parts.Length != 3
             || string.IsNullOrWhiteSpace(parts[0])
             || string.IsNullOrWhiteSpace(parts[2])
-            || !int.TryParse(parts[1], out var keyVersion))
+            || !int.TryParse(parts[1], out var keyVersion)
+        )
         {
-            throw new EncryptionException("Value must be in format encryptionTypeCode:integer:encryptedValue")
+            throw new EncryptionException(
+                "Value must be in format encryptionTypeCode:integer:encryptedValue"
+            )
             {
-                Reason = EncryptionException.ErrorReason.InvalidFormat
+                Reason = EncryptionException.ErrorReason.InvalidFormat,
             };
         }
 

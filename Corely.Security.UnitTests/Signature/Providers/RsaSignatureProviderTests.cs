@@ -1,8 +1,8 @@
-﻿using Corely.Security.Keys;
+﻿using System.Security.Cryptography;
+using Corely.Security.Keys;
 using Corely.Security.Signature;
 using Corely.Security.Signature.Providers;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography;
 
 namespace Corely.Security.UnitTests.Signature.Providers;
 
@@ -13,7 +13,10 @@ public class RsaSignatureProviderTests : AsymmetricSignatureProviderGenericTests
     [Fact]
     public override void ProviderName_ReturnsCorrectValue_ForImplementation()
     {
-        Assert.Equal(AsymmetricSignatureConstants.RSA_SHA256_CODE, _rsaSignatureProvider.ProviderName);
+        Assert.Equal(
+            AsymmetricSignatureConstants.RSA_SHA256_CODE,
+            _rsaSignatureProvider.ProviderName
+        );
     }
 
     [Fact]
@@ -37,7 +40,9 @@ public class RsaSignatureProviderTests : AsymmetricSignatureProviderGenericTests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public void GetSigningCredentials_ReturnsCorrectSigningCredentials_ForImplementation(bool isKeyPrivate)
+    public void GetSigningCredentials_ReturnsCorrectSigningCredentials_ForImplementation(
+        bool isKeyPrivate
+    )
     {
         var (publicKey, privateKey) = _rsaSignatureProvider.GetAsymmetricKeyProvider().CreateKeys();
 

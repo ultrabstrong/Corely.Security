@@ -2,6 +2,5 @@
 
 namespace Corely.Security.Signature.Factories;
 
-public interface ISymmetricSignatureProviderFactory : IProviderFactory<ISymmetricSignatureProvider>
-{
-}
+public interface ISymmetricSignatureProviderFactory
+    : IProviderFactory<ISymmetricSignatureProvider> { }

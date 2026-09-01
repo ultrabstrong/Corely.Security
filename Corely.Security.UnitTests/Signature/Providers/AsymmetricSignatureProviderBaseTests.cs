@@ -33,7 +33,10 @@ public sealed class AsymmetricSignatureProviderBaseTests : AsymmetricSignaturePr
 
         public override IAsymmetricKeyProvider GetAsymmetricKeyProvider() => _mockKeyProvider;
 
-        public override SigningCredentials GetSigningCredentials(ReadOnlySpan<byte> key, bool isKeyPrivate) => null!;
+        public override SigningCredentials GetSigningCredentials(
+            ReadOnlySpan<byte> key,
+            bool isKeyPrivate
+        ) => null!;
 
         protected override string SignInternal(string value, ReadOnlySpan<byte> privateKey)
         {
@@ -42,7 +45,11 @@ public sealed class AsymmetricSignatureProviderBaseTests : AsymmetricSignaturePr
             return lastSignature;
         }
 
-        protected override bool VerifyInternal(string value, string signature, ReadOnlySpan<byte> publicKey) =>
+        protected override bool VerifyInternal(
+            string value,
+            string signature,
+            ReadOnlySpan<byte> publicKey
+        ) =>
             lastValue == value
             && lastSignature == signature
             && lastSignature.EndsWith(Convert.ToBase64String(publicKey));
@@ -54,37 +61,44 @@ public sealed class AsymmetricSignatureProviderBaseTests : AsymmetricSignaturePr
             : base(providerName) { }
 
         public override IAsymmetricKeyProvider GetAsymmetricKeyProvider() => null!;
-        public override SigningCredentials GetSigningCredentials(ReadOnlySpan<byte> key, bool isKeyPrivate) => null!;
-        protected override string SignInternal(string value, ReadOnlySpan<byte> privateKey) => value;
-        protected override bool VerifyInternal(string value, string signature, ReadOnlySpan<byte> publicKey) => false;
+
+        public override SigningCredentials GetSigningCredentials(
+            ReadOnlySpan<byte> key,
+            bool isKeyPrivate
+        ) => null!;
+
+        protected override string SignInternal(string value, ReadOnlySpan<byte> privateKey) =>
+            value;
+
+        protected override bool VerifyInternal(
+            string value,
+            string signature,
+            ReadOnlySpan<byte> publicKey
+        ) => false;
     }
 
     private class NullMockSignatureProvider : MockAsymmetricSignatureProviderBase
     {
         public NullMockSignatureProvider()
             : base(null!) { }
-
     }
 
     private class EmptyMockSignatureProvider : MockAsymmetricSignatureProviderBase
     {
         public EmptyMockSignatureProvider()
             : base(string.Empty) { }
-
     }
 
     private class WhitespaceMockSignatureProvider : MockAsymmetricSignatureProviderBase
     {
         public WhitespaceMockSignatureProvider()
             : base(" ") { }
-
     }
 
     private class ColonMockSignatureProvider : MockAsymmetricSignatureProviderBase
     {
         public ColonMockSignatureProvider()
             : base("as:df") { }
-
     }
 
     private const string TEST_PROVIDER_NAME = "00";

@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
-using Corely.Security.KeyStore;
 using Corely.Security.Keys;
+using Corely.Security.KeyStore;
 using Corely.Security.Signature.Providers;
 
 namespace Corely.Security.UnitTests.Interop;
@@ -58,9 +58,7 @@ public class AsymmetricKnownAnswerTests
     {
         var provider = new ECDsaSignatureProvider(HashAlgorithmName.SHA256);
 
-        Assert.True(
-            provider.Verify(Message, EcdsaSignature, PublicOnlyStore(EcdsaPublicKey))
-        );
+        Assert.True(provider.Verify(Message, EcdsaSignature, PublicOnlyStore(EcdsaPublicKey)));
     }
 
     [Fact]
@@ -109,7 +107,10 @@ public class AsymmetricKnownAnswerTests
         var provider = new ECDsaSignatureProvider(HashAlgorithmName.SHA256);
 
         var signature = Convert.FromBase64String(
-            provider.Sign(Message, new InMemoryAsymmetricKeyStoreProvider(keys.PublicKey, keys.PrivateKey))
+            provider.Sign(
+                Message,
+                new InMemoryAsymmetricKeyStoreProvider(keys.PublicKey, keys.PrivateKey)
+            )
         );
 
         Assert.Equal(64, signature.Length);

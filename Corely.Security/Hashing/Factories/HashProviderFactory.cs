@@ -5,11 +5,11 @@ namespace Corely.Security.Hashing.Factories;
 public class HashProviderFactory : IHashProviderFactory
 {
     private readonly Dictionary<string, IHashProvider> _providers = new()
-        {
-            { HashConstants.PBKDF2_SHA256_CODE, new Pbkdf2HashProvider() },
-            { HashConstants.SALTED_SHA256_CODE, new Sha256SaltedHashProvider() },
-            { HashConstants.SALTED_SHA512_CODE, new Sha512SaltedHashProvider() }
-        };
+    {
+        { HashConstants.PBKDF2_SHA256_CODE, new Pbkdf2HashProvider() },
+        { HashConstants.SALTED_SHA256_CODE, new Sha256SaltedHashProvider() },
+        { HashConstants.SALTED_SHA512_CODE, new Sha512SaltedHashProvider() },
+    };
     private readonly string _defaultProviderCode;
 
     public HashProviderFactory(string defaultProviderCode)
@@ -26,7 +26,7 @@ public class HashProviderFactory : IHashProviderFactory
         {
             throw new HashException($"Hash provider code already exists: {providerCode}")
             {
-                Reason = HashException.ErrorReason.InvalidTypeCode
+                Reason = HashException.ErrorReason.InvalidTypeCode,
             };
         }
 
@@ -42,7 +42,7 @@ public class HashProviderFactory : IHashProviderFactory
         {
             throw new HashException($"Hash provider code not found: {providerCode}")
             {
-                Reason = HashException.ErrorReason.InvalidTypeCode
+                Reason = HashException.ErrorReason.InvalidTypeCode,
             };
         }
 
@@ -56,7 +56,7 @@ public class HashProviderFactory : IHashProviderFactory
         {
             throw new HashException($"Hash type code cannot contain ':'")
             {
-                Reason = HashException.ErrorReason.InvalidTypeCode
+                Reason = HashException.ErrorReason.InvalidTypeCode,
             };
         }
     }
@@ -74,7 +74,7 @@ public class HashProviderFactory : IHashProviderFactory
 
         throw new HashException($"Hash provider code unknown: {providerCode}")
         {
-            Reason = HashException.ErrorReason.InvalidTypeCode
+            Reason = HashException.ErrorReason.InvalidTypeCode,
         };
     }
 
@@ -89,9 +89,7 @@ public class HashProviderFactory : IHashProviderFactory
     public List<(string ProviderCode, Type ProviderType)> ListProviders()
     {
         return _providers
-            .Select(kvp => (
-                ProviderCode: kvp.Key,
-                ProviderType: kvp.Value.GetType()))
+            .Select(kvp => (ProviderCode: kvp.Key, ProviderType: kvp.Value.GetType()))
             .ToList();
     }
 }

@@ -6,20 +6,17 @@ public class HashException : Exception
     {
         Unknown,
         InvalidFormat,
-        InvalidTypeCode
+        InvalidTypeCode,
     }
 
     public ErrorReason Reason { get; set; } = ErrorReason.Unknown;
 
-    public HashException() : base()
-    {
-    }
+    public HashException()
+        : base() { }
 
-    public HashException(string message) : base(message)
-    {
-    }
+    public HashException(string message)
+        : base(message) { }
 
-    public HashException(string message, Exception innerException) : base(message, innerException)
-    {
-    }
+    public HashException(string message, Exception innerException)
+        : base(message, innerException) { }
 }

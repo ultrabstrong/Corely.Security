@@ -1,5 +1,5 @@
-﻿using Corely.Security.Signature.Providers;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
+using Corely.Security.Signature.Providers;
 
 namespace Corely.Security.Signature.Factories;
 
@@ -20,6 +20,7 @@ public class AsymmetricSignatureProviderFactory : IAsymmetricSignatureProviderFa
         _providers.Add(AsymmetricSignatureConstants.LEGACY_ECDSA_SHA256_CODE, ecdsa);
         _providers.Add(AsymmetricSignatureConstants.LEGACY_RSA_SHA256_CODE, rsa);
     }
+
     public void AddProvider(string providerCode, IAsymmetricSignatureProvider provider)
     {
         ArgumentNullException.ThrowIfNull(provider, nameof(provider));
@@ -28,9 +29,11 @@ public class AsymmetricSignatureProviderFactory : IAsymmetricSignatureProviderFa
 
         if (_providers.ContainsKey(providerCode))
         {
-            throw new SignatureException($"Asymmetric signature provider code already exists: {providerCode}")
+            throw new SignatureException(
+                $"Asymmetric signature provider code already exists: {providerCode}"
+            )
             {
-                Reason = SignatureException.ErrorReason.InvalidTypeCode
+                Reason = SignatureException.ErrorReason.InvalidTypeCode,
             };
         }
 
@@ -45,9 +48,11 @@ public class AsymmetricSignatureProviderFactory : IAsymmetricSignatureProviderFa
 
         if (!_providers.ContainsKey(providerCode))
         {
-            throw new SignatureException($"Asymmetric signature provider code not found: {providerCode}")
+            throw new SignatureException(
+                $"Asymmetric signature provider code not found: {providerCode}"
+            )
             {
-                Reason = SignatureException.ErrorReason.InvalidTypeCode
+                Reason = SignatureException.ErrorReason.InvalidTypeCode,
             };
         }
 
@@ -61,7 +66,7 @@ public class AsymmetricSignatureProviderFactory : IAsymmetricSignatureProviderFa
         {
             throw new SignatureException($"Asymmetric signature type code cannot contain ':'")
             {
-                Reason = SignatureException.ErrorReason.InvalidTypeCode
+                Reason = SignatureException.ErrorReason.InvalidTypeCode,
             };
         }
     }
@@ -74,22 +79,21 @@ public class AsymmetricSignatureProviderFactory : IAsymmetricSignatureProviderFa
 
         if (!_providers.TryGetValue(providerCode, out IAsymmetricSignatureProvider? value))
         {
-            throw new SignatureException($"Asymmetric signature provider code not found: {providerCode}")
+            throw new SignatureException(
+                $"Asymmetric signature provider code not found: {providerCode}"
+            )
             {
-                Reason = SignatureException.ErrorReason.InvalidTypeCode
+                Reason = SignatureException.ErrorReason.InvalidTypeCode,
             };
         }
 
         return value;
     }
 
-
     public List<(string ProviderCode, Type ProviderType)> ListProviders()
     {
         return _providers
-            .Select(kvp => (
-                ProviderCode: kvp.Key,
-                ProviderType: kvp.Value.GetType()))
+            .Select(kvp => (ProviderCode: kvp.Key, ProviderType: kvp.Value.GetType()))
             .ToList();
     }
 }

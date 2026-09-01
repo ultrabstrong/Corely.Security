@@ -1,4 +1,5 @@
-﻿using Corely.Security.Encryption;
+﻿using System.Security.Cryptography;
+using Corely.Security.Encryption;
 using Corely.Security.Encryption.Factories;
 using Corely.Security.Encryption.Providers;
 using Corely.Security.Hashing;
@@ -15,7 +16,6 @@ using Corely.Security.Signature.Providers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography;
 
 namespace Corely.Security.DemoApp;
 
@@ -55,40 +55,56 @@ internal class Program
 
         void SymmetricAesKeyProviderDemo()
         {
-            var factory = new SymmetricEncryptionProviderFactory(SymmetricEncryptionConstants.AES_CODE);
+            var factory = new SymmetricEncryptionProviderFactory(
+                SymmetricEncryptionConstants.AES_CODE
+            );
             var provider = factory.GetDefaultProvider();
             var keyProvider = provider.GetSymmetricKeyProvider();
             var key = keyProvider.CreateKey();
-            Console.WriteLine($"  AES   Key Length: {key.Length} bytes | Valid: {keyProvider.IsKeyValid(key)}");
+            Console.WriteLine(
+                $"  AES   Key Length: {key.Length} bytes | Valid: {keyProvider.IsKeyValid(key)}"
+            );
         }
 
         void SymmetricHmacKeyProviderDemo()
         {
-            var factory = new SymmetricSignatureProviderFactory(SymmetricSignatureConstants.HMAC_SHA256_CODE);
+            var factory = new SymmetricSignatureProviderFactory(
+                SymmetricSignatureConstants.HMAC_SHA256_CODE
+            );
             var provider = factory.GetDefaultProvider();
             var keyProvider = provider.GetSymmetricKeyProvider();
             var key = keyProvider.CreateKey();
-            Console.WriteLine($"  HMAC  Key Length: {key.Length} bytes | Valid: {keyProvider.IsKeyValid(key)}");
+            Console.WriteLine(
+                $"  HMAC  Key Length: {key.Length} bytes | Valid: {keyProvider.IsKeyValid(key)}"
+            );
         }
 
         void AsymmetricRsaKeyProviderDemo()
         {
             // Use RSA encryption provider to access RSA key provider
-            var factory = new AsymmetricEncryptionProviderFactory(AsymmetricEncryptionConstants.RSA_CODE);
+            var factory = new AsymmetricEncryptionProviderFactory(
+                AsymmetricEncryptionConstants.RSA_CODE
+            );
             var provider = factory.GetDefaultProvider();
             var keyProvider = provider.GetAsymmetricKeyProvider();
             var (pub, priv) = keyProvider.CreateKeys();
-            Console.WriteLine($"  RSA   PublicKeyBytes: {pub.Length} | PrivateKeyBytes: {priv.Length} | Valid: {keyProvider.IsKeyValid(pub, priv)}");
+            Console.WriteLine(
+                $"  RSA   PublicKeyBytes: {pub.Length} | PrivateKeyBytes: {priv.Length} | Valid: {keyProvider.IsKeyValid(pub, priv)}"
+            );
         }
 
         void AsymmetricEcdsaKeyProviderDemo()
         {
             // Use ECDSA signature provider to access ECDSA key provider
-            var factory = new AsymmetricSignatureProviderFactory(AsymmetricSignatureConstants.ECDSA_SHA256_CODE);
+            var factory = new AsymmetricSignatureProviderFactory(
+                AsymmetricSignatureConstants.ECDSA_SHA256_CODE
+            );
             var provider = factory.GetDefaultProvider();
             var keyProvider = provider.GetAsymmetricKeyProvider();
             var (pub, priv) = keyProvider.CreateKeys();
-            Console.WriteLine($"  ECDSA PublicKeyBytes: {pub.Length} | PrivateKeyBytes: {priv.Length} | Valid: {keyProvider.IsKeyValid(pub, priv)}");
+            Console.WriteLine(
+                $"  ECDSA PublicKeyBytes: {pub.Length} | PrivateKeyBytes: {priv.Length} | Valid: {keyProvider.IsKeyValid(pub, priv)}"
+            );
         }
 
         // Execute key provider demos
@@ -131,7 +147,9 @@ internal class Program
     private static void RunSymmetricEncryptionDemo()
     {
         Console.WriteLine("\n-- Symmetric Encryption (AES) --");
-        var encryptionFactory = new SymmetricEncryptionProviderFactory(SymmetricEncryptionConstants.AES_CODE);
+        var encryptionFactory = new SymmetricEncryptionProviderFactory(
+            SymmetricEncryptionConstants.AES_CODE
+        );
         var provider = encryptionFactory.GetDefaultProvider();
 
         var keyProvider = provider.GetSymmetricKeyProvider();
@@ -151,14 +169,18 @@ internal class Program
         keyStore.Add(keyProvider.CreateKey());
         var reEncrypted = provider.ReEncrypt(encrypted, keyStore);
         var reDecrypted = provider.Decrypt(reEncrypted, keyStore);
-        Console.WriteLine($"Re-Encrypted (rotated to version {keyStore.GetCurrentVersion()}): {reEncrypted}");
+        Console.WriteLine(
+            $"Re-Encrypted (rotated to version {keyStore.GetCurrentVersion()}): {reEncrypted}"
+        );
         Console.WriteLine($"Re-Decrypted: {reDecrypted}");
     }
 
     private static void RunSymmetricSignatureDemo()
     {
         Console.WriteLine("\n-- Symmetric Signature (HMAC SHA256) --");
-        var signatureFactory = new SymmetricSignatureProviderFactory(SymmetricSignatureConstants.HMAC_SHA256_CODE);
+        var signatureFactory = new SymmetricSignatureProviderFactory(
+            SymmetricSignatureConstants.HMAC_SHA256_CODE
+        );
         var provider = signatureFactory.GetDefaultProvider();
 
         var keyProvider = provider.GetSymmetricKeyProvider();
@@ -180,14 +202,18 @@ internal class Program
         keyStore.Add(keyProvider.CreateKey()); // version 2 (existing signature still validated with current key only)
         var signatureV2 = provider.Sign(data, keyStore); // new signature with new key
         var verifiedV2 = provider.Verify(data, signatureV2, keyStore);
-        Console.WriteLine($"Signature after rotation (version {keyStore.GetCurrentVersion()}): {signatureV2}");
+        Console.WriteLine(
+            $"Signature after rotation (version {keyStore.GetCurrentVersion()}): {signatureV2}"
+        );
         Console.WriteLine($"Verify (rotated key): {verifiedV2}");
     }
 
     private static void RunAsymmetricEncryptionDemo()
     {
         Console.WriteLine("\n-- Asymmetric Encryption (RSA) --");
-        var encryptionFactory = new AsymmetricEncryptionProviderFactory(AsymmetricEncryptionConstants.RSA_CODE);
+        var encryptionFactory = new AsymmetricEncryptionProviderFactory(
+            AsymmetricEncryptionConstants.RSA_CODE
+        );
         var provider = encryptionFactory.GetDefaultProvider();
 
         var keyProvider = provider.GetAsymmetricKeyProvider();
@@ -208,16 +234,22 @@ internal class Program
         keyStore.Add(pub2, priv2);
         var reEncrypted = provider.ReEncrypt(encrypted, keyStore);
         var reDecrypted = provider.Decrypt(reEncrypted, keyStore);
-        Console.WriteLine($"Re-Encrypted (rotated to version {keyStore.GetCurrentVersion()}): {reEncrypted}");
+        Console.WriteLine(
+            $"Re-Encrypted (rotated to version {keyStore.GetCurrentVersion()}): {reEncrypted}"
+        );
         Console.WriteLine($"Re-Decrypted: {reDecrypted}");
     }
 
     private static void RunAsymmetricSignatureDemo()
     {
         Console.WriteLine("\n-- Asymmetric Signature (ECDSA / RSA) --");
-        var signatureFactory = new AsymmetricSignatureProviderFactory(AsymmetricSignatureConstants.ECDSA_SHA256_CODE);
+        var signatureFactory = new AsymmetricSignatureProviderFactory(
+            AsymmetricSignatureConstants.ECDSA_SHA256_CODE
+        );
         var ecdsaProvider = signatureFactory.GetDefaultProvider();
-        var rsaProvider = signatureFactory.GetProvider(AsymmetricSignatureConstants.RSA_SHA256_CODE);
+        var rsaProvider = signatureFactory.GetProvider(
+            AsymmetricSignatureConstants.RSA_SHA256_CODE
+        );
 
         var ecdsaKeyProvider = ecdsaProvider.GetAsymmetricKeyProvider();
         var (ecdsaPub, ecdsaPriv) = ecdsaKeyProvider.CreateKeys();
@@ -226,7 +258,9 @@ internal class Program
         var data = "Document requiring digital signature";
         var ecdsaSignature = ecdsaProvider.Sign(data, ecdsaKeyStore);
         var ecdsaVerified = ecdsaProvider.Verify(data, ecdsaSignature, ecdsaKeyStore);
-        Console.WriteLine($"ECDSA Signature: {ecdsaSignature[..Math.Min(60, ecdsaSignature.Length)]}...");
+        Console.WriteLine(
+            $"ECDSA Signature: {ecdsaSignature[..Math.Min(60, ecdsaSignature.Length)]}..."
+        );
         Console.WriteLine($"ECDSA Verified: {ecdsaVerified}");
 
         var rsaKeyProvider = rsaProvider.GetAsymmetricKeyProvider();
@@ -253,7 +287,9 @@ internal class Program
 
         void SymmetricEncryptionProviderDemo()
         {
-            var factory = new SymmetricEncryptionProviderFactory(SymmetricEncryptionConstants.AES_CODE);
+            var factory = new SymmetricEncryptionProviderFactory(
+                SymmetricEncryptionConstants.AES_CODE
+            );
             var provider = new DemoSymmetricEncryptionProvider();
             factory.AddProvider(provider.ProviderName, provider);
             var keyStore = new InMemorySymmetricKeyStoreProvider(new byte[16]);
@@ -263,7 +299,9 @@ internal class Program
 
         void AsymmetricEncryptionProviderDemo()
         {
-            var factory = new AsymmetricEncryptionProviderFactory(AsymmetricEncryptionConstants.RSA_CODE);
+            var factory = new AsymmetricEncryptionProviderFactory(
+                AsymmetricEncryptionConstants.RSA_CODE
+            );
             var provider = new DemoAsymmetricEncryptionProvider();
             factory.AddProvider(provider.ProviderName, provider);
             var keyStore = new InMemoryAsymmetricKeyStoreProvider(new byte[8], new byte[8]);
@@ -273,7 +311,9 @@ internal class Program
 
         void SymmetricSignatureProviderDemo()
         {
-            var factory = new SymmetricSignatureProviderFactory(SymmetricSignatureConstants.HMAC_SHA256_CODE);
+            var factory = new SymmetricSignatureProviderFactory(
+                SymmetricSignatureConstants.HMAC_SHA256_CODE
+            );
             var provider = new DemoSymmetricSignatureProvider("SIG");
             factory.AddProvider(provider.ProviderName, provider);
             var keyStore = new InMemorySymmetricKeyStoreProvider(new byte[16]);
@@ -283,7 +323,9 @@ internal class Program
 
         void AsymmetricSignatureProviderDemo()
         {
-            var factory = new AsymmetricSignatureProviderFactory(AsymmetricSignatureConstants.ECDSA_SHA256_CODE);
+            var factory = new AsymmetricSignatureProviderFactory(
+                AsymmetricSignatureConstants.ECDSA_SHA256_CODE
+            );
             var provider = new DemoAsymmetricSignatureProvider("ASIG");
             factory.AddProvider(provider.ProviderName, provider);
             var keyStore = new InMemoryAsymmetricKeyStoreProvider(new byte[8], new byte[8]);
@@ -305,28 +347,37 @@ internal class Program
 
         var services = new ServiceCollection();
 
-        services.AddSingleton<ISymmetricEncryptionProviderFactory>(_ =>
-            new SymmetricEncryptionProviderFactory(SymmetricEncryptionConstants.AES_CODE));
-        services.AddSingleton<IAsymmetricEncryptionProviderFactory>(_ =>
-            new AsymmetricEncryptionProviderFactory(AsymmetricEncryptionConstants.RSA_CODE));
-        services.AddSingleton<IAsymmetricSignatureProviderFactory>(_ =>
-            new AsymmetricSignatureProviderFactory(AsymmetricSignatureConstants.ECDSA_SHA256_CODE));
-        services.AddSingleton<IHashProviderFactory>(_ =>
-            new HashProviderFactory(HashConstants.SALTED_SHA256_CODE));
+        services.AddSingleton<ISymmetricEncryptionProviderFactory>(
+            _ => new SymmetricEncryptionProviderFactory(SymmetricEncryptionConstants.AES_CODE)
+        );
+        services.AddSingleton<IAsymmetricEncryptionProviderFactory>(
+            _ => new AsymmetricEncryptionProviderFactory(AsymmetricEncryptionConstants.RSA_CODE)
+        );
+        services.AddSingleton<IAsymmetricSignatureProviderFactory>(
+            _ => new AsymmetricSignatureProviderFactory(
+                AsymmetricSignatureConstants.ECDSA_SHA256_CODE
+            )
+        );
+        services.AddSingleton<IHashProviderFactory>(_ => new HashProviderFactory(
+            HashConstants.SALTED_SHA256_CODE
+        ));
 
         services.AddScoped<IPasswordValidationProvider, PasswordValidationProvider>();
         services.AddSingleton<ISecretProvider, RandomSecretProvider>();
 
         // Manually register options since no IConfiguration binding here
-        services.AddSingleton(
-            _ => Options.Create(new PasswordValidationOptions
-            {
-                MinimumLength = 8,
-                RequireUppercase = true,
-                RequireLowercase = true,
-                RequireDigit = true,
-                RequireNonAlphanumeric = false
-            }));
+        services.AddSingleton(_ =>
+            Options.Create(
+                new PasswordValidationOptions
+                {
+                    MinimumLength = 8,
+                    RequireUppercase = true,
+                    RequireLowercase = true,
+                    RequireDigit = true,
+                    RequireNonAlphanumeric = false,
+                }
+            )
+        );
 
         using ServiceProvider provider = services.BuildServiceProvider();
 
@@ -351,7 +402,9 @@ internal class Program
         void SymmetricKeyStoreDemo()
         {
             Console.WriteLine("\n  * Symmetric Key Store *");
-            var symFactory = new SymmetricEncryptionProviderFactory(SymmetricEncryptionConstants.AES_CODE);
+            var symFactory = new SymmetricEncryptionProviderFactory(
+                SymmetricEncryptionConstants.AES_CODE
+            );
             var symProvider = symFactory.GetDefaultProvider();
             var symKeyCreator = symProvider.GetSymmetricKeyProvider();
 
@@ -378,14 +431,18 @@ internal class Program
         void AsymmetricKeyStoreDemo()
         {
             Console.WriteLine("\n  * Asymmetric Key Store *");
-            var asymFactory = new AsymmetricEncryptionProviderFactory(AsymmetricEncryptionConstants.RSA_CODE);
+            var asymFactory = new AsymmetricEncryptionProviderFactory(
+                AsymmetricEncryptionConstants.RSA_CODE
+            );
             var asymProvider = asymFactory.GetDefaultProvider();
             var asymKeyCreator = asymProvider.GetAsymmetricKeyProvider();
 
             // Seed asymmetric key store (version 1)
             var (pub1, priv1) = asymKeyCreator.CreateKeys();
             var asymKeyStore = new InMemoryAsymmetricKeyStoreProvider(pub1, priv1);
-            Console.WriteLine($"Initial Asymmetric Key Version: {asymKeyStore.GetCurrentVersion()}");
+            Console.WriteLine(
+                $"Initial Asymmetric Key Version: {asymKeyStore.GetCurrentVersion()}"
+            );
 
             var asymSecret = "RotateMeAsymmetric";
             var asymEncryptedV1 = asymProvider.Encrypt(asymSecret, asymKeyStore);
@@ -394,7 +451,9 @@ internal class Program
             // Rotate asymmetric keys (version 2)
             var (pub2, priv2) = asymKeyCreator.CreateKeys();
             asymKeyStore.Add(pub2, priv2);
-            Console.WriteLine($"Rotated Asymmetric Key Version: {asymKeyStore.GetCurrentVersion()}");
+            Console.WriteLine(
+                $"Rotated Asymmetric Key Version: {asymKeyStore.GetCurrentVersion()}"
+            );
 
             var asymReEncryptedV2 = asymProvider.ReEncrypt(asymEncryptedV1, asymKeyStore);
             Console.WriteLine($"Re-Encrypted (v2): {asymReEncryptedV2}");
@@ -412,25 +471,27 @@ internal class Program
         Console.WriteLine("\n-- Password Validation Demo --");
 
         // Configure validation rules (could mirror what DI would inject)
-        var options = Options.Create(new PasswordValidationOptions
-        {
-            MinimumLength = 8,
-            RequireUppercase = true,
-            RequireLowercase = true,
-            RequireDigit = true,
-            RequireNonAlphanumeric = true
-        });
+        var options = Options.Create(
+            new PasswordValidationOptions
+            {
+                MinimumLength = 8,
+                RequireUppercase = true,
+                RequireLowercase = true,
+                RequireDigit = true,
+                RequireNonAlphanumeric = true,
+            }
+        );
 
         var validator = new PasswordValidationProvider(options);
 
         string[] samples =
         {
-            "Passw0rd!",      // valid
-            "password",       // no upper, digit, special
-            "PASSWORD1",      // no lower, no special
-            "Passw0rd",       // missing special
-            "Pw0!",           // too short
-            "ValidPass1#"      // valid
+            "Passw0rd!", // valid
+            "password", // no upper, digit, special
+            "PASSWORD1", // no lower, no special
+            "Passw0rd", // missing special
+            "Pw0!", // too short
+            "ValidPass1#", // valid
         };
 
         foreach (var pwd in samples)
@@ -442,7 +503,9 @@ internal class Program
             }
             else
             {
-                Console.WriteLine($"  INVALID : '{pwd}' -> [{string.Join(", ", result.ValidationFailures)}]");
+                Console.WriteLine(
+                    $"  INVALID : '{pwd}' -> [{string.Join(", ", result.ValidationFailures)}]"
+                );
             }
         }
     }
@@ -457,8 +520,7 @@ internal sealed class DemoHashProvider : SaltedHashProviderBase
 
     public override string ProviderDescription => "Demo hash provider for testing";
 
-    protected override byte[] HashInternal(byte[] value)
-     => SHA256.HashData(value);
+    protected override byte[] HashInternal(byte[] value) => SHA256.HashData(value);
 }
 
 internal sealed class DemoSymmetricEncryptionProvider : SymmetricEncryptionProviderBase
@@ -468,9 +530,13 @@ internal sealed class DemoSymmetricEncryptionProvider : SymmetricEncryptionProvi
         : base("DemoSymEnc") { }
 
     public override string ProviderDescription => "Demo symmetric encryption provider for testing";
+
     protected override string DecryptInternal(string value, ReadOnlySpan<byte> key) => value;
+
     protected override string EncryptInternal(string value, ReadOnlySpan<byte> key) => value;
-    public override ISymmetricKeyProvider GetSymmetricKeyProvider() => new DemoSymmetricKeyProvider();
+
+    public override ISymmetricKeyProvider GetSymmetricKeyProvider() =>
+        new DemoSymmetricKeyProvider();
 }
 
 internal sealed class DemoAsymmetricEncryptionProvider : AsymmetricEncryptionProviderBase
@@ -480,9 +546,13 @@ internal sealed class DemoAsymmetricEncryptionProvider : AsymmetricEncryptionPro
         : base("DemoAsymEnc") { }
 
     public override string ProviderDescription => "Demo asymmetric encryption provider for testing";
+
     protected override string DecryptInternal(string value, ReadOnlySpan<byte> privateKey) => value;
+
     protected override string EncryptInternal(string value, ReadOnlySpan<byte> publicKey) => value;
-    public override IAsymmetricKeyProvider GetAsymmetricKeyProvider() => new DemoAsymmetricKeyProvider();
+
+    public override IAsymmetricKeyProvider GetAsymmetricKeyProvider() =>
+        new DemoAsymmetricKeyProvider();
 }
 
 internal sealed class DemoSymmetricSignatureProvider : SymmetricSignatureProviderBase
@@ -490,12 +560,23 @@ internal sealed class DemoSymmetricSignatureProvider : SymmetricSignatureProvide
     // Unique demo provider name (built-in HMAC SHA256 uses "HMAC-SHA256").
     public override string ProviderDescription => "Demo symmetric signature provider for testing";
     private readonly string _signatureValue;
+
     public DemoSymmetricSignatureProvider(string signatureValue)
         : base("DemoSymSig") => _signatureValue = signatureValue;
+
     protected override string SignInternal(string value, ReadOnlySpan<byte> key) => _signatureValue;
-    protected override bool VerifyInternal(string value, string signature, ReadOnlySpan<byte> key) => signature == _signatureValue;
-    public override ISymmetricKeyProvider GetSymmetricKeyProvider() => new DemoSymmetricKeyProvider();
-    public override SigningCredentials GetSigningCredentials(ReadOnlySpan<byte> key) => throw new NotSupportedException();
+
+    protected override bool VerifyInternal(
+        string value,
+        string signature,
+        ReadOnlySpan<byte> key
+    ) => signature == _signatureValue;
+
+    public override ISymmetricKeyProvider GetSymmetricKeyProvider() =>
+        new DemoSymmetricKeyProvider();
+
+    public override SigningCredentials GetSigningCredentials(ReadOnlySpan<byte> key) =>
+        throw new NotSupportedException();
 }
 
 internal sealed class DemoAsymmetricSignatureProvider : AsymmetricSignatureProviderBase
@@ -503,12 +584,26 @@ internal sealed class DemoAsymmetricSignatureProvider : AsymmetricSignatureProvi
     // Unique demo provider name (built-in ECDSA/RSA use "ECDSA-P256-SHA256"/"RSA-2048-PKCS1-SHA256").
     public override string ProviderDescription => "Demo asymmetric signature provider for testing";
     private readonly string _signatureValue;
+
     public DemoAsymmetricSignatureProvider(string signatureValue)
         : base("DemoAsymSig") => _signatureValue = signatureValue;
-    protected override string SignInternal(string value, ReadOnlySpan<byte> privateKey) => _signatureValue;
-    protected override bool VerifyInternal(string value, string signature, ReadOnlySpan<byte> publicKey) => signature == _signatureValue;
-    public override SigningCredentials GetSigningCredentials(ReadOnlySpan<byte> key, bool isKeyPrivate) => throw new NotSupportedException();
-    public override IAsymmetricKeyProvider GetAsymmetricKeyProvider() => new DemoAsymmetricKeyProvider();
+
+    protected override string SignInternal(string value, ReadOnlySpan<byte> privateKey) =>
+        _signatureValue;
+
+    protected override bool VerifyInternal(
+        string value,
+        string signature,
+        ReadOnlySpan<byte> publicKey
+    ) => signature == _signatureValue;
+
+    public override SigningCredentials GetSigningCredentials(
+        ReadOnlySpan<byte> key,
+        bool isKeyPrivate
+    ) => throw new NotSupportedException();
+
+    public override IAsymmetricKeyProvider GetAsymmetricKeyProvider() =>
+        new DemoAsymmetricKeyProvider();
 }
 
 // Demo key providers (simplified)

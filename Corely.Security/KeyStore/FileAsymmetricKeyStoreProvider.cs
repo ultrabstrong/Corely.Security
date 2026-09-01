@@ -71,8 +71,10 @@ public class FileAsymmetricKeyStoreProvider : IAsymmetricKeyStoreProvider
             if (i == bytes.Length || bytes[i] == (byte)'\n')
             {
                 var end = i;
-                if (end > start && bytes[end - 1] == (byte)'\r') end--;
-                if (end > start) lines.Add((start, end - start));
+                if (end > start && bytes[end - 1] == (byte)'\r')
+                    end--;
+                if (end > start)
+                    lines.Add((start, end - start));
                 start = i + 1;
             }
         }

@@ -2,7 +2,4 @@
 
 namespace Corely.Security.UnitTests.KeyStore;
 
-public class KeyStoreExceptionTests
-    : ExceptionTestsBase<KeyStoreException>
-{
-}
+public class KeyStoreExceptionTests : ExceptionTestsBase<KeyStoreException> { }

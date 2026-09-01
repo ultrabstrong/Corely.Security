@@ -9,6 +9,7 @@ public sealed class SymmetricEncryptionProviderBaseTests : SymmetricEncryptionPr
     private class MockSymmetricKeyProvider : ISymmetricKeyProvider
     {
         public byte[] CreateKey() => [];
+
         public bool IsKeyValid(ReadOnlySpan<byte> key) => true;
     }
 
@@ -18,9 +19,14 @@ public sealed class SymmetricEncryptionProviderBaseTests : SymmetricEncryptionPr
             : base(TEST_PROVIDER_NAME) { }
 
         private readonly MockSymmetricKeyProvider _mockKeyProvider = new();
+
         public override ISymmetricKeyProvider GetSymmetricKeyProvider() => _mockKeyProvider;
-        protected override string EncryptInternal(string value, ReadOnlySpan<byte> key) => $"{Guid.NewGuid()}{value}";
-        protected override string DecryptInternal(string value, ReadOnlySpan<byte> key) => value[36..];
+
+        protected override string EncryptInternal(string value, ReadOnlySpan<byte> key) =>
+            $"{Guid.NewGuid()}{value}";
+
+        protected override string DecryptInternal(string value, ReadOnlySpan<byte> key) =>
+            value[36..];
     }
 
     private abstract class MockSymmetricEncryptionProviderBase : SymmetricEncryptionProviderBase
@@ -29,7 +35,9 @@ public sealed class SymmetricEncryptionProviderBaseTests : SymmetricEncryptionPr
             : base(providerName) { }
 
         public override ISymmetricKeyProvider GetSymmetricKeyProvider() => null!;
+
         protected override string EncryptInternal(string value, ReadOnlySpan<byte> key) => value;
+
         protected override string DecryptInternal(string value, ReadOnlySpan<byte> key) => value;
     }
 
@@ -37,28 +45,24 @@ public sealed class SymmetricEncryptionProviderBaseTests : SymmetricEncryptionPr
     {
         public NullMockEncryptionProvider()
             : base(null!) { }
-
     }
 
     private class EmptyMockEncryptionProvider : MockSymmetricEncryptionProviderBase
     {
         public EmptyMockEncryptionProvider()
             : base(string.Empty) { }
-
     }
 
     private class WhitespaceMockEncryptionProvider : MockSymmetricEncryptionProviderBase
     {
         public WhitespaceMockEncryptionProvider()
             : base(" ") { }
-
     }
 
     private class ColonMockEncryptionProvider : MockSymmetricEncryptionProviderBase
     {
         public ColonMockEncryptionProvider()
             : base("as:df") { }
-
     }
 
     private const string TEST_PROVIDER_NAME = "00";

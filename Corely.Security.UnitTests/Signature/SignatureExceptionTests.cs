@@ -2,7 +2,4 @@
 
 namespace Corely.Security.UnitTests.Signature;
 
-public class SignatureExceptionTests
-    : ExceptionTestsBase<SignatureException>
-{
-}
+public class SignatureExceptionTests : ExceptionTestsBase<SignatureException> { }

@@ -6,20 +6,17 @@ public sealed class SignatureException : Exception
     {
         Unknown,
         InvalidFormat,
-        InvalidTypeCode
+        InvalidTypeCode,
     }
 
     public ErrorReason Reason { get; set; } = ErrorReason.Unknown;
 
-    public SignatureException() : base()
-    {
-    }
+    public SignatureException()
+        : base() { }
 
-    public SignatureException(string message) : base(message)
-    {
-    }
+    public SignatureException(string message)
+        : base(message) { }
 
-    public SignatureException(string message, Exception innerException) : base(message, innerException)
-    {
-    }
+    public SignatureException(string message, Exception innerException)
+        : base(message, innerException) { }
 }

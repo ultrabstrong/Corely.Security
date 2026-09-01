@@ -23,7 +23,7 @@ public abstract class AsymmetricSignatureProviderBase : IAsymmetricSignatureProv
         {
             throw new SignatureException($"Signature provider name cannot contain ':'")
             {
-                Reason = SignatureException.ErrorReason.InvalidTypeCode
+                Reason = SignatureException.ErrorReason.InvalidTypeCode,
             };
         }
 
@@ -55,9 +55,16 @@ public abstract class AsymmetricSignatureProviderBase : IAsymmetricSignatureProv
 
     public abstract IAsymmetricKeyProvider GetAsymmetricKeyProvider();
 
-    public abstract SigningCredentials GetSigningCredentials(ReadOnlySpan<byte> key, bool isKeyPrivate);
+    public abstract SigningCredentials GetSigningCredentials(
+        ReadOnlySpan<byte> key,
+        bool isKeyPrivate
+    );
 
     protected abstract string SignInternal(string value, ReadOnlySpan<byte> privateKey);
 
-    protected abstract bool VerifyInternal(string value, string signature, ReadOnlySpan<byte> publicKey);
+    protected abstract bool VerifyInternal(
+        string value,
+        string signature,
+        ReadOnlySpan<byte> publicKey
+    );
 }

@@ -53,8 +53,10 @@ public class StoredFormatCompatibilityTests
         const string stored =
             "AES-256-CBC-PKCS7:1:AAECAwQFBgcICQoLDA0ODyTz8Zk6QHQ70yjwTVyVVDZCHPhHRs071yrdA2uHx0Z+";
 
-        var decrypted = new AesEncryptionProvider()
-            .Decrypt(stored, new InMemorySymmetricKeyStoreProvider(KeyBase64));
+        var decrypted = new AesEncryptionProvider().Decrypt(
+            stored,
+            new InMemorySymmetricKeyStoreProvider(KeyBase64)
+        );
 
         Assert.Equal(Plaintext, decrypted);
     }
@@ -65,8 +67,10 @@ public class StoredFormatCompatibilityTests
         const string stored =
             "AES-256-GCM:1:AAECAwQFBgcICQoLM4uBKj7mnyk/+Gc9MaVvmCRtpH6pnO9o6CLi+didAUDouOhDnlY+EksQgPc=";
 
-        var decrypted = new AesGcmEncryptionProvider()
-            .Decrypt(stored, new InMemorySymmetricKeyStoreProvider(KeyBase64));
+        var decrypted = new AesGcmEncryptionProvider().Decrypt(
+            stored,
+            new InMemorySymmetricKeyStoreProvider(KeyBase64)
+        );
 
         Assert.Equal(Plaintext, decrypted);
     }

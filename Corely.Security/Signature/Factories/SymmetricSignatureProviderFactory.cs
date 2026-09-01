@@ -12,7 +12,10 @@ public class SymmetricSignatureProviderFactory : ISymmetricSignatureProviderFact
         ArgumentNullException.ThrowIfNull(defaultProviderCode, nameof(defaultProviderCode));
 
         _defaultProviderCode = defaultProviderCode;
-        _providers.Add(SymmetricSignatureConstants.HMAC_SHA256_CODE, new HmacSha256SignatureProvider());
+        _providers.Add(
+            SymmetricSignatureConstants.HMAC_SHA256_CODE,
+            new HmacSha256SignatureProvider()
+        );
     }
 
     public void AddProvider(string providerCode, ISymmetricSignatureProvider provider)
@@ -23,9 +26,11 @@ public class SymmetricSignatureProviderFactory : ISymmetricSignatureProviderFact
 
         if (_providers.ContainsKey(providerCode))
         {
-            throw new SignatureException($"Symmetric signature provider code already exists: {providerCode}")
+            throw new SignatureException(
+                $"Symmetric signature provider code already exists: {providerCode}"
+            )
             {
-                Reason = SignatureException.ErrorReason.InvalidTypeCode
+                Reason = SignatureException.ErrorReason.InvalidTypeCode,
             };
         }
 
@@ -40,9 +45,11 @@ public class SymmetricSignatureProviderFactory : ISymmetricSignatureProviderFact
 
         if (!_providers.ContainsKey(providerCode))
         {
-            throw new SignatureException($"Symmetric signature provider code not found: {providerCode}")
+            throw new SignatureException(
+                $"Symmetric signature provider code not found: {providerCode}"
+            )
             {
-                Reason = SignatureException.ErrorReason.InvalidTypeCode
+                Reason = SignatureException.ErrorReason.InvalidTypeCode,
             };
         }
 
@@ -56,7 +63,7 @@ public class SymmetricSignatureProviderFactory : ISymmetricSignatureProviderFact
         {
             throw new SignatureException($"Symmetric signature type code cannot contain ':'")
             {
-                Reason = SignatureException.ErrorReason.InvalidTypeCode
+                Reason = SignatureException.ErrorReason.InvalidTypeCode,
             };
         }
     }
@@ -69,22 +76,21 @@ public class SymmetricSignatureProviderFactory : ISymmetricSignatureProviderFact
 
         if (!_providers.TryGetValue(providerCode, out ISymmetricSignatureProvider? value))
         {
-            throw new SignatureException($"Symmetric signature provider code not found: {providerCode}")
+            throw new SignatureException(
+                $"Symmetric signature provider code not found: {providerCode}"
+            )
             {
-                Reason = SignatureException.ErrorReason.InvalidTypeCode
+                Reason = SignatureException.ErrorReason.InvalidTypeCode,
             };
         }
 
         return value;
     }
 
-
     public List<(string ProviderCode, Type ProviderType)> ListProviders()
     {
         return _providers
-            .Select(kvp => (
-                ProviderCode: kvp.Key,
-                ProviderType: kvp.Value.GetType()))
+            .Select(kvp => (ProviderCode: kvp.Key, ProviderType: kvp.Value.GetType()))
             .ToList();
     }
 }

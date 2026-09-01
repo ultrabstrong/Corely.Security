@@ -9,7 +9,9 @@ namespace Corely.Security.UnitTests.Signature.Factories;
 public class SymmetricEncryptionProviderFactoryTests
 {
     private const string DEFAULT_PROVIDER_CODE = SymmetricSignatureConstants.HMAC_SHA256_CODE;
-    private readonly SymmetricSignatureProviderFactory _signatureProviderFactory = new(DEFAULT_PROVIDER_CODE);
+    private readonly SymmetricSignatureProviderFactory _signatureProviderFactory = new(
+        DEFAULT_PROVIDER_CODE
+    );
     private readonly Fixture _fixture = new();
 
     [Fact]
@@ -31,7 +33,9 @@ public class SymmetricEncryptionProviderFactoryTests
         var provider = new Mock<ISymmetricSignatureProvider>().Object;
 
         _signatureProviderFactory.AddProvider(providerCode, provider);
-        var ex = Record.Exception(() => _signatureProviderFactory.AddProvider(providerCode, provider));
+        var ex = Record.Exception(() =>
+            _signatureProviderFactory.AddProvider(providerCode, provider)
+        );
 
         Assert.NotNull(ex);
         Assert.IsType<SignatureException>(ex);
@@ -43,12 +47,14 @@ public class SymmetricEncryptionProviderFactoryTests
     public void AddProvider_Throws_WithInvalidCode(string providerCode)
     {
         var provider = new Mock<ISymmetricSignatureProvider>().Object;
-        var ex = Record.Exception(() => _signatureProviderFactory.AddProvider(providerCode, provider));
+        var ex = Record.Exception(() =>
+            _signatureProviderFactory.AddProvider(providerCode, provider)
+        );
 
         Assert.NotNull(ex);
-        Assert.True(ex is ArgumentNullException
-            || ex is ArgumentException
-            || ex is SignatureException);
+        Assert.True(
+            ex is ArgumentNullException || ex is ArgumentException || ex is SignatureException
+        );
     }
 
     [Fact]
@@ -82,7 +88,9 @@ public class SymmetricEncryptionProviderFactoryTests
         var providerCode = _fixture.Create<string>();
         var provider = new Mock<ISymmetricSignatureProvider>().Object;
 
-        var ex = Record.Exception(() => _signatureProviderFactory.UpdateProvider(providerCode, provider));
+        var ex = Record.Exception(() =>
+            _signatureProviderFactory.UpdateProvider(providerCode, provider)
+        );
 
         Assert.NotNull(ex);
         Assert.IsType<SignatureException>(ex);
@@ -94,19 +102,23 @@ public class SymmetricEncryptionProviderFactoryTests
     public void UpdateProvider_Throws_WithInvalidCode(string providerCode)
     {
         var provider = new Mock<ISymmetricSignatureProvider>().Object;
-        var ex = Record.Exception(() => _signatureProviderFactory.UpdateProvider(providerCode, provider));
+        var ex = Record.Exception(() =>
+            _signatureProviderFactory.UpdateProvider(providerCode, provider)
+        );
 
         Assert.NotNull(ex);
-        Assert.True(ex is ArgumentNullException
-            || ex is ArgumentException
-            || ex is SignatureException);
+        Assert.True(
+            ex is ArgumentNullException || ex is ArgumentException || ex is SignatureException
+        );
     }
 
     [Fact]
     public void UpdateProvider_Throws_WithNullProvider()
     {
         var providerCode = _fixture.Create<string>();
-        var ex = Record.Exception(() => _signatureProviderFactory.UpdateProvider(providerCode, null!));
+        var ex = Record.Exception(() =>
+            _signatureProviderFactory.UpdateProvider(providerCode, null!)
+        );
 
         Assert.NotNull(ex);
         Assert.IsType<ArgumentNullException>(ex);
@@ -139,12 +151,10 @@ public class SymmetricEncryptionProviderFactoryTests
         var ex = Record.Exception(() => _signatureProviderFactory.GetProvider(providerCode));
 
         Assert.NotNull(ex);
-        Assert.True(ex is ArgumentNullException
-            || ex is ArgumentException
-            || ex is SignatureException);
+        Assert.True(
+            ex is ArgumentNullException || ex is ArgumentException || ex is SignatureException
+        );
     }
-
-
 
     [Fact]
     public void ListProviders_ReturnsProviders()
@@ -165,6 +175,10 @@ public class SymmetricEncryptionProviderFactoryTests
 
     public static IEnumerable<object[]> GetProviderData()
     {
-        yield return new object[] { SymmetricSignatureConstants.HMAC_SHA256_CODE, typeof(HmacSha256SignatureProvider) };
+        yield return new object[]
+        {
+            SymmetricSignatureConstants.HMAC_SHA256_CODE,
+            typeof(HmacSha256SignatureProvider),
+        };
     }
 }

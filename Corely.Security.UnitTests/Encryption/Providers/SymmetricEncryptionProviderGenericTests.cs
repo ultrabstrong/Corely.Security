@@ -113,9 +113,7 @@ public abstract class SymmetricEncryptionProviderGenericTests
     [InlineData(":2:", true)]
     public void Decrypt_Throws_WithInvalidFormat(string value, bool prependProviderName)
     {
-        var testValue = prependProviderName
-            ? $"{_encryptionProvider.ProviderName}{value}"
-            : value;
+        var testValue = prependProviderName ? $"{_encryptionProvider.ProviderName}{value}" : value;
 
         var ex = Record.Exception(() => _encryptionProvider.Decrypt(testValue, _keyStoreProvider));
 
@@ -180,5 +178,4 @@ public abstract class SymmetricEncryptionProviderGenericTests
     public abstract void GetSymmetricKeyProvider_ReturnsCorrectKeyProvider_ForImplementation();
 
     public abstract ISymmetricEncryptionProvider GetEncryptionProvider();
-
 }

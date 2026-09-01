@@ -68,9 +68,12 @@ public class FileSymmetricKeyStoreProvider : ISymmetricKeyStoreProvider
 
     private static ReadOnlySpan<byte> TrimWhitespace(byte[] bytes)
     {
-        int start = 0, end = bytes.Length;
-        while (start < end && IsWhitespace(bytes[start])) start++;
-        while (end > start && IsWhitespace(bytes[end - 1])) end--;
+        int start = 0,
+            end = bytes.Length;
+        while (start < end && IsWhitespace(bytes[start]))
+            start++;
+        while (end > start && IsWhitespace(bytes[end - 1]))
+            end--;
         return bytes.AsSpan(start, end - start);
     }
 

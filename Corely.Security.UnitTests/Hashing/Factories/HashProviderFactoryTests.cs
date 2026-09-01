@@ -47,9 +47,7 @@ public class HashProviderFactoryTests
         var ex = Record.Exception(() => _hashProviderFactory.AddProvider(providerCode, provider));
 
         Assert.NotNull(ex);
-        Assert.True(ex is ArgumentNullException
-            || ex is ArgumentException
-            || ex is HashException);
+        Assert.True(ex is ArgumentNullException || ex is ArgumentException || ex is HashException);
     }
 
     [Fact]
@@ -83,7 +81,9 @@ public class HashProviderFactoryTests
         var providerCode = _fixture.Create<string>();
         var provider = new Mock<IHashProvider>().Object;
 
-        var ex = Record.Exception(() => _hashProviderFactory.UpdateProvider(providerCode, provider));
+        var ex = Record.Exception(() =>
+            _hashProviderFactory.UpdateProvider(providerCode, provider)
+        );
 
         Assert.NotNull(ex);
         Assert.IsType<HashException>(ex);
@@ -96,12 +96,12 @@ public class HashProviderFactoryTests
     {
         var provider = new Mock<IHashProvider>().Object;
 
-        var ex = Record.Exception(() => _hashProviderFactory.UpdateProvider(providerCode, provider));
+        var ex = Record.Exception(() =>
+            _hashProviderFactory.UpdateProvider(providerCode, provider)
+        );
 
         Assert.NotNull(ex);
-        Assert.True(ex is ArgumentNullException
-            || ex is ArgumentException
-            || ex is HashException);
+        Assert.True(ex is ArgumentNullException || ex is ArgumentException || ex is HashException);
     }
 
     [Fact]
@@ -140,9 +140,7 @@ public class HashProviderFactoryTests
         var ex = Record.Exception(() => _hashProviderFactory.GetProvider(providerCode));
 
         Assert.NotNull(ex);
-        Assert.True(ex is ArgumentNullException
-            || ex is ArgumentException
-            || ex is HashException);
+        Assert.True(ex is ArgumentNullException || ex is ArgumentException || ex is HashException);
     }
 
     [Theory, MemberData(nameof(GetProviderData))]
@@ -164,9 +162,7 @@ public class HashProviderFactoryTests
         var ex = Record.Exception(() => _hashProviderFactory.GetProviderToVerify(providerCode));
 
         Assert.NotNull(ex);
-        Assert.True(ex is ArgumentNullException
-            || ex is ArgumentException
-            || ex is HashException);
+        Assert.True(ex is ArgumentNullException || ex is ArgumentException || ex is HashException);
     }
 
     [Fact]
@@ -188,7 +184,15 @@ public class HashProviderFactoryTests
 
     public static IEnumerable<object[]> GetProviderData()
     {
-        yield return new object[] { HashConstants.SALTED_SHA256_CODE, typeof(Sha256SaltedHashProvider) };
-        yield return new object[] { HashConstants.SALTED_SHA512_CODE, typeof(Sha512SaltedHashProvider) };
+        yield return new object[]
+        {
+            HashConstants.SALTED_SHA256_CODE,
+            typeof(Sha256SaltedHashProvider),
+        };
+        yield return new object[]
+        {
+            HashConstants.SALTED_SHA512_CODE,
+            typeof(Sha512SaltedHashProvider),
+        };
     }
 }
