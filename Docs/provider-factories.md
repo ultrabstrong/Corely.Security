@@ -30,6 +30,18 @@ Auto resolution (verification / decryption):
 - Symmetric signature: `GetProviderForVerifying(value)`
 - Asymmetric signature: `GetProviderForVerifying(value)`
 
+Every provider exposes `ProviderName`, which is the same name written into the value's prefix. Use
+it to find out what wrote a stored value, rather than splitting the string yourself:
+
+```csharp
+var writtenBy = factory.GetProviderForDecrypting(value).ProviderName;
+```
+
+Hand-parsing `providerName:keyVersion:cipherBase64` works until the format changes, and it is the
+one place a format change would break callers silently.
+
+To move stored values from one provider to another, see [Encryption Rotation](encryption-rotation.md).
+
 Notes:
 - Provider names must be non-empty and cannot contain ':' (validated at runtime)
 - Factories are safe to register as singletons

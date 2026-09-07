@@ -63,6 +63,7 @@ Each topic below maps to a runnable demo in `Corely.Security.DemoApp/Program.cs`
 - [Key Providers](key-providers.md)
 - [Secret Providers](secret-providers.md)
 - [Key Stores](key-stores.md)
+- [Encryption Rotation](encryption-rotation.md)
 - [Provider Factories & Custom Providers](provider-factories.md)
 - [Dependency Injection](dependency-injection.md)
 - [Password Validation](password-validation.md)

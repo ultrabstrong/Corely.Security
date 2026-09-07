@@ -8,6 +8,10 @@ Corely.Security gives you small plug-in style building blocks for application "l
 > Base64 `string` to `byte[]`/`ReadOnlySpan<byte>`, and custom providers now pass their name to
 > the base constructor. Data written by 1.x stays readable.
 
+Rotating a key or moving stored values to a different algorithm? See
+[Encryption Rotation](https://github.com/ultrabstrong/Corely.Security/blob/master/Docs/encryption-rotation.md).
+Values written by an older provider keep working without any migration.
+
 ## Installation
 `dotnet add package Corely.Security`
 

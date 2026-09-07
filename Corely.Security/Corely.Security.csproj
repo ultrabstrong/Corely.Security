@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Title>Corely Security</Title>
-    <Version>3.0.2</Version>
+    <Version>3.1.0</Version>
     <PackageProjectUrl>https://github.com/ultrabstrong/Corely</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/ultrabstrong/Corely.Security</RepositoryUrl>
