@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using Corely.Security.Keys;
 using Corely.Security.KeyStore;
 
@@ -54,11 +54,29 @@ public abstract class SymmetricEncryptionProviderBase : ISymmetricEncryptionProv
         {
             return DecryptInternal(encryptedValue, key);
         }
+        catch (CryptographicException ex) when (NamesADifferentProvider(value))
+        {
+            // A wrong provider and a wrong key fail the same way - AES-GCM reports an
+            // authentication tag mismatch either way - and the key is the one people go looking
+            // at first. Say which it is, since the value records who wrote it.
+            throw new EncryptionException(
+                $"Value was encrypted with '{value.Split(':')[0]}' but is being decrypted with "
+                    + $"'{ProviderName}'. Decrypt it with the provider that wrote it, or re-encrypt "
+                    + "it under the current provider.",
+                ex
+            )
+            {
+                Reason = EncryptionException.ErrorReason.InvalidTypeCode,
+            };
+        }
         finally
         {
             CryptographicOperations.ZeroMemory(key);
         }
     }
+
+    private bool NamesADifferentProvider(string value) =>
+        value.Split(':') is [var named, _, _] && named != ProviderName;
 
     private (string, int) ValidateForKeyVersion(string value)
     {
