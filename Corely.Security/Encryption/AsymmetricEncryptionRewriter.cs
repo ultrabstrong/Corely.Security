@@ -7,14 +7,9 @@ namespace Corely.Security.Encryption;
 /// Rewrites a stored value from the provider that wrote it to a target provider.
 /// </summary>
 /// <remarks>
-/// This rotates the <em>provider</em>. To rotate the <em>key</em> while staying on the same
-/// provider, use <c>ReEncrypt</c> instead - they are different operations and reaching for the
-/// wrong one is a common mistake.
-/// <para>
-/// Values written by an older provider keep working without any rewriting, because decryption
-/// resolves the provider from the value itself. Rewriting is for retiring an algorithm
-/// deliberately, not for restoring access to data that has stopped opening.
-/// </para>
+/// Rotates the provider. Use <c>ReEncrypt</c> to rotate the key while staying on one provider.
+/// Older values stay readable without rewriting, so this is for retiring an algorithm, not for
+/// recovering access.
 /// </remarks>
 public sealed class AsymmetricEncryptionRewriter
 {
@@ -29,8 +24,7 @@ public sealed class AsymmetricEncryptionRewriter
         ArgumentNullException.ThrowIfNull(factory);
         ArgumentException.ThrowIfNullOrWhiteSpace(targetProviderCode);
 
-        // Resolved now rather than on each call so an unknown code fails at construction, where
-        // the stack points at the caller's configuration instead of at one row of a migration.
+        // Fails at construction rather than mid-migration on an unknown code.
         _ = factory.GetProvider(targetProviderCode);
 
         _factory = factory;
@@ -49,8 +43,7 @@ public sealed class AsymmetricEncryptionRewriter
 
         var sourceProvider = _factory.GetProviderForDecrypting(value);
 
-        // Idempotent by design: a half-finished migration is safe to re-run, and the caller never
-        // has to compare provider names.
+        // Makes a half-finished migration safe to re-run.
         if (sourceProvider.ProviderName == _targetProviderCode)
         {
             return value;
@@ -66,8 +59,7 @@ public sealed class AsymmetricEncryptionRewriter
         return rewritten;
     }
 
-    // The step a hand-rolled migration omits, and the only one whose absence is unrecoverable:
-    // once the rewritten value is written back, the original is gone.
+    // Unrecoverable if skipped: once written back, the original is gone.
     private void VerifyReadsBack(
         string rewritten,
         string expected,

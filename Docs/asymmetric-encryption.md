@@ -3,9 +3,9 @@
 RSA provider included (provider name `"RSA-OAEP-SHA256"`). Uses key versioning like symmetric
 encryption.
 
-The 1.x name `"RSA-2048-OAEP-SHA256"` stays registered as a read alias, so values encrypted by
-1.x still decrypt. The key size was never provider configuration - it comes from whichever key
-the key store supplies - so it is no longer claimed in the name.
+The legacy name `"RSA-2048-OAEP-SHA256"` stays registered as a read alias, so values written under
+it still decrypt. Key size comes from whichever key the key store supplies, not from provider
+configuration, so it is not claimed in the name.
 
 Usage:
 ```csharp

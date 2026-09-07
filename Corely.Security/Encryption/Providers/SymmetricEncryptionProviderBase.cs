@@ -56,9 +56,8 @@ public abstract class SymmetricEncryptionProviderBase : ISymmetricEncryptionProv
         }
         catch (CryptographicException ex) when (NamesADifferentProvider(value))
         {
-            // A wrong provider and a wrong key fail the same way - AES-GCM reports an
-            // authentication tag mismatch either way - and the key is the one people go looking
-            // at first. Say which it is, since the value records who wrote it.
+            // A wrong provider and a wrong key both surface as a tag mismatch, and the key is
+            // what people check first. The value records who wrote it, so say so.
             throw new EncryptionException(
                 $"Value was encrypted with '{value.Split(':')[0]}' but is being decrypted with "
                     + $"'{ProviderName}'. Decrypt it with the provider that wrote it, or re-encrypt "
