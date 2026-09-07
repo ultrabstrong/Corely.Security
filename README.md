@@ -4,7 +4,7 @@ Corely.Security gives you small plug-in style building blocks for application "l
 
 > **Upgrading to 3.x?** 3.0 targets `net10.0` and drops `net8.0`; there are no API changes.
 >
-> **Upgrading from 1.x?** See [MIGRATION-2.0.md](MIGRATION-2.0.md). Key material moved from
+> **Upgrading from 1.x?** See [MIGRATION-2.0.md](https://github.com/ultrabstrong/Corely.Security/blob/master/MIGRATION-2.0.md). Key material moved from
 > Base64 `string` to `byte[]`/`ReadOnlySpan<byte>`, and custom providers now pass their name to
 > the base constructor. Data written by 1.x stays readable.
 
@@ -18,7 +18,7 @@ Details about using this library can be found in the [documentation](https://git
 [Corely.Security](https://github.com/ultrabstrong/Corely.Security)
 
 ## Contributing
-We welcome contributions! Please read our [contributing guidelines](CONTRIBUTING.md) to get started.
+We welcome contributions! Please read our [contributing guidelines](https://github.com/ultrabstrong/Corely.Security/blob/master/CONTRIBUTING.md) to get started.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
