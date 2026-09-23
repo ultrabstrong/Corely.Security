@@ -20,7 +20,6 @@ public sealed class RsaEncryptionProvider : AsymmetricEncryptionProviderBase
         _rsaEncryptionPadding = rsaEncryptionPadding;
     }
 
-    // Not ToString(): stored prefixes depend on this exact text.
     private static string PaddingName(RSAEncryptionPadding padding) =>
         padding.Mode == RSAEncryptionPaddingMode.Oaep
             ? $"OAEP-{padding.OaepHashAlgorithm.Name}"

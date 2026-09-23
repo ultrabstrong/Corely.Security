@@ -13,7 +13,6 @@ public class AsymmetricKnownAnswerTests
         "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE7FH1C9bnJiTB16IZcgHOlE3+14fV8MMVaexEXRjEw1Wp"
         + "Qdwp3dVQO+0ofsxbE03ip6y2Mtj6KIwccfq4sX8ktA==";
 
-    // IEEE P1363 (r||s), not the DER that ProviderDescription claims.
     private const string EcdsaSignature =
         "YOB42XA/X3Amw+vKpst0QSOBSYjBDCl401/nPh4IZ8rmCueBVur2uMiywGnhf8s/zwjFgZ2FxtOnugZY"
         + "EcoZMg==";

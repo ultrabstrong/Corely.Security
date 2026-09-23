@@ -52,7 +52,6 @@ public abstract class AsymmetricEncryptionProviderBase : IAsymmetricEncryptionPr
 
     private (string, int) ValidateForKeyVersion(string value)
     {
-        // Prefix not checked against ProviderName: the factory routed by it, and checking would block renames.
         string[] parts = value.Split(':');
 
         if (
