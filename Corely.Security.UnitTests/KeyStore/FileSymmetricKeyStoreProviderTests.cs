@@ -32,7 +32,6 @@ public class FileSymmetricKeyStoreProviderTests
         Assert.Equal(_fileKey, _fileKeyStoreProvider.GetCurrentKey());
     }
 
-    // Key files are written by hand and by editors that append a newline.
     [Theory]
     [InlineData("\n")]
     [InlineData("\r\n")]

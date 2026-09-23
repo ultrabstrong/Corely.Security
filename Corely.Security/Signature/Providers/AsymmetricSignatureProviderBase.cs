@@ -11,10 +11,6 @@ public abstract class AsymmetricSignatureProviderBase : IAsymmetricSignatureProv
 
     public virtual string ProviderDescription => GetType().Name;
 
-    // The name is supplied by the derived constructor rather than read from an abstract
-    // property. Calling a virtual member from a base constructor observes the derived type
-    // before its fields are assigned, so a name computed from constructor arguments was
-    // either half-formed or null at the moment it was validated.
     protected AsymmetricSignatureProviderBase(string providerName)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(providerName, nameof(providerName));

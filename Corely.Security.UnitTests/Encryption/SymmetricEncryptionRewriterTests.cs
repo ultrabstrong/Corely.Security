@@ -49,8 +49,6 @@ public class SymmetricEncryptionRewriterTests
 
         var rewritten = _rewriter.Rewrite(alreadyCurrent, _keyStore);
 
-        // Reference equality of content matters: re-encrypting would produce a different nonce, so
-        // an identical string proves no encryption happened and the migration is re-runnable.
         Assert.Equal(alreadyCurrent, rewritten);
     }
 
@@ -112,10 +110,6 @@ public class SymmetricEncryptionRewriterTests
         );
     }
 
-    /// <summary>
-    /// Encrypts to something that will not decrypt back to the original, standing in for any bug
-    /// that would otherwise write an unreadable value over the only copy.
-    /// </summary>
     private sealed class CorruptingEncryptionProvider(
         string providerName,
         ISymmetricKeyProvider keyProvider

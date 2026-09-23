@@ -7,15 +7,8 @@ using Corely.Security.Signature.Providers;
 
 namespace Corely.Security.UnitTests.Interop;
 
-// Every other test in this suite is a round trip: hash then verify, encrypt then decrypt. That
-// proves the code agrees with itself, which it would continue to do if a provider silently
-// implemented the wrong algorithm. These assert against values published by the standards bodies
-// and reproduced with an implementation outside .NET, so they fail if the primitive underneath
-// stops being the primitive the provider name claims.
 public class KnownAnswerTests
 {
-    // RFC 8018 PBKDF2 with HMAC-SHA256, dkLen 32. The salt and derived key are spliced into the
-    // provider's own storage format so Verify exercises the real parsing and derivation path.
     [Theory]
     [InlineData(1, "Eg+2z/z4syxD5yJSVsT4N6hlSMkszDVICAWYfLcL4Xs=")]
     [InlineData(2, "rk0Mla9rRtMtCt/5KPBt0CowP47zwlHf1uLYWpVHTEM=")]
@@ -39,7 +32,6 @@ public class KnownAnswerTests
         Assert.False(new Pbkdf2HashProvider(1).Verify("Password", hash));
     }
 
-    // The salted providers hash salt || value and store Base64(salt || digest).
     [Fact]
     public void SaltedSha256_MatchesAnIndependentlyComputedDigest()
     {
@@ -62,7 +54,6 @@ public class KnownAnswerTests
         Assert.True(new Sha512SaltedHashProvider().Verify("password", hash));
     }
 
-    // RFC 4231 HMAC-SHA256 test cases 1 and 2.
     [Theory]
     [InlineData(
         "CwsLCwsLCwsLCwsLCwsLCwsLCws=",
@@ -83,9 +74,6 @@ public class KnownAnswerTests
         Assert.True(provider.Verify(data, expectedSignature, keyStore));
     }
 
-    // Produced by a non-.NET AES-GCM implementation, then laid out in the order this provider
-    // writes: nonce | tag | ciphertext. A change to that ordering fails here rather than silently
-    // making every previously encrypted value undecryptable.
     [Fact]
     public void AesGcm_DecryptsAnIndependentlyProducedCiphertext()
     {

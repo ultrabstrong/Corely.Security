@@ -9,10 +9,6 @@ using Corely.Security.Signature.Providers;
 
 namespace Corely.Security.UnitTests.Interop;
 
-// ProviderName is the factory lookup key everywhere, and for encryption providers it is also the
-// prefix written into stored values. The default-configuration names must therefore stay byte for
-// byte what they have always been; the configured-value names exist so a provider stops reporting
-// settings it is not using.
 public class ProviderNamingTests
 {
     [Fact]
@@ -64,8 +60,6 @@ public class ProviderNamingTests
         );
     }
 
-    // Key size and curve come from whichever key the key store supplies, so a provider cannot
-    // report them honestly and no longer claims to.
     [Fact]
     public void NamesDoNotClaimKeyProperties()
     {
@@ -80,7 +74,6 @@ public class ProviderNamingTests
         Assert.All(names, n => Assert.DoesNotContain("P256", n));
     }
 
-    // The 1.x names are the prefix on values encrypted by 1.x, so they must still resolve.
     [Fact]
     public void TheFactoryStillResolvesLegacyNames()
     {
@@ -107,7 +100,6 @@ public class ProviderNamingTests
         );
     }
 
-    // A value written by 1.x carries the old prefix and must round-trip through the factory.
     [Fact]
     public void AValueEncryptedUnderTheLegacyNameStillDecrypts()
     {

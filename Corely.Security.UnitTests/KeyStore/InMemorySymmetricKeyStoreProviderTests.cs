@@ -16,8 +16,6 @@ public class InMemorySymmetricKeyStoreProviderTests
         Assert.Equal(key, keyStoreProvider.GetCurrentKey());
     }
 
-    // The store must hand out copies; a caller zeroing what it received would otherwise wipe the
-    // stored key, since the provider bases zero every key they are given.
     [Fact]
     public void GetCurrentKey_ReturnsACopyTheCallerMayZero()
     {
@@ -79,8 +77,6 @@ public class InMemorySymmetricKeyStoreProviderTests
         Assert.Equal(KeyStoreException.ErrorReason.InvalidVersion, ((KeyStoreException)ex).Reason);
     }
 
-    // Clear drops the keys but deliberately leaves the version counter alone: a new key reusing
-    // version 1 would silently mismatch values already written under the old version 1.
     [Fact]
     public void Clear_DiscardsStoredKeys()
     {

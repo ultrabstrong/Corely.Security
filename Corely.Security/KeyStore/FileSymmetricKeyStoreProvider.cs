@@ -32,8 +32,7 @@ public class FileSymmetricKeyStoreProvider : ISymmetricKeyStoreProvider
         return GetCurrentKey();
     }
 
-    // Read as bytes and decode in place. Going through File.ReadAllText would put the key into a
-    // string, which cannot be zeroed and lives until the GC happens to collect it.
+    // Bytes, not ReadAllText: a string key can't be zeroed.
     public byte[] GetCurrentKey()
     {
         var fileBytes = GetFileBytes();

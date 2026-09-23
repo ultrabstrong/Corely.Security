@@ -20,8 +20,7 @@ public sealed class RsaEncryptionProvider : AsymmetricEncryptionProviderBase
         _rsaEncryptionPadding = rsaEncryptionPadding;
     }
 
-    // Mapped explicitly rather than through ToString(): this name is the prefix on every stored
-    // value, so the OaepSHA256 default must keep rendering "OAEP-SHA256".
+    // Not ToString(): stored prefixes depend on this exact text.
     private static string PaddingName(RSAEncryptionPadding padding) =>
         padding.Mode == RSAEncryptionPaddingMode.Oaep
             ? $"OAEP-{padding.OaepHashAlgorithm.Name}"

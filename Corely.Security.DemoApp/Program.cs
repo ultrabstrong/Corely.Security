@@ -25,27 +25,21 @@ internal class Program
     {
         Console.WriteLine("=== Corely.Security Demo ===");
 
-        // Demonstrate key providers
         RunKeyProvidersDemo();
         RunSecretProvidersDemo();
 
-        // Demonstrate simple encryption, hashing, and signing operations
         RunHashingDemo();
         RunSymmetricEncryptionDemo();
         RunSymmetricSignatureDemo();
         RunAsymmetricEncryptionDemo();
         RunAsymmetricSignatureDemo();
 
-        // Demonstrate adding custom providers for encryption, hashing, and signing
         RunAddCustomProvidersDemo();
 
-        // Demonstrate dependency injection registration and resolution
         RunDependencyInjectionDemo();
 
-        // Demonstrate direct usage of key store providers (symmetric & asymmetric)
         RunKeyStoreProvidersDemo();
 
-        // Demonstrate password validation logic
         RunPasswordValidationDemo();
     }
 
@@ -81,7 +75,6 @@ internal class Program
 
         void AsymmetricRsaKeyProviderDemo()
         {
-            // Use RSA encryption provider to access RSA key provider
             var factory = new AsymmetricEncryptionProviderFactory(
                 AsymmetricEncryptionConstants.RSA_CODE
             );
@@ -95,7 +88,6 @@ internal class Program
 
         void AsymmetricEcdsaKeyProviderDemo()
         {
-            // Use ECDSA signature provider to access ECDSA key provider
             var factory = new AsymmetricSignatureProviderFactory(
                 AsymmetricSignatureConstants.ECDSA_SHA256_CODE
             );
@@ -107,7 +99,6 @@ internal class Program
             );
         }
 
-        // Execute key provider demos
         SymmetricAesKeyProviderDemo();
         SymmetricHmacKeyProviderDemo();
         AsymmetricRsaKeyProviderDemo();
@@ -153,7 +144,7 @@ internal class Program
         var provider = encryptionFactory.GetDefaultProvider();
 
         var keyProvider = provider.GetSymmetricKeyProvider();
-        var keyStore = new InMemorySymmetricKeyStoreProvider(keyProvider.CreateKey()); // version 1
+        var keyStore = new InMemorySymmetricKeyStoreProvider(keyProvider.CreateKey());
 
         var plaintext = "Sensitive data that must be encrypted.";
         var encrypted = provider.Encrypt(plaintext, keyStore);
@@ -165,7 +156,6 @@ internal class Program
         Console.WriteLine($"Encrypted: {encrypted}");
         Console.WriteLine($"Decrypted: {decrypted}");
 
-        // Rotate key (version 2) and re-encrypt
         keyStore.Add(keyProvider.CreateKey());
         var reEncrypted = provider.ReEncrypt(encrypted, keyStore);
         var reDecrypted = provider.Decrypt(reEncrypted, keyStore);
@@ -184,7 +174,7 @@ internal class Program
         var provider = signatureFactory.GetDefaultProvider();
 
         var keyProvider = provider.GetSymmetricKeyProvider();
-        var keyStore = new InMemorySymmetricKeyStoreProvider(keyProvider.CreateKey()); // version 1
+        var keyStore = new InMemorySymmetricKeyStoreProvider(keyProvider.CreateKey());
 
         var data = "Payload to authenticate";
         var signature = provider.Sign(data, keyStore);
@@ -198,9 +188,8 @@ internal class Program
         Console.WriteLine($"Verify (correct): {verified}");
         Console.WriteLine($"Verify (tampered): {failed}");
 
-        // Demonstrate rotation impact
-        keyStore.Add(keyProvider.CreateKey()); // version 2 (existing signature still validated with current key only)
-        var signatureV2 = provider.Sign(data, keyStore); // new signature with new key
+        keyStore.Add(keyProvider.CreateKey());
+        var signatureV2 = provider.Sign(data, keyStore);
         var verifiedV2 = provider.Verify(data, signatureV2, keyStore);
         Console.WriteLine(
             $"Signature after rotation (version {keyStore.GetCurrentVersion()}): {signatureV2}"
@@ -218,7 +207,7 @@ internal class Program
 
         var keyProvider = provider.GetAsymmetricKeyProvider();
         var (pub1, priv1) = keyProvider.CreateKeys();
-        var keyStore = new InMemoryAsymmetricKeyStoreProvider(pub1, priv1); // version 1
+        var keyStore = new InMemoryAsymmetricKeyStoreProvider(pub1, priv1);
 
         var plaintext = "Highly sensitive asymmetric data";
         var encrypted = provider.Encrypt(plaintext, keyStore);
@@ -229,7 +218,6 @@ internal class Program
         Console.WriteLine($"Encrypted: {encrypted}");
         Console.WriteLine($"Decrypted: {decrypted}");
 
-        // Rotate keys (version 2) and re-encrypt
         var (pub2, priv2) = keyProvider.CreateKeys();
         keyStore.Add(pub2, priv2);
         var reEncrypted = provider.ReEncrypt(encrypted, keyStore);
@@ -333,7 +321,6 @@ internal class Program
             Console.WriteLine($"Custom Asymmetric Signature => {signature}");
         }
 
-        // Execute local demos
         HashProviderDemo();
         SymmetricEncryptionProviderDemo();
         AsymmetricEncryptionProviderDemo();
@@ -365,7 +352,6 @@ internal class Program
         services.AddScoped<IPasswordValidationProvider, PasswordValidationProvider>();
         services.AddSingleton<ISecretProvider, RandomSecretProvider>();
 
-        // Manually register options since no IConfiguration binding here
         services.AddSingleton(_ =>
             Options.Create(
                 new PasswordValidationOptions
@@ -408,7 +394,6 @@ internal class Program
             var symProvider = symFactory.GetDefaultProvider();
             var symKeyCreator = symProvider.GetSymmetricKeyProvider();
 
-            // Seed key store with initial key (version 1)
             var initialSymKey = symKeyCreator.CreateKey();
             var symKeyStore = new InMemorySymmetricKeyStoreProvider(initialSymKey);
             Console.WriteLine($"Initial Symmetric Key Version: {symKeyStore.GetCurrentVersion()}");
@@ -417,11 +402,9 @@ internal class Program
             var encryptedV1 = symProvider.Encrypt(secret, symKeyStore);
             Console.WriteLine($"Encrypted (v1): {encryptedV1}");
 
-            // Rotate to version 2
             symKeyStore.Add(symKeyCreator.CreateKey());
             Console.WriteLine($"Rotated Symmetric Key Version: {symKeyStore.GetCurrentVersion()}");
 
-            // Re-encrypt existing ciphertext to current version (demonstrates automated decrypt & re-encrypt flow)
             var reEncryptedToV2 = symProvider.ReEncrypt(encryptedV1, symKeyStore);
             Console.WriteLine($"Re-Encrypted (v2): {reEncryptedToV2}");
             var decryptedAfterRotation = symProvider.Decrypt(reEncryptedToV2, symKeyStore);
@@ -437,7 +420,6 @@ internal class Program
             var asymProvider = asymFactory.GetDefaultProvider();
             var asymKeyCreator = asymProvider.GetAsymmetricKeyProvider();
 
-            // Seed asymmetric key store (version 1)
             var (pub1, priv1) = asymKeyCreator.CreateKeys();
             var asymKeyStore = new InMemoryAsymmetricKeyStoreProvider(pub1, priv1);
             Console.WriteLine(
@@ -448,7 +430,6 @@ internal class Program
             var asymEncryptedV1 = asymProvider.Encrypt(asymSecret, asymKeyStore);
             Console.WriteLine($"Encrypted (v1): {asymEncryptedV1}");
 
-            // Rotate asymmetric keys (version 2)
             var (pub2, priv2) = asymKeyCreator.CreateKeys();
             asymKeyStore.Add(pub2, priv2);
             Console.WriteLine(
@@ -461,7 +442,6 @@ internal class Program
             Console.WriteLine($"Decrypted (v2): {asymDecryptedV2}");
         }
 
-        // Execute local key store demos
         SymmetricKeyStoreDemo();
         AsymmetricKeyStoreDemo();
     }
@@ -470,7 +450,6 @@ internal class Program
     {
         Console.WriteLine("\n-- Password Validation Demo --");
 
-        // Configure validation rules (could mirror what DI would inject)
         var options = Options.Create(
             new PasswordValidationOptions
             {
@@ -486,12 +465,12 @@ internal class Program
 
         string[] samples =
         {
-            "Passw0rd!", // valid
-            "password", // no upper, digit, special
-            "PASSWORD1", // no lower, no special
-            "Passw0rd", // missing special
-            "Pw0!", // too short
-            "ValidPass1#", // valid
+            "Passw0rd!",
+            "password",
+            "PASSWORD1",
+            "Passw0rd",
+            "Pw0!",
+            "ValidPass1#",
         };
 
         foreach (var pwd in samples)
@@ -511,10 +490,8 @@ internal class Program
     }
 }
 
-// --- Demo-only Custom Provider Implementations ---
 internal sealed class DemoHashProvider : SaltedHashProviderBase
 {
-    // Unique demo provider name (not conflicting with built-in providers).
     public DemoHashProvider()
         : base("DemoHash") { }
 
@@ -525,7 +502,6 @@ internal sealed class DemoHashProvider : SaltedHashProviderBase
 
 internal sealed class DemoSymmetricEncryptionProvider : SymmetricEncryptionProviderBase
 {
-    // Unique demo provider name (built-in AES uses "AES-256-CBC-PKCS7").
     public DemoSymmetricEncryptionProvider()
         : base("DemoSymEnc") { }
 
@@ -541,7 +517,6 @@ internal sealed class DemoSymmetricEncryptionProvider : SymmetricEncryptionProvi
 
 internal sealed class DemoAsymmetricEncryptionProvider : AsymmetricEncryptionProviderBase
 {
-    // Unique demo provider name (built-in RSA uses "RSA-2048-OAEP-SHA256").
     public DemoAsymmetricEncryptionProvider()
         : base("DemoAsymEnc") { }
 
@@ -557,7 +532,6 @@ internal sealed class DemoAsymmetricEncryptionProvider : AsymmetricEncryptionPro
 
 internal sealed class DemoSymmetricSignatureProvider : SymmetricSignatureProviderBase
 {
-    // Unique demo provider name (built-in HMAC SHA256 uses "HMAC-SHA256").
     public override string ProviderDescription => "Demo symmetric signature provider for testing";
     private readonly string _signatureValue;
 
@@ -581,7 +555,6 @@ internal sealed class DemoSymmetricSignatureProvider : SymmetricSignatureProvide
 
 internal sealed class DemoAsymmetricSignatureProvider : AsymmetricSignatureProviderBase
 {
-    // Unique demo provider name (built-in ECDSA/RSA use "ECDSA-P256-SHA256"/"RSA-2048-PKCS1-SHA256").
     public override string ProviderDescription => "Demo asymmetric signature provider for testing";
     private readonly string _signatureValue;
 
@@ -606,7 +579,6 @@ internal sealed class DemoAsymmetricSignatureProvider : AsymmetricSignatureProvi
         new DemoAsymmetricKeyProvider();
 }
 
-// Demo key providers (simplified)
 internal sealed class DemoSymmetricKeyProvider : ISymmetricKeyProvider
 {
     public byte[] CreateKey() => new byte[16];

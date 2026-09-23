@@ -12,11 +12,6 @@ public class InMemorySymmetricKeyStoreProvider : ISymmetricKeyStoreProvider
         Add(key);
     }
 
-    /// <summary>
-    /// Convenience overload for keys held as Base64 - configuration, environment variables, a
-    /// database column. The string itself cannot be zeroed, so prefer the span overload where the
-    /// key is already bytes.
-    /// </summary>
     public InMemorySymmetricKeyStoreProvider(string base64Key)
         : this(Convert.FromBase64String(base64Key)) { }
 
@@ -44,9 +39,6 @@ public class InMemorySymmetricKeyStoreProvider : ISymmetricKeyStoreProvider
 
     public byte[] GetCurrentKey() => [.. _keys[_version]];
 
-    /// <summary>
-    /// Zeroes every key this store holds. The store is unusable afterwards.
-    /// </summary>
     public void Clear()
     {
         foreach (var key in _keys.Values)

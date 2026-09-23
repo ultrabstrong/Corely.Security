@@ -5,15 +5,6 @@ using Corely.Security.Signature.Providers;
 
 namespace Corely.Security.UnitTests.Interop;
 
-// Verification needs only a public key, so these pin real cross-implementation vectors without
-// any secret in the repository. The message and signature were produced outside .NET; if a
-// provider's curve, padding scheme, hash algorithm, or signature encoding drifts from what its
-// name advertises, verification of an externally produced signature stops working.
-//
-// A key pair generated inside the test would not do this. Signing and verifying with the same
-// freshly generated key is a round trip, and a round trip passes through any change applied
-// consistently to both halves - which is exactly how the AES-GCM layout mutation slipped past
-// 154 existing tests.
 public class AsymmetricKnownAnswerTests
 {
     private const string Message = "corely-security-known-answer";
@@ -22,8 +13,7 @@ public class AsymmetricKnownAnswerTests
         "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE7FH1C9bnJiTB16IZcgHOlE3+14fV8MMVaexEXRjEw1Wp"
         + "Qdwp3dVQO+0ofsxbE03ip6y2Mtj6KIwccfq4sX8ktA==";
 
-    // IEEE P1363 (raw r || s), which is what .NET's ECDsa.VerifyData consumes by default -
-    // NOT the DER sequence that ProviderDescription advertises. See EcdsaSignatureFormat below.
+    // IEEE P1363 (r||s), not the DER that ProviderDescription claims.
     private const string EcdsaSignature =
         "YOB42XA/X3Amw+vKpst0QSOBSYjBDCl401/nPh4IZ8rmCueBVur2uMiywGnhf8s/zwjFgZ2FxtOnugZY"
         + "EcoZMg==";
@@ -42,14 +32,10 @@ public class AsymmetricKnownAnswerTests
         + "5Z8UIn0aD8h+ZDQLGvHx6MfCcGZwNyATGcyh2gmjB7xpYpWIIh4s1/KCTD2cdpFKRhPkGtc9wykiiO4I"
         + "sNSFb1Hy5664jEqDthMhAA==";
 
-    // Same message, signed by a different P-256 key. Guards against a verify path that returns
-    // true without actually checking anything.
     private const string EcdsaSignatureFromAnotherKey =
         "EkfOB1P1vrHR/LCL6Yx8w6mrYnr6cXx1cWpP9AapCG1q2NHCsPWJOI5ZJ/7YPnrTjgMXZl4QiQsZB7WQ"
         + "Y0D9ZQ==";
 
-    // The private key is never used on the verification path; the store requires one, so the
-    // public key is passed in its place to keep secrets out of the repository.
     private static InMemoryAsymmetricKeyStoreProvider PublicOnlyStore(string publicKey) =>
         new(publicKey, publicKey);
 
@@ -97,9 +83,6 @@ public class AsymmetricKnownAnswerTests
         Assert.False(provider.Verify(Message + "!", RsaSignature, PublicOnlyStore(RsaPublicKey)));
     }
 
-    // The signature encoding is the thing that decides whether an external system can consume
-    // these signatures at all, and nothing else in the suite pins it. P-256 P1363 is exactly
-    // 64 bytes; a DER sequence for the same curve is 70-72 and starts with 0x30.
     [Fact]
     public void Ecdsa_EmitsP1363NotDer()
     {

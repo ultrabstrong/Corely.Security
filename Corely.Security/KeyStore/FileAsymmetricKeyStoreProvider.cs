@@ -35,8 +35,7 @@ public class FileAsymmetricKeyStoreProvider : IAsymmetricKeyStoreProvider
 
     public (byte[] PublicKey, byte[] PrivateKey) GetCurrentKeys() => ReadKeys();
 
-    // Read as bytes and decode in place. Going through File.ReadAllText would put the private key
-    // into a string, which cannot be zeroed and lives until the GC happens to collect it.
+    // Bytes, not ReadAllText: a string key can't be zeroed.
     private (byte[] PublicKey, byte[] PrivateKey) ReadKeys()
     {
         var fileBytes = GetFileBytes();

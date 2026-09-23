@@ -10,10 +10,6 @@ public abstract class AsymmetricEncryptionProviderBase : IAsymmetricEncryptionPr
 
     public virtual string ProviderDescription => GetType().Name;
 
-    // The name is supplied by the derived constructor rather than read from an abstract
-    // property. Calling a virtual member from a base constructor observes the derived type
-    // before its fields are assigned, so a name computed from constructor arguments was
-    // either half-formed or null at the moment it was validated.
     protected AsymmetricEncryptionProviderBase(string providerName)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(providerName, nameof(providerName));
@@ -56,10 +52,7 @@ public abstract class AsymmetricEncryptionProviderBase : IAsymmetricEncryptionPr
 
     private (string, int) ValidateForKeyVersion(string value)
     {
-        // The prefix is deliberately not checked against ProviderName. The factory already routed
-        // this value here by that prefix, so re-checking it only forbids a provider from reading
-        // values written under a name it has since moved on from - which is exactly what makes
-        // renaming a provider impossible without stranding stored data.
+        // Prefix not checked against ProviderName: the factory routed by it, and checking would block renames.
         string[] parts = value.Split(':');
 
         if (

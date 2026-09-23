@@ -6,15 +6,7 @@ using Corely.Security.KeyStore;
 
 namespace Corely.Security.UnitTests.Interop;
 
-// Round-trip tests encrypt and decrypt with the same code in the same process, so they stay green
-// through any change to the stored format. Consumers do not: Corely.IAM writes these strings to
-// SQL and reads them back months later, under a newer version of this library. The literals below
-// are the formats as shipped. A failure here means previously stored credentials and encrypted
-// values have become unreadable, which no round-trip test can detect.
-//
-// Asymmetric providers are absent deliberately - pinning RSA/ECDSA output means committing a
-// private key, and these formats (PKCS#8, SubjectPublicKeyInfo, DER signatures) are defined
-// outside this library rather than by it.
+// Shipped formats. A failure means stored data is unreadable; never update these literals to pass.
 public class StoredFormatCompatibilityTests
 {
     private const string KeyBase64 = "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=";
@@ -75,8 +67,6 @@ public class StoredFormatCompatibilityTests
         Assert.Equal(Plaintext, decrypted);
     }
 
-    // A stored value carries the key version it was written under. Reading it must select that
-    // version rather than the current one, or every value written before a rotation breaks.
     [Fact]
     public void AesGcm_DecryptsWithTheKeyVersionRecordedInTheValue()
     {
@@ -93,7 +83,6 @@ public class StoredFormatCompatibilityTests
         );
     }
 
-    // The envelope shape itself, asserted for values this suite cannot pin byte for byte.
     [Fact]
     public void HashProviders_EmitTheirDocumentedEnvelope()
     {

@@ -15,7 +15,7 @@ public sealed class AsymmetricSignatureProviderBaseTests : AsymmetricSignaturePr
         public (byte[] PublicKey, byte[] PrivateKey) CreateKeys()
         {
             var key = _fixture.Create<byte[]>();
-            return (key, key); // This allows mocking signature verification success / failure
+            return (key, key);
         }
 
         public bool IsKeyValid(ReadOnlySpan<byte> publicKey, ReadOnlySpan<byte> privateKey) => true;

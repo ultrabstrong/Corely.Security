@@ -6,10 +6,6 @@ using Corely.Security.KeyStore;
 
 namespace Corely.Security.UnitTests.Interop;
 
-// A provider name is written into every value it encrypts, so a name can only ever change if
-// providers can still read values carrying the old one. Decrypt deliberately does not check the
-// stored prefix against its own ProviderName: the factory already routed the value here by that
-// prefix, and re-checking it would make every shipped name permanent.
 public class ProviderRenameTests
 {
     private const string LegacyName = "AES-256-GCM-LEGACY";
@@ -49,7 +45,6 @@ public class ProviderRenameTests
         Assert.Equal(Plaintext, resolved.Decrypt(underLegacyName, keyStore));
     }
 
-    // Reading under an alias must not change what new writes are labelled.
     [Fact]
     public void NewValuesAreWrittenUnderTheCurrentName()
     {
@@ -60,7 +55,6 @@ public class ProviderRenameTests
         Assert.StartsWith($"{SymmetricEncryptionConstants.AES_GCM_CODE}:", written);
     }
 
-    // Dropping the identity check must not weaken shape validation.
     [Theory]
     [InlineData(":1:abc")]
     [InlineData("   :1:abc")]

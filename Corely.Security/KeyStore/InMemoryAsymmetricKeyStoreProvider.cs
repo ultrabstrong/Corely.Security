@@ -15,10 +15,6 @@ public class InMemoryAsymmetricKeyStoreProvider : IAsymmetricKeyStoreProvider
         Add(publicKey, privateKey);
     }
 
-    /// <summary>
-    /// Convenience overload for keys held as Base64. The strings cannot be zeroed, so prefer the
-    /// span overload where the keys are already bytes.
-    /// </summary>
     public InMemoryAsymmetricKeyStoreProvider(string base64PublicKey, string base64PrivateKey)
         : this(
             Convert.FromBase64String(base64PublicKey),
@@ -54,9 +50,6 @@ public class InMemoryAsymmetricKeyStoreProvider : IAsymmetricKeyStoreProvider
         return ([.. keys.PublicKey], [.. keys.PrivateKey]);
     }
 
-    /// <summary>
-    /// Zeroes every private key this store holds. The store is unusable afterwards.
-    /// </summary>
     public void Clear()
     {
         foreach (var (_, privateKey) in _keys.Values)

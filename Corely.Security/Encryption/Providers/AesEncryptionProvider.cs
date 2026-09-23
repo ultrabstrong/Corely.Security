@@ -23,7 +23,6 @@ public sealed class AesEncryptionProvider : SymmetricEncryptionProviderBase
             using (ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV))
             using (MemoryStream msEncrypt = new())
             {
-                // Prepend IV to the beginning of the encrypted string
                 msEncrypt.Write(aes.IV, 0, aes.IV.Length);
 
                 using (CryptoStream csEncrypt = new(msEncrypt, encryptor, CryptoStreamMode.Write))
@@ -54,7 +53,6 @@ public sealed class AesEncryptionProvider : SymmetricEncryptionProviderBase
             byte[] iv = new byte[aes.IV.Length];
             byte[] cipherText = new byte[fullCipher.Length - iv.Length];
 
-            // Extract IV from the beginning of the encrypted string
             Buffer.BlockCopy(fullCipher, 0, iv, 0, iv.Length);
             Buffer.BlockCopy(fullCipher, iv.Length, cipherText, 0, cipherText.Length);
 
