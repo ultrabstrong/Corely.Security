@@ -1,5 +1,3 @@
-using System.Buffers;
-using System.Buffers.Text;
 using System.Security.Cryptography;
 
 namespace Corely.Security.KeyStore;
@@ -42,7 +40,7 @@ public class FileAsymmetricKeyStoreProvider : IAsymmetricKeyStoreProvider
 
         try
         {
-            var lines = SplitLines(fileBytes);
+            var lines = fileBytes.NonEmptyLineRanges();
             if (lines.Count < 2)
             {
                 throw new KeyStoreException(
@@ -53,54 +51,15 @@ public class FileAsymmetricKeyStoreProvider : IAsymmetricKeyStoreProvider
                 };
             }
 
-            return (Decode(fileBytes, lines[0]), Decode(fileBytes, lines[1]));
+            return (
+                fileBytes.AsSpan(lines[0].Start, lines[0].Length).DecodedBase64Key(),
+                fileBytes.AsSpan(lines[1].Start, lines[1].Length).DecodedBase64Key()
+            );
         }
         finally
         {
             CryptographicOperations.ZeroMemory(fileBytes);
         }
-    }
-
-    private static List<(int Start, int Length)> SplitLines(byte[] bytes)
-    {
-        List<(int, int)> lines = [];
-        var start = 0;
-        for (var i = 0; i <= bytes.Length; i++)
-        {
-            if (i == bytes.Length || bytes[i] == (byte)'\n')
-            {
-                var end = i;
-                if (end > start && bytes[end - 1] == (byte)'\r')
-                    end--;
-                if (end > start)
-                    lines.Add((start, end - start));
-                start = i + 1;
-            }
-        }
-        return lines;
-    }
-
-    private static byte[] Decode(byte[] source, (int Start, int Length) line)
-    {
-        var span = source.AsSpan(line.Start, line.Length);
-        var decoded = new byte[Base64.GetMaxDecodedFromUtf8Length(span.Length)];
-
-        var status = Base64.DecodeFromUtf8(span, decoded, out _, out var written);
-        if (status != OperationStatus.Done)
-        {
-            CryptographicOperations.ZeroMemory(decoded);
-            throw new KeyStoreException("Key file does not contain valid Base64.")
-            {
-                Reason = KeyStoreException.ErrorReason.CurrentKeyNotFound,
-            };
-        }
-
-        var key = decoded[..written];
-        if (written != decoded.Length)
-        {
-            CryptographicOperations.ZeroMemory(decoded);
-        }
-        return key;
     }
 
     protected virtual byte[] GetFileBytes() => File.ReadAllBytes(_filePath);

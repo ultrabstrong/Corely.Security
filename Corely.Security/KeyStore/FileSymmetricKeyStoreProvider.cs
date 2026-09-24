@@ -1,4 +1,3 @@
-using System.Buffers.Text;
 using System.Security.Cryptography;
 
 namespace Corely.Security.KeyStore;
@@ -39,44 +38,13 @@ public class FileSymmetricKeyStoreProvider : ISymmetricKeyStoreProvider
 
         try
         {
-            var trimmed = TrimWhitespace(fileBytes);
-            var decoded = new byte[Base64.GetMaxDecodedFromUtf8Length(trimmed.Length)];
-
-            var status = Base64.DecodeFromUtf8(trimmed, decoded, out _, out var written);
-            if (status != System.Buffers.OperationStatus.Done)
-            {
-                CryptographicOperations.ZeroMemory(decoded);
-                throw new KeyStoreException("Key file does not contain valid Base64.")
-                {
-                    Reason = KeyStoreException.ErrorReason.CurrentKeyNotFound,
-                };
-            }
-
-            var key = decoded[..written];
-            if (written != decoded.Length)
-            {
-                CryptographicOperations.ZeroMemory(decoded);
-            }
-            return key;
+            return fileBytes.WithoutSurroundingWhitespace().DecodedBase64Key();
         }
         finally
         {
             CryptographicOperations.ZeroMemory(fileBytes);
         }
     }
-
-    private static ReadOnlySpan<byte> TrimWhitespace(byte[] bytes)
-    {
-        int start = 0,
-            end = bytes.Length;
-        while (start < end && IsWhitespace(bytes[start]))
-            start++;
-        while (end > start && IsWhitespace(bytes[end - 1]))
-            end--;
-        return bytes.AsSpan(start, end - start);
-    }
-
-    private static bool IsWhitespace(byte b) => b is 0x20 or 0x09 or 0x0A or 0x0D;
 
     protected virtual byte[] GetFileBytes() => File.ReadAllBytes(_filePath);
 }
