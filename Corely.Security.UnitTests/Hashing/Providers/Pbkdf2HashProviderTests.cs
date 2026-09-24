@@ -113,6 +113,8 @@ public class Pbkdf2HashProviderTests : SaltedHashProviderGenericTests
 
 file static class Pbkdf2HashProviderExtensions
 {
-    public static int Iterations(this Pbkdf2HashProvider provider) =>
-        int.Parse(provider.Hash("probe").Split(':')[1]);
+    extension(Pbkdf2HashProvider provider)
+    {
+        public int Iterations() => int.Parse(provider.Hash("probe").Split(':')[1]);
+    }
 }
