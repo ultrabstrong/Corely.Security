@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using System.Text;
 using Corely.Security.Keys;
 
@@ -7,7 +7,7 @@ namespace Corely.Security.Encryption.Providers;
 public sealed class RsaEncryptionProvider : AsymmetricEncryptionProviderBase
 {
     public override string ProviderDescription =>
-        $"RSA encryption with {PaddingName(_rsaEncryptionPadding)} padding. Keys use PKCS#8 "
+        $"RSA encryption with {_rsaEncryptionPadding.ShortName()} padding. Keys use PKCS#8 "
         + "(private) and SubjectPublicKeyInfo (public) format, Base64-encoded. Output is "
         + "Base64-encoded.";
 
@@ -15,15 +15,10 @@ public sealed class RsaEncryptionProvider : AsymmetricEncryptionProviderBase
     private readonly RSAEncryptionPadding _rsaEncryptionPadding;
 
     public RsaEncryptionProvider(RSAEncryptionPadding rsaEncryptionPadding)
-        : base($"RSA-{PaddingName(rsaEncryptionPadding)}")
+        : base($"RSA-{rsaEncryptionPadding.ShortName()}")
     {
         _rsaEncryptionPadding = rsaEncryptionPadding;
     }
-
-    private static string PaddingName(RSAEncryptionPadding padding) =>
-        padding.Mode == RSAEncryptionPaddingMode.Oaep
-            ? $"OAEP-{padding.OaepHashAlgorithm.Name}"
-            : "PKCS1";
 
     protected override string DecryptInternal(string value, ReadOnlySpan<byte> privateKey)
     {
