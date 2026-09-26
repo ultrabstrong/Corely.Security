@@ -24,7 +24,7 @@ Most call sites do not change, because `CreateKey()` now feeds the key store dir
 var keyStore = new InMemorySymmetricKeyStoreProvider(provider.GetSymmetricKeyProvider().CreateKey());
 ```
 
-Where a key arrives Base64-encoded - configuration, an environment variable, a database column -
+Where a key arrives Base64-encoded (configuration, an environment variable, a database column),
 the in-memory stores keep `string` constructor overloads. That string is yours to manage; the
 library will not hold it.
 
@@ -56,7 +56,7 @@ class MyProvider : SaltedHashProviderBase
 
 Custom providers also take `ReadOnlySpan<byte>` for keys in `EncryptInternal`, `DecryptInternal`,
 `SignInternal`, `VerifyInternal` and `GetSigningCredentials`. Drop the
-`Convert.FromBase64String(key)` line - the bytes arrive decoded.
+`Convert.FromBase64String(key)` line; the bytes arrive decoded.
 
 ## File key stores reject unknown versions
 
@@ -76,8 +76,8 @@ signature as a provider code and always threw. Resolve signature providers with 
 
 ## Provider names no longer claim key properties
 
-A provider cannot know the key size or curve it will be handed - both come from the key store at
-call time - so the names no longer assert them.
+A provider cannot know the key size or curve it will be handed (both come from the key store at
+call time), so the names no longer assert them.
 
 | 1.x | 2.0 |
 |-----|-----|
@@ -98,7 +98,7 @@ factory.AddProvider(AsymmetricEncryptionConstants.LEGACY_RSA_CODE, provider);
 
 Unchanged behaviour, corrected documentation. `ECDsaSignatureProvider` always emitted IEEE P1363
 (raw `r || s`, 64 bytes for P-256); it described itself as DER. If you hand these signatures to an
-external verifier, configure it for P1363 - or convert. Nothing about existing signatures changed.
+external verifier, configure it for P1363, or convert. Nothing about existing signatures changed.
 
 ## Your stored data
 
@@ -107,5 +107,5 @@ vectors and stored-format fixtures in `Corely.Security.UnitTests/Interop` pin th
 unchanged across every 2.0 refactor.
 
 The one exception is the file key store version check above: if you were relying on it returning
-the only key for a version other than 1, that now throws - and it was silently giving you the
+the only key for a version other than 1, that now throws. It was silently giving you the
 wrong key before.

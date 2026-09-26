@@ -4,7 +4,7 @@ Generate opaque application secrets for workflows like password recovery, one-ti
 
 ## Included Provider
 
-- `RandomSecretProvider` - generates URL-safe random secrets using cryptographically secure randomness
+- `RandomSecretProvider`: generates URL-safe random secrets using cryptographically secure randomness
 
 ## Example
 

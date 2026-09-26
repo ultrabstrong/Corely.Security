@@ -16,7 +16,7 @@ arrive from configuration, and both expose `Clear()` to zero what they hold.
 key pair) at version 1. `Get` throws `KeyStoreException` for any other version rather than
 returning the only key it has.
 
-Production note: These in-memory stores are for demo/runtime rotation only—not durable storage. Persist real keys in a managed KMS / key vault and hydrate a custom store implementation at startup.
+Production note: These in-memory stores are for demo/runtime rotation only, not durable storage. Persist real keys in a managed KMS / key vault and hydrate a custom store implementation at startup.
 
 Symmetric example:
 ```csharp
